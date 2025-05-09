@@ -1,0 +1,114 @@
+package org.portodigital.residencia.oabpe.domain.pagamento_cotas;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.RequiredArgsConstructor;
+import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABRequestDTO;
+import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
+import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasRequestDTO;
+import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/pagamento-cotas")
+@RequiredArgsConstructor
+public class PagamentoCotasController {
+
+    private final PagamentoCotasService pagamentoCotasService;
+
+    @Operation(
+            summary = "Listar Pagamentos de Cotas",
+            description = "Retorna uma lista paginada de todos os Pagamnetos de Cotas cadastrados"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista recuperada com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
+    })
+    @GetMapping
+    @PreAuthorize("hasPermission('PagamentoCotas', 'LEITURA')")
+    public ResponseEntity<Page<PagamentoCotasResponseDTO>> getAll(
+            @Parameter(description = "Parâmetros de paginação (page, size, sort)")
+            Pageable pageable) {
+        return ResponseEntity.ok(pagamentoCotasService.getAll(pageable));
+    }
+
+    @Operation(
+            summary = "Buscar Pagamento de Cota por ID",
+            description = "Retorna os detalhes de um Pagamento de Cota específico"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Pagamento encontrado"),
+            @ApiResponse(responseCode = "404", description = "Pagamento não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
+    })
+    @GetMapping("/{id}")
+    @PreAuthorize("hasPermission('PagamentoCotas', 'LEITURA')")
+    public ResponseEntity<PagamentoCotasResponseDTO> getById(
+            @Parameter(description = "ID do Pagamento", example = "1")
+            @PathVariable Long id) {
+        return ResponseEntity.ok(pagamentoCotasService.getById(id));
+    }
+
+    @Operation(
+            summary = "Criar novo Pagamento de Cota",
+            description = "Cadastra um novo registro de Pagamento de Cota"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Pagamento criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
+    })
+    @PostMapping
+    @PreAuthorize("hasPermission('PagamentoCotas', 'ESCRITA')")
+    public ResponseEntity<PagamentoCotasResponseDTO> create(
+            @Parameter(description = "Dados do pagamento para criação")
+            @RequestBody PagamentoCotasRequestDTO request) {
+        PagamentoCotasResponseDTO response = pagamentoCotasService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(
+            summary = "Excluir Pagamento",
+            description = "Deixa inativo um registro de Pagamento"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Pagamento inativo com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Pagamento não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
+    })
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasPermission('PagamentoCotas', 'ESCRITA')")
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "ID do pagamento a ser excluído", example = "1")
+            @PathVariable Long id) {
+        pagamentoCotasService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Atualizar Pagamento",
+            description = "Atualiza os dados de um Pagamento existente"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Pagamento atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Pagamento não encontrado"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
+    })
+    @PutMapping("/{id}")
+    @PreAuthorize("hasPermission('PagamentoCotas', 'ESCRITA')")
+    public ResponseEntity<PagamentoCotasResponseDTO> update(
+            @Parameter(description = "ID do Pagamento de Cota a ser atualizado", example = "1")
+            @PathVariable Long id,
+            @Parameter(description = "Novos dados do Pagamento")
+            @RequestBody PagamentoCotasRequestDTO request) {
+        return ResponseEntity.ok(pagamentoCotasService.update(id, request));
+    }
+}
