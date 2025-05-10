@@ -18,5 +18,6 @@ public class BalanceteCFOABResponseDTO {
     private String periodicidade;
     private LocalDate dtPrevEntr;
     private LocalDate dtEntr;
+    private Long eficiencia;
     private String usuarioId;
 }

@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import org.portodigital.residencia.oabpe.domain.user.User;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Getter
 @Setter
@@ -40,7 +41,21 @@ public class BalanceteCFOAB {
     @Column(name = "DtEntrega")
     private LocalDate dtEntr;
 
+    @Column(name = "Status", length = 1)
+    private String status;
+
+    @Column(name = "Eficiencia", length = 1)
+    private Long eficiencia;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "Id_usuario", referencedColumnName = "id")
     private User user;
+
+    public Long getEficiencia() {
+        if (dtEntr == null) {
+            return null;
+        }
+        long diasAtraso = ChronoUnit.DAYS.between(dtPrevEntr, dtEntr);
+        return diasAtraso > 0 ? diasAtraso : 0L;
+    }
 }

@@ -29,7 +29,7 @@ public class BalanceteCFOABService {
 
     public BalanceteCFOABResponseDTO create(BalanceteCFOABRequestDTO request) {
         BalanceteCFOAB balancete = mapper.map(request, BalanceteCFOAB.class);
-
+        balancete.setStatus("A");
         BalanceteCFOAB savedBalancete = balanceteCFOABRepository.save(balancete);
         return mapper.map(savedBalancete, BalanceteCFOABResponseDTO.class);
     }
@@ -37,7 +37,8 @@ public class BalanceteCFOABService {
     public void delete(Long id) {
         var existingBalancete = balanceteCFOABRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Balancete não encontrado."));
-        balanceteCFOABRepository.delete(existingBalancete);
+        existingBalancete.setStatus("I");
+        balanceteCFOABRepository.save(existingBalancete);
     }
 
     public BalanceteCFOABResponseDTO update(Long id, BalanceteCFOABRequestDTO request) {
