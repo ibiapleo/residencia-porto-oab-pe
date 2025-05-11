@@ -4,9 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABRequestDTO;
-import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
 import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasRequestDTO;
 import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasResponseDTO;
 import org.springframework.data.domain.Page;
@@ -17,8 +16,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/pagamento-cotas")
+@RequestMapping("/v1/pagamento-cotas")
 @RequiredArgsConstructor
+@Tag(name = "Pagamento de cotas", description = "Gerencia registros de pagamento de cotas")
 public class PagamentoCotasController {
 
     private final PagamentoCotasService pagamentoCotasService;
@@ -32,7 +32,7 @@ public class PagamentoCotasController {
             @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
     })
     @GetMapping
-    @PreAuthorize("hasPermission('PagamentoCotas', 'LEITURA')")
+    @PreAuthorize("hasPermission('modulo_pagamento_cotas', 'LEITURA')")
     public ResponseEntity<Page<PagamentoCotasResponseDTO>> getAll(
             @Parameter(description = "Parâmetros de paginação (page, size, sort)")
             Pageable pageable) {
@@ -49,7 +49,7 @@ public class PagamentoCotasController {
             @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
     })
     @GetMapping("/{id}")
-    @PreAuthorize("hasPermission('PagamentoCotas', 'LEITURA')")
+    @PreAuthorize("hasPermission('modulo_pagamento_cotas', 'LEITURA')")
     public ResponseEntity<PagamentoCotasResponseDTO> getById(
             @Parameter(description = "ID do Pagamento", example = "1")
             @PathVariable Long id) {
@@ -66,7 +66,7 @@ public class PagamentoCotasController {
             @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
     })
     @PostMapping
-    @PreAuthorize("hasPermission('PagamentoCotas', 'ESCRITA')")
+    @PreAuthorize("hasPermission('modulo_pagamento_cotas', 'ESCRITA')")
     public ResponseEntity<PagamentoCotasResponseDTO> create(
             @Parameter(description = "Dados do pagamento para criação")
             @RequestBody PagamentoCotasRequestDTO request) {
@@ -84,7 +84,7 @@ public class PagamentoCotasController {
             @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
     })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasPermission('PagamentoCotas', 'ESCRITA')")
+    @PreAuthorize("hasPermission('modulo_pagamento_cotas', 'ESCRITA')")
     public ResponseEntity<Void> delete(
             @Parameter(description = "ID do pagamento a ser excluído", example = "1")
             @PathVariable Long id) {
@@ -103,7 +103,7 @@ public class PagamentoCotasController {
             @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
     })
     @PutMapping("/{id}")
-    @PreAuthorize("hasPermission('PagamentoCotas', 'ESCRITA')")
+    @PreAuthorize("hasPermission('modulo_pagamento_cotas', 'ESCRITA')")
     public ResponseEntity<PagamentoCotasResponseDTO> update(
             @Parameter(description = "ID do Pagamento de Cota a ser atualizado", example = "1")
             @PathVariable Long id,

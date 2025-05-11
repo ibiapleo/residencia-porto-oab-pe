@@ -4,11 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaRequestDTO;
 import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaResponseDTO;
-import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasRequestDTO;
-import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -17,8 +16,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/base-orcamentaria")
+@RequestMapping("/v1/base-orcamentaria")
 @RequiredArgsConstructor
+@Tag(name = "Base Orçamentaria", description = "Gerencia registros da base orçamentaria")
 public class BaseOrcamentariaController {
 
     private final BaseOrcamentariaService baseOrcamentariaService;
@@ -32,7 +32,7 @@ public class BaseOrcamentariaController {
             @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
     })
     @GetMapping
-    @PreAuthorize("hasPermission('BaseOrcamentaria', 'LEITURA')")
+    @PreAuthorize("hasPermission('modulo_base_orcamentaria', 'LEITURA')")
     public ResponseEntity<Page<BaseOrcamentariaResponseDTO>> getAll(
             @Parameter(description = "Parâmetros de paginação (page, size, sort)")
             Pageable pageable) {
@@ -49,7 +49,7 @@ public class BaseOrcamentariaController {
             @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
     })
     @GetMapping("/{id}")
-    @PreAuthorize("hasPermission('BaseOrcamentaria', 'LEITURA')")
+    @PreAuthorize("hasPermission('modulo_base_orcamentaria', 'LEITURA')")
     public ResponseEntity<BaseOrcamentariaResponseDTO> getById(
             @Parameter(description = "ID da Base", example = "1")
             @PathVariable Long id) {
@@ -66,7 +66,7 @@ public class BaseOrcamentariaController {
             @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
     })
     @PostMapping
-    @PreAuthorize("hasPermission('BaseOrcamentaria', 'ESCRITA')")
+    @PreAuthorize("hasPermission('modulo_base_orcamentaria', 'ESCRITA')")
     public ResponseEntity<BaseOrcamentariaResponseDTO> create(
             @Parameter(description = "Dados do pagamento para criação")
             @RequestBody BaseOrcamentariaRequestDTO request) {
@@ -84,7 +84,7 @@ public class BaseOrcamentariaController {
             @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
     })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasPermission('BaseOrcamentaria', 'ESCRITA')")
+    @PreAuthorize("hasPermission('modulo_base_orcamentaria', 'ESCRITA')")
     public ResponseEntity<Void> delete(
             @Parameter(description = "ID da Base a ser excluído", example = "1")
             @PathVariable Long id) {
@@ -103,7 +103,7 @@ public class BaseOrcamentariaController {
             @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
     })
     @PutMapping("/{id}")
-    @PreAuthorize("hasPermission('BaseOrcamentaria', 'ESCRITA')")
+    @PreAuthorize("hasPermission('modulo_base_orcamentaria', 'ESCRITA')")
     public ResponseEntity<BaseOrcamentariaResponseDTO> update(
             @Parameter(description = "ID da Base a ser atualizado", example = "1")
             @PathVariable Long id,

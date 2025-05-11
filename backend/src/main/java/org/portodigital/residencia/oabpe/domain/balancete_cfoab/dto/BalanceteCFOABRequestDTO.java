@@ -1,10 +1,8 @@
 package org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.portodigital.residencia.oabpe.domain.user.User;
 
 import java.time.LocalDate;
 

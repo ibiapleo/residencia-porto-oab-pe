@@ -24,12 +24,11 @@ public class BaseOrcamentaria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(optional = false)
-//    @JoinColumn(name = "Id_Lancto", referencedColumnName = "id", nullable = false)
-//    private Lancto lacntoId;
+    @Column(name = "Id_Lancto", nullable = false)
+    private Long idLancto;
 
-//    @Column(length = 50, name = "Lancto", nullable = false)
-//    private String lancto;
+    @Column(length = 50, name = "Lancto", nullable = false)
+    private String lancto;
 
     @Column(name = "Valor", precision = 19, scale = 2, nullable = false)
     private BigDecimal valor;
@@ -47,7 +46,7 @@ public class BaseOrcamentaria {
     private String tipo;
 
     @Column(name = "Status", length = 1)
-    private String status;
+    private boolean status = true;
 
     @Column(name = "DAT_CRIACAO_REGISTRO")
     @Temporal(TemporalType.TIMESTAMP)

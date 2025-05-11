@@ -1,4 +1,4 @@
-package org.portodigital.residencia.oabpe.domain.user.payload;
+package org.portodigital.residencia.oabpe.domain.identidade.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,5 +13,4 @@ public class UserResponseDTO {
 
     private String id;
     private String name;
-    private String email;
 }

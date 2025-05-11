@@ -1,4 +1,4 @@
-package org.portodigital.residencia.oabpe.domain.user.payload;
+package org.portodigital.residencia.oabpe.domain.identidade.dto;
 
 import lombok.Data;
 

@@ -1,13 +1,13 @@
-package org.portodigital.residencia.oabpe.domain.user;
+package org.portodigital.residencia.oabpe.domain.identidade.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.portodigital.residencia.oabpe.domain.user.role.Role;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -18,6 +18,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User {
 
     @Id
@@ -33,7 +34,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(length = 500)
+    @Column(length = 1000)
     private String refreshToken;
 
     @Column(name = "DAT_CRIACAO_REGISTRO")

@@ -1,5 +1,6 @@
-package org.portodigital.residencia.oabpe.domain.user;
+package org.portodigital.residencia.oabpe.domain.identidade.repository;
 
+import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

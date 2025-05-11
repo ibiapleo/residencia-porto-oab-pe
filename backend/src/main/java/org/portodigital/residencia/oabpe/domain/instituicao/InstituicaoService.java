@@ -4,9 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.portodigital.residencia.oabpe.domain.instituicao.dto.InstituicaoRequestDTO;
 import org.portodigital.residencia.oabpe.domain.instituicao.dto.InstituicaoResponseDTO;
-import org.portodigital.residencia.oabpe.domain.subseccional.Subseccional;
-import org.portodigital.residencia.oabpe.domain.subseccional.dto.SubseccionalRequest;
-import org.portodigital.residencia.oabpe.domain.subseccional.dto.SubseccionalResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

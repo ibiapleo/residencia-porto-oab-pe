@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface PrestacaoContasSubseccionalRepository extends JpaRepository<PrestacaoContasSubseccional, Long> {
 
-    @Query("SELECT p FROM PrestacaoContasSubseccional p WHERE p.status = 'A'")
+    @Query("SELECT p FROM PrestacaoContasSubseccional p WHERE p.status = true")
     Page<PrestacaoContasSubseccional> findAllAtivos(Pageable pageable);
 }

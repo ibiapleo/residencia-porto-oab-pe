@@ -12,8 +12,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class BaseOrcamentariaResponseDTO {
     private Long id;
-//    private Long lacntoId;
-//    private String lancto;
+    private Long lacntoId;
+    private String lancto;
     private BigDecimal valor;
     private LocalDate dtDocto;
     private LocalDate dtLancto;

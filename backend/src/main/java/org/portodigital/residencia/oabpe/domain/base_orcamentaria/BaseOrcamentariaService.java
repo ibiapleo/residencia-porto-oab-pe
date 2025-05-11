@@ -4,10 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaRequestDTO;
 import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaResponseDTO;
-import org.portodigital.residencia.oabpe.domain.pagamento_cotas.PagamentoCotas;
-import org.portodigital.residencia.oabpe.domain.pagamento_cotas.PagamentoCotasRepository;
-import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasRequestDTO;
-import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasResponseDTO;
 import org.portodigital.residencia.oabpe.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,25 +29,21 @@ public class BaseOrcamentariaService {
 
     public BaseOrcamentariaResponseDTO create(BaseOrcamentariaRequestDTO request) {
         BaseOrcamentaria baseOrcamentaria = mapper.map(request, BaseOrcamentaria.class);
-
-        baseOrcamentaria.setStatus("A");
-
         BaseOrcamentaria savedBaseOrcamentaria = baseOrcamentariaRepository.save(baseOrcamentaria);
         return mapper.map(savedBaseOrcamentaria, BaseOrcamentariaResponseDTO.class);
     }
 
     public void delete(Long id) {
         var existingBase = baseOrcamentariaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Base Orçamentaria não encontrado."));
-
-        existingBase.setStatus("I");
-
+        existingBase.setStatus(false);
         baseOrcamentariaRepository.save(existingBase);
     }
 
     public BaseOrcamentariaResponseDTO update(Long id, BaseOrcamentariaRequestDTO request) {
         return baseOrcamentariaRepository.findById(id)
                 .map(existingBaseOrcamentaria -> {
-                    //existingBaseOrcamentaria.setLancto(request.getLancto());
+                    existingBaseOrcamentaria.setIdLancto(request.getIdLancto());
+                    existingBaseOrcamentaria.setLancto(request.getLancto());
                     existingBaseOrcamentaria.setValor(request.getValor());
                     existingBaseOrcamentaria.setDtDocto(request.getDtDocto());
                     existingBaseOrcamentaria.setDtLancto(request.getDtLancto());

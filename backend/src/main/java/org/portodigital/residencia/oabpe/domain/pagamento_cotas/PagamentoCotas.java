@@ -9,8 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.portodigital.residencia.oabpe.domain.instituicao.Instituicao;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.TipoDesconto;
-import org.portodigital.residencia.oabpe.domain.subseccional.Subseccional;
-import org.portodigital.residencia.oabpe.domain.user.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

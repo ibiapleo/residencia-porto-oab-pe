@@ -30,9 +30,6 @@ public class PrestacaoContasSubseccionalService {
 
     public PrestacaoContasSubseccionalResponseDTO create(PrestacaoContasSubseccionalRequestDTO request) {
         PrestacaoContasSubseccional prestacao = mapper.map(request, PrestacaoContasSubseccional.class);
-
-        prestacao.setStatus("A");
-
         PrestacaoContasSubseccional savedPrestacao = prestacaoContasSubseccionalRepository.save(prestacao);
         return mapper.map(savedPrestacao, PrestacaoContasSubseccionalResponseDTO.class);
     }
@@ -56,9 +53,7 @@ public class PrestacaoContasSubseccionalService {
 
     public void delete(Long id) {
         var existingPrestacao = prestacaoContasSubseccionalRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Prestação de contas não encontrado."));
-
-        existingPrestacao.setStatus("I");
-
+        existingPrestacao.setStatus(false);
         prestacaoContasSubseccionalRepository.save(existingPrestacao);
     }
 }

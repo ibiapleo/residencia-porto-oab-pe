@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.portodigital.residencia.oabpe.domain.user.User;
+import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 
 @Entity
 @Data
@@ -14,11 +14,14 @@ import org.portodigital.residencia.oabpe.domain.user.User;
 public class Subseccional {
 
     @Id
-    @Column(name = "Id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "SubSeccional", nullable = false, length = 100)
     private String subSeccional;
+
+    @Column(name = "Status", nullable = false)
+    private Boolean status = true;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "Id_usuario", referencedColumnName = "id")

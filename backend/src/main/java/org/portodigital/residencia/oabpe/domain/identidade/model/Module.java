@@ -1,16 +1,17 @@
-package org.portodigital.residencia.oabpe.domain.user.module;
+package org.portodigital.residencia.oabpe.domain.identidade.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.portodigital.residencia.oabpe.domain.user.permission.Permission;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Module {
@@ -21,7 +22,7 @@ public class Module {
 
     private String name;
 
-    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "module",  fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Permission> permissions = new HashSet<>();
 
 }

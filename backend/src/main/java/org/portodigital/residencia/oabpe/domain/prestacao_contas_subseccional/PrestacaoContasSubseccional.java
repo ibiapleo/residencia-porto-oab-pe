@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.domain.subseccional.Subseccional;
-import org.portodigital.residencia.oabpe.domain.user.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -55,8 +55,8 @@ public class PrestacaoContasSubseccional {
     @Column(name = "Observacao")
     private String observacao;
 
-    @Column(name = "Status", length = 1)
-    private String status;
+    @Column(name = "Status", nullable = false)
+    private Boolean status = true;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "Id_usuario", referencedColumnName = "id")
