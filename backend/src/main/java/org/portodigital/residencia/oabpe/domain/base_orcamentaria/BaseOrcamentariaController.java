@@ -1,0 +1,114 @@
+package org.portodigital.residencia.oabpe.domain.base_orcamentaria;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.RequiredArgsConstructor;
+import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaRequestDTO;
+import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaResponseDTO;
+import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasRequestDTO;
+import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/base-orcamentaria")
+@RequiredArgsConstructor
+public class BaseOrcamentariaController {
+
+    private final BaseOrcamentariaService baseOrcamentariaService;
+
+    @Operation(
+            summary = "Listar Bases Orçamentarias",
+            description = "Retorna uma lista paginada de todos as Bases Orçamentarias cadastrados"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista recuperada com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
+    })
+    @GetMapping
+    @PreAuthorize("hasPermission('BaseOrcamentaria', 'LEITURA')")
+    public ResponseEntity<Page<BaseOrcamentariaResponseDTO>> getAll(
+            @Parameter(description = "Parâmetros de paginação (page, size, sort)")
+            Pageable pageable) {
+        return ResponseEntity.ok(baseOrcamentariaService.getAll(pageable));
+    }
+
+    @Operation(
+            summary = "Buscar Base Orçamentaria por ID",
+            description = "Retorna os detalhes de uma Base Orçamentaria específico"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Base encontrado"),
+            @ApiResponse(responseCode = "404", description = "Base não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
+    })
+    @GetMapping("/{id}")
+    @PreAuthorize("hasPermission('BaseOrcamentaria', 'LEITURA')")
+    public ResponseEntity<BaseOrcamentariaResponseDTO> getById(
+            @Parameter(description = "ID da Base", example = "1")
+            @PathVariable Long id) {
+        return ResponseEntity.ok(baseOrcamentariaService.getById(id));
+    }
+
+    @Operation(
+            summary = "Criar nova Base Orçamentaria",
+            description = "Cadastra um novo registro de Base Orçamentaria"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Base criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
+    })
+    @PostMapping
+    @PreAuthorize("hasPermission('BaseOrcamentaria', 'ESCRITA')")
+    public ResponseEntity<BaseOrcamentariaResponseDTO> create(
+            @Parameter(description = "Dados do pagamento para criação")
+            @RequestBody BaseOrcamentariaRequestDTO request) {
+        BaseOrcamentariaResponseDTO response = baseOrcamentariaService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @Operation(
+            summary = "Base Inativa",
+            description = "Deixar o status de uma Base inativa"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Base inativa com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Base não encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
+    })
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasPermission('BaseOrcamentaria', 'ESCRITA')")
+    public ResponseEntity<Void> delete(
+            @Parameter(description = "ID da Base a ser excluído", example = "1")
+            @PathVariable Long id) {
+        baseOrcamentariaService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Atualizar a Base",
+            description = "Atualiza os dados de um Base existente"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Base atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Base não encontrado"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
+    })
+    @PutMapping("/{id}")
+    @PreAuthorize("hasPermission('BaseOrcamentaria', 'ESCRITA')")
+    public ResponseEntity<BaseOrcamentariaResponseDTO> update(
+            @Parameter(description = "ID da Base a ser atualizado", example = "1")
+            @PathVariable Long id,
+            @Parameter(description = "Novos dados da Base")
+            @RequestBody BaseOrcamentariaRequestDTO request) {
+        return ResponseEntity.ok(baseOrcamentariaService.update(id, request));
+    }
+}
