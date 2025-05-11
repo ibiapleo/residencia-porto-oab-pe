@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://${DB_HOST:localhost}:1433;databaseName=${DB_NAME:DM_TI_FINANCEIRO};encrypt=false
+    username: sa
+    password: je?Z_TS{'J:hYLJD
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+    show_sql: true
+    defer-datasource-initialization: true
+
+openapi:
+  service:
+    title: API Residência OAB-PE
+    version: 1.0.0
+    url: http://localhost:8080
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+api:
+  security:
+    token:
+      secret: my-secret-key
