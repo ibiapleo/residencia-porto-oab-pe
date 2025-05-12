@@ -71,7 +71,9 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/webjars/**",
                                 "/swagger-ui.html",
-                                "/ms-users/v3/api-docs")
+                                "/ms-users/v3/api-docs",
+                                "/transparencia"
+                                )
                         .permitAll()
                         .anyRequest()
                         .authenticated()
