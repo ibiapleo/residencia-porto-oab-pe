@@ -20,4 +20,6 @@ public class BalanceteCFOABResponseDTO {
     private LocalDate dtEntr;
     private Long eficiencia;
     private String usuarioId;
+    private boolean status;
+
 }

@@ -24,7 +24,7 @@ public class BalanceteCFOABController {
     private final BalanceteCFOABService balanceteCFOABService;
 
     @Operation(
-            summary = "Listar balancetes",
+            summary = "Listar Balancetes",
             description = "Retorna uma lista paginada de todos os balancetes cadastrados"
     )
     @ApiResponses({
@@ -40,7 +40,7 @@ public class BalanceteCFOABController {
     }
 
     @Operation(
-            summary = "Buscar balancete por ID",
+            summary = "Buscar Balancete por ID",
             description = "Retorna os detalhes de um balancete específico"
     )
     @ApiResponses({
@@ -57,7 +57,7 @@ public class BalanceteCFOABController {
     }
 
     @Operation(
-            summary = "Criar novo balancete",
+            summary = "Criar novo Balancete",
             description = "Cadastra um novo registro de balancete contábil"
     )
     @ApiResponses({
@@ -75,8 +75,8 @@ public class BalanceteCFOABController {
     }
 
     @Operation(
-            summary = "Excluir balancete",
-            description = "Remove permanentemente um registro de balancete"
+            summary = "Excluir balancete (soft delete)",
+            description = "Deixar o status de um Balancete inativo"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Balancete excluído com sucesso"),
@@ -93,7 +93,7 @@ public class BalanceteCFOABController {
     }
 
     @Operation(
-            summary = "Atualizar balancete",
+            summary = "Atualizar Balancete",
             description = "Atualiza os dados de um balancete existente"
     )
     @ApiResponses({

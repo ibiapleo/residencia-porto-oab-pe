@@ -75,8 +75,8 @@ public class PagamentoCotasController {
     }
 
     @Operation(
-            summary = "Excluir Pagamento",
-            description = "Deixa inativo um registro de Pagamento"
+            summary = "Excluir Pagamento de Cota (soft delete)",
+            description = "Deixar o status de um Pagamento de Cota inativo"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Pagamento inativo com sucesso"),

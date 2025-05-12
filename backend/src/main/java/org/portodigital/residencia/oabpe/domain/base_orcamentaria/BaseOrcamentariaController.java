@@ -24,8 +24,8 @@ public class BaseOrcamentariaController {
     private final BaseOrcamentariaService baseOrcamentariaService;
 
     @Operation(
-            summary = "Listar Bases Orçamentarias",
-            description = "Retorna uma lista paginada de todos as Bases Orçamentarias cadastrados"
+            summary = "Listar Bases Orçamentárias",
+            description = "Retorna uma lista paginada de todos as Bases Orçamentárias cadastradas"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista recuperada com sucesso"),
@@ -40,8 +40,8 @@ public class BaseOrcamentariaController {
     }
 
     @Operation(
-            summary = "Buscar Base Orçamentaria por ID",
-            description = "Retorna os detalhes de uma Base Orçamentaria específico"
+            summary = "Buscar Base Orçamentária por ID",
+            description = "Retorna os detalhes de uma Base Orçamentária específica"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Base encontrado"),
@@ -57,8 +57,8 @@ public class BaseOrcamentariaController {
     }
 
     @Operation(
-            summary = "Criar nova Base Orçamentaria",
-            description = "Cadastra um novo registro de Base Orçamentaria"
+            summary = "Criar nova Base Orçamentária",
+            description = "Cadastra um novo registro de Base Orçamentária"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Base criado com sucesso"),
@@ -75,8 +75,8 @@ public class BaseOrcamentariaController {
     }
 
     @Operation(
-            summary = "Base Inativa",
-            description = "Deixar o status de uma Base inativa"
+            summary = "Excluir uma Base Orçamentária (soft delete)",
+            description = "Deixar o status de uma Base Orçamentária inativo"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Base inativa com sucesso"),
