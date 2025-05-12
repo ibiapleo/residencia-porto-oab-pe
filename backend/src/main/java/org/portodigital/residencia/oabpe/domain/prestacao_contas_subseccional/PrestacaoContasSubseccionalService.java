@@ -2,11 +2,15 @@ package org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
+import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalRequestDTO;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalResponseDTO;
 import org.portodigital.residencia.oabpe.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,26 +33,23 @@ public class PrestacaoContasSubseccionalService {
     }
 
     public PrestacaoContasSubseccionalResponseDTO create(PrestacaoContasSubseccionalRequestDTO request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
         PrestacaoContasSubseccional prestacao = mapper.map(request, PrestacaoContasSubseccional.class);
+        prestacao.setUser(user);
         PrestacaoContasSubseccional savedPrestacao = prestacaoContasSubseccionalRepository.save(prestacao);
-        return mapper.map(savedPrestacao, PrestacaoContasSubseccionalResponseDTO.class);
+        PrestacaoContasSubseccionalResponseDTO dto = mapper.map(savedPrestacao, PrestacaoContasSubseccionalResponseDTO.class);
+        dto.setUsuarioId(prestacao.getUser().getId());
+        return dto;
     }
 
     public PrestacaoContasSubseccionalResponseDTO update(Long id, PrestacaoContasSubseccionalRequestDTO request) {
-        return prestacaoContasSubseccionalRepository.findById(id)
-                .map(existingPrestacao -> {
-                    existingPrestacao.setMesReferencia(request.getMesReferencia());
-                    existingPrestacao.setAno(request.getAno());
-                    existingPrestacao.setDtPrevEntr(request.getDtPrevEntr());
-                    existingPrestacao.setDtEntrega(request.getDtEntrega());
-                    existingPrestacao.setDtPagto(request.getDtPagto());
-                    existingPrestacao.setValorDuodecimo(request.getValorDuodecimo());
-                    existingPrestacao.setValorDesconto(request.getValorDesconto());
-                    existingPrestacao.setProtocoloSGD(request.getProtocoloSGD());
-                    existingPrestacao.setObservacao(request.getObservacao());
-                    PrestacaoContasSubseccional updatedPrestacao = prestacaoContasSubseccionalRepository.save(existingPrestacao);
-                    return mapper.map(updatedPrestacao, PrestacaoContasSubseccionalResponseDTO.class);
-                }).orElseThrow(() -> new EntityNotFoundException("Prestação de contas não encontrado."));
+        PrestacaoContasSubseccional existing = prestacaoContasSubseccionalRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Prestação de contas não encontrada com id: " + id));
+
+        mapper.map(request, existing);
+        PrestacaoContasSubseccional updated = prestacaoContasSubseccionalRepository.save(existing);
+        return mapper.map(updated, PrestacaoContasSubseccionalResponseDTO.class);
     }
 
     public void delete(Long id) {

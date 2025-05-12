@@ -59,7 +59,7 @@ public class PrestacaoContasSubseccionalController {
         return ResponseEntity.ok(prestacaoContasSubseccionalService.update(id, request));
     }
 
-    @Operation(summary = "Excluir (soft delete) uma prestação de contas")
+    @Operation(summary = "Excluir uma prestação de contas (soft delete)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Prestação desativada com sucesso"),
             @ApiResponse(responseCode = "404", description = "Prestação não encontrada")
