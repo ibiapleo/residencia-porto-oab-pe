@@ -32,6 +32,9 @@ public class BalanceteCFOABService {
 
     public BalanceteCFOABResponseDTO create(BalanceteCFOABRequestDTO request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new SecurityException("Acesso não autorizado");
+        }
         User user = (User) authentication.getPrincipal();
         BalanceteCFOAB balancete = mapper.map(request, BalanceteCFOAB.class);
         balancete.setUser(user);

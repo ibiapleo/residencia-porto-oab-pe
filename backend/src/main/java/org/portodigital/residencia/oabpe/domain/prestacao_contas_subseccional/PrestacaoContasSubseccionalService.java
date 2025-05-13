@@ -34,6 +34,9 @@ public class PrestacaoContasSubseccionalService {
 
     public PrestacaoContasSubseccionalResponseDTO create(PrestacaoContasSubseccionalRequestDTO request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new SecurityException("Acesso não autorizado");
+        }
         User user = (User) authentication.getPrincipal();
         PrestacaoContasSubseccional prestacao = mapper.map(request, PrestacaoContasSubseccional.class);
         prestacao.setUser(user);
