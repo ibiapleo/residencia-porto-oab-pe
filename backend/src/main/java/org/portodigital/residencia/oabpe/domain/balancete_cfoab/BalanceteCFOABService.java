@@ -38,6 +38,7 @@ public class BalanceteCFOABService {
         User user = (User) authentication.getPrincipal();
         BalanceteCFOAB balancete = mapper.map(request, BalanceteCFOAB.class);
         balancete.setUser(user);
+        balancete.setEficiencia(balancete.getEficiencia());
         BalanceteCFOAB savedBalancete = balanceteCFOABRepository.save(balancete);
         BalanceteCFOABResponseDTO dto = mapper.map(savedBalancete, BalanceteCFOABResponseDTO.class);
         dto.setUsuarioId(balancete.getUser().getId());
