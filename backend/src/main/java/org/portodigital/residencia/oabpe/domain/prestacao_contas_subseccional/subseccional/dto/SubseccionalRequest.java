@@ -1,5 +1,6 @@
-package org.portodigital.residencia.oabpe.domain.subseccional.dto;
+package org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,5 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SubseccionalRequest {
 
+    private Long id;
+    @NotBlank
     private String subSeccional;
 }
