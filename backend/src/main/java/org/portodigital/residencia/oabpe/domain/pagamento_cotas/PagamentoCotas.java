@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.domain.instituicao.Instituicao;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto.TipoDesconto;
 
@@ -70,4 +71,7 @@ public class PagamentoCotas {
     @UpdateTimestamp
     private LocalDateTime dataAlteracaoRegistro;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "Id_usuario", referencedColumnName = "id")
+    private User user;
 }
