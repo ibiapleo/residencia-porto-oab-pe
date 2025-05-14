@@ -24,5 +24,6 @@ public class PagamentoCotasResponseDTO {
     private LocalDate dtPagto;
     private String observacao;
     private String status;
+    private String usuarioId;
 
 }
