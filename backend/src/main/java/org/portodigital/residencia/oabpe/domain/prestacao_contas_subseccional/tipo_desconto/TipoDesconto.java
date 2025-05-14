@@ -1,4 +1,4 @@
-package org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional;
+package org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
