@@ -13,7 +13,8 @@ import java.time.LocalDate;
 public class BalanceteCFOABResponseDTO {
 
     private Long id;
-    private String demonstracao;
+    private Long demonstrativoId;
+    private String nomeDemonstrativo;
     private String referencia;
     private String ano;
     private String periodicidade;
@@ -22,7 +23,6 @@ public class BalanceteCFOABResponseDTO {
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dtEntr;
     private Long eficiencia;
-    private String usuarioId;
     private boolean status;
 
 }

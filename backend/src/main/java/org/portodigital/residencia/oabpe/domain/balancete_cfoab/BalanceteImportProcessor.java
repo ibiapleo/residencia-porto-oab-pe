@@ -1,10 +1,13 @@
 package org.portodigital.residencia.oabpe.domain.balancete_cfoab;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABRequestDTO;
 import org.portodigital.residencia.oabpe.domain.commons.ImportProcessor;
+import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
+import org.portodigital.residencia.oabpe.domain.demonstrativo.DemonstrativoRepository;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +22,7 @@ import java.util.Set;
 public class BalanceteImportProcessor implements ImportProcessor<BalanceteCFOABRequestDTO> {
 
     private final Validator validator;
+    private final DemonstrativoRepository demonstrativoRepository;
 
     @Override
     public String[] getRequiredHeaders() {
@@ -28,7 +32,7 @@ public class BalanceteImportProcessor implements ImportProcessor<BalanceteCFOABR
     @Override
     public BalanceteCFOABRequestDTO parse(Map<String, String> rowData) {
         BalanceteCFOABRequestDTO dto = new BalanceteCFOABRequestDTO();
-        dto.setDemonstracao(rowData.get("Demonstrativo"));
+        dto.setDemonstrativoId(Long.valueOf(rowData.get("Id_Demostrativo")));
         dto.setReferencia(rowData.get("Referencia"));
         dto.setAno(rowData.get("Ano"));
         dto.setPeriodicidade(rowData.get("Periodicidade"));
@@ -54,8 +58,12 @@ public class BalanceteImportProcessor implements ImportProcessor<BalanceteCFOABR
 
     @Override
     public Object convertToEntity(BalanceteCFOABRequestDTO dto, User user) {
+
+        Demonstrativo demonstrativo = demonstrativoRepository.findByIdAtivo(dto.getDemonstrativoId())
+                .orElseThrow(() -> new EntityNotFoundException("Demonstrativo não encontrado com ID: " + dto.getDemonstrativoId()));
+
         BalanceteCFOAB entity = new BalanceteCFOAB();
-        entity.setDemonstracao(dto.getDemonstracao());
+        entity.setDemonstrativo(demonstrativo);
         entity.setReferencia(dto.getReferencia());
         entity.setAno(dto.getAno());
         entity.setPeriodicidade(dto.getPeriodicidade());

@@ -5,6 +5,8 @@ import org.modelmapper.ModelMapper;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABRequestDTO;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
 import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
+import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
+import org.portodigital.residencia.oabpe.domain.demonstrativo.DemonstrativoRepository;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,7 @@ public class BalanceteCFOABService extends AbstractFileImportService<BalanceteCF
 
     private final BalanceteImportProcessor processor;
     private final BalanceteCFOABRepository balanceteCFOABRepository;
+    private final DemonstrativoRepository demonstrativoRepository;
     private final ModelMapper mapper;
 
     @Transactional
@@ -48,13 +51,17 @@ public class BalanceteCFOABService extends AbstractFileImportService<BalanceteCF
         if (authentication == null || authentication.getPrincipal() == null) {
             throw new SecurityException("Acesso não autorizado");
         }
+
+        Demonstrativo demonstrativo = demonstrativoRepository.findByIdAtivo(request.getDemonstrativoId())
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Demonstrativo não encontrado com ID: " + request.getDemonstrativoId()));
+
         User user = (User) authentication.getPrincipal();
         BalanceteCFOAB balancete = mapper.map(request, BalanceteCFOAB.class);
         balancete.setUser(user);
+        balancete.setDemonstrativo(demonstrativo);
         balancete.setEficiencia(balancete.getEficiencia());
         BalanceteCFOAB savedBalancete = balanceteCFOABRepository.save(balancete);
         BalanceteCFOABResponseDTO dto = mapper.map(savedBalancete, BalanceteCFOABResponseDTO.class);
-        dto.setUsuarioId(balancete.getUser().getId());
         return dto;
     }
 
