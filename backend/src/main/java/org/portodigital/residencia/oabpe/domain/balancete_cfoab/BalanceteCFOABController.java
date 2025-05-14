@@ -139,12 +139,11 @@ public class BalanceteCFOABController {
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
     })
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<BalanceteCFOABResponseDTO>> uploadFile(
+    public void uploadFile(
             @RequestParam("file") MultipartFile file,
             @Parameter(hidden = true) Authentication authentication
     ) throws IOException {
         User user = (User) authentication.getPrincipal();
         balanceteCFOABService.importarArquivo(file, user);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

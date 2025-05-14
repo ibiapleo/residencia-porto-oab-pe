@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 
 import java.time.LocalDate;
@@ -22,8 +23,9 @@ public class BalanceteCFOAB {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "Demonstracao", length = 80, nullable = false)
-    private String demonstracao;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "Id_demonstrativo", referencedColumnName = "id")
+    private Demonstrativo demonstrativo;
 
     @Column(name = "Referencia", length = 80, nullable = false)
     private String referencia;
