@@ -3,25 +3,32 @@ package org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
+import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalFiltroRequest;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalRequestDTO;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalResponseDTO;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.Subseccional;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.dto.SubseccionalRequest;
 import org.portodigital.residencia.oabpe.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PrestacaoContasSubseccionalService {
+public class PrestacaoContasSubseccionalService extends AbstractFileImportService<PrestacaoContasSubseccionalRequestDTO> {
 
     private final PrestacaoContasSubseccionalRepository prestacaoContasSubseccionalRepository;
-
+    private final PrestacaoContasImportProcessor processor;
     private final ModelMapper mapper;
 
     public Page<PrestacaoContasSubseccionalResponseDTO> getAllComFiltro(PrestacaoContasSubseccionalFiltroRequest filtro, Pageable pageable) {
@@ -82,5 +89,11 @@ public class PrestacaoContasSubseccionalService {
         var existingPrestacao = prestacaoContasSubseccionalRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Prestação de contas não encontrado."));
         existingPrestacao.setStatus(false);
         prestacaoContasSubseccionalRepository.save(existingPrestacao);
+    }
+
+    @Transactional
+    public void importarArquivo(MultipartFile file, User user) throws IOException {
+        List<Object> entidades = importFile(file, user, processor);
+        prestacaoContasSubseccionalRepository.saveAll(entidades.stream().map(e -> (PrestacaoContasSubseccional) e).toList());
     }
 }
