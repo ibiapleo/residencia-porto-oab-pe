@@ -7,8 +7,12 @@ import org.portodigital.residencia.oabpe.domain.balancete_cfoab.BalanceteCFOAB;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABRequestDTO;
 import org.portodigital.residencia.oabpe.domain.commons.ImportProcessor;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalRequestDTO;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.Subseccional;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.SubseccionalRepository;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -17,33 +21,41 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
-public class PrestacaoContasImportProcessor implements ImportProcessor<BalanceteCFOABRequestDTO> {
+public class PrestacaoContasImportProcessor implements ImportProcessor<PrestacaoContasSubseccionalRequestDTO> {
 
     private final Validator validator;
+    private final SubseccionalRepository subseccionalRepository;
 
     @Override
     public String[] getRequiredHeaders() {
-        return new String[]{"Demonstrativo", "Referencia", "Ano", "Periodicidade", "PrevisaoEntrega"};
+        return new String[]{
+                "SUBSECCIONAL", "Referencia", "ANO",
+                "PRAZO DE ENTREGA", "DATA DE ENTREGA",
+                "DATA DE PAGAMENTO", "VALOR PAGO", "OBSERVAÇÃO"
+        };
     }
 
     @Override
-    public BalanceteCFOABRequestDTO parse(Map<String, String> rowData) {
-        BalanceteCFOABRequestDTO dto = new BalanceteCFOABRequestDTO();
-        dto.setDemonstracao(rowData.get("Demonstrativo"));
-        dto.setReferencia(rowData.get("Referencia"));
-        dto.setAno(rowData.get("Ano"));
-        dto.setPeriodicidade(rowData.get("Periodicidade"));
-        dto.setDtPrevEntr(LocalDate.parse(rowData.get("PrevisaoEntrega"), DateTimeFormatter.ofPattern("M/d/yyyy")));
-        dto.setDtEntr(Optional.ofNullable(rowData.get("DataEntrega"))
-                .filter(s -> !s.isBlank())
-                .map(d -> LocalDate.parse(d, DateTimeFormatter.ofPattern("M/d/yyyy")))
-                .orElse(null));
+    public PrestacaoContasSubseccionalRequestDTO parse(Map<String, String> rowData) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+
+        PrestacaoContasSubseccionalRequestDTO dto = new PrestacaoContasSubseccionalRequestDTO();
+        dto.setSubseccional(rowData.get("SUBSECCIONAL"));
+        dto.setMesReferencia(rowData.get("Referencia"));
+        dto.setAno(rowData.get("ANO"));
+
+        dto.setDtPrevEntr(parseDate(rowData.get("PRAZO DE ENTREGA"), dateFormatter));
+        dto.setDtEntrega(parseDate(rowData.get("DATA DE ENTREGA"), dateFormatter));
+        dto.setDtPagto(parseDate(rowData.get("DATA DE PAGAMENTO"), dateFormatter));
+        dto.setValorPago(parseBigDecimal(rowData.get("VALOR PAGO")));
+        dto.setObservacao(rowData.get("OBSERVAÇÃO"));
+
         return dto;
     }
 
     @Override
-    public void validate(BalanceteCFOABRequestDTO dto) {
-        Set<ConstraintViolation<BalanceteCFOABRequestDTO>> violations = validator.validate(dto);
+    public void validate(PrestacaoContasSubseccionalRequestDTO dto) {
+        Set<ConstraintViolation<PrestacaoContasSubseccionalRequestDTO>> violations = validator.validate(dto);
         if (!violations.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (ConstraintViolation<?> violation : violations) {
@@ -54,17 +66,34 @@ public class PrestacaoContasImportProcessor implements ImportProcessor<Balancete
     }
 
     @Override
-    public Object convertToEntity(BalanceteCFOABRequestDTO dto, User user) {
-        BalanceteCFOAB entity = new BalanceteCFOAB();
-        entity.setDemonstracao(dto.getDemonstracao());
-        entity.setReferencia(dto.getReferencia());
+    public Object convertToEntity(PrestacaoContasSubseccionalRequestDTO dto, User user) {
+        PrestacaoContasSubseccional entity = new PrestacaoContasSubseccional();
+
+        Subseccional subseccional = subseccionalRepository
+                .findBySubSeccionalIgnoreCase(dto.getSubseccional())
+                .orElseThrow(() -> new IllegalArgumentException("Subseccional não encontrada: " + dto.getSubseccional()));
+
+        entity.setSubseccional(subseccional);
+        entity.setMesReferencia(dto.getMesReferencia());
         entity.setAno(dto.getAno());
-        entity.setPeriodicidade(dto.getPeriodicidade());
         entity.setDtPrevEntr(dto.getDtPrevEntr());
-        entity.setDtEntr(dto.getDtEntr());
-        entity.setUser(user);
+        entity.setDtEntrega(dto.getDtEntrega());
+        entity.setDtPagto(dto.getDtPagto());
+        entity.setValorPago(dto.getValorPago());
+        entity.setObservacao(dto.getObservacao());
         entity.setStatus(true);
-        entity.setEficiencia(entity.getEficiencia());
+        entity.setUser(user);
+
         return entity;
+    }
+
+    private LocalDate parseDate(String raw, DateTimeFormatter formatter) {
+        if (raw == null || raw.isBlank()) return null;
+        return LocalDate.parse(raw.trim(), formatter);
+    }
+
+    private BigDecimal parseBigDecimal(String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        return new BigDecimal(raw.replace(",", ".").trim());
     }
 }

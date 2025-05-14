@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class PrestacaoContasSubseccionalResponseDTO {
 
-    private Long id;
     private String mesReferencia;
     private String ano;
     private LocalDate dtPrevEntr;
@@ -26,6 +25,6 @@ public class PrestacaoContasSubseccionalResponseDTO {
     private BigDecimal valorPago;
     private String subseccional;
     private String usuarioId;
-    private Long tipoDescontoId;
+    private String tipoDesconto;
 
 }

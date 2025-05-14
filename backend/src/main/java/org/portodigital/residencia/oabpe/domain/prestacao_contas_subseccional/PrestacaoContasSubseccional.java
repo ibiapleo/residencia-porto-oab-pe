@@ -50,6 +50,9 @@ public class PrestacaoContasSubseccional {
     @Column(name = "ValorDesconto", precision = 15, scale = 2)
     private BigDecimal valorDesconto;
 
+    @Column(name = "ValorPago", precision = 15, scale = 2)
+    private BigDecimal valorPago;
+
     @Column(name = "ProtocoloSGD", length = 17)
     private String protocoloSGD;
 
