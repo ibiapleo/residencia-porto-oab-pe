@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABRequestDTO;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
+import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -11,13 +12,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class BalanceteCFOABService {
+public class BalanceteCFOABService extends AbstractFileImportService<BalanceteCFOABRequestDTO> {
 
+    private final BalanceteImportProcessor processor;
     private final BalanceteCFOABRepository balanceteCFOABRepository;
     private final ModelMapper mapper;
+
+    @Transactional
+    public void importarArquivo(MultipartFile file, User user) throws IOException {
+        List<Object> entidades = importFile(file, user, processor);
+        balanceteCFOABRepository.saveAll(entidades.stream().map(e -> (BalanceteCFOAB) e).toList());
+    }
 
     public Page<BalanceteCFOABResponseDTO> getAll(Pageable pageable) {
         return balanceteCFOABRepository.findAllAtivos(pageable)

@@ -23,7 +23,11 @@ public class PrestacaoContasSubseccionalService {
 
     public Page<PrestacaoContasSubseccionalResponseDTO> getAll(Pageable pageable) {
         return prestacaoContasSubseccionalRepository.findAllAtivos(pageable)
-                .map(prestacao -> mapper.map(prestacao, PrestacaoContasSubseccionalResponseDTO.class));
+                .map(prestacao -> {
+                    PrestacaoContasSubseccionalResponseDTO dto = mapper.map(prestacao, PrestacaoContasSubseccionalResponseDTO.class);
+                    dto.setSubseccional(prestacao.getSubseccional().getSubSeccional());
+                    return dto;
+                });
     }
 
     public PrestacaoContasSubseccionalResponseDTO getById(Long id) {
