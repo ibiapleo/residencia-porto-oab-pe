@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalFiltroRequest;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalRequestDTO;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalResponseDTO;
 import org.portodigital.residencia.oabpe.exception.EntityNotFoundException;
@@ -13,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class PrestacaoContasSubseccionalService {
@@ -21,11 +24,12 @@ public class PrestacaoContasSubseccionalService {
 
     private final ModelMapper mapper;
 
-    public Page<PrestacaoContasSubseccionalResponseDTO> getAll(Pageable pageable) {
-        return prestacaoContasSubseccionalRepository.findAllAtivos(pageable)
+    public Page<PrestacaoContasSubseccionalResponseDTO> getAllComFiltro(PrestacaoContasSubseccionalFiltroRequest filtro, Pageable pageable) {
+        return prestacaoContasSubseccionalRepository.findAllByFiltros(filtro, pageable)
                 .map(prestacao -> {
                     PrestacaoContasSubseccionalResponseDTO dto = mapper.map(prestacao, PrestacaoContasSubseccionalResponseDTO.class);
                     dto.setSubseccional(prestacao.getSubseccional().getSubSeccional());
+                    dto.setTipoDesconto(prestacao.getTipoDesconto().getNome());
                     return dto;
                 });
     }
@@ -36,18 +40,33 @@ public class PrestacaoContasSubseccionalService {
                 .orElseThrow(() -> new EntityNotFoundException("Prestação de contas não encontrado."));
     }
 
-    public PrestacaoContasSubseccionalResponseDTO create(PrestacaoContasSubseccionalRequestDTO request) {
+    public void create(PrestacaoContasSubseccionalRequestDTO request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getPrincipal() == null) {
             throw new SecurityException("Acesso não autorizado");
         }
+
         User user = (User) authentication.getPrincipal();
         PrestacaoContasSubseccional prestacao = mapper.map(request, PrestacaoContasSubseccional.class);
+
+        LocalDate dtPrevEntr = prestacao.getDtPrevEntr();
+        LocalDate dtEntrega = prestacao.getDtEntrega();
+        LocalDate dtPagto = prestacao.getDtPagto();
+
+        if (dtEntrega != null && dtPrevEntr != null && dtEntrega.isAfter(dtPrevEntr)) {
+            throw new IllegalArgumentException("A Data de Entrega não pode ser posterior à Data Prevista de Entrega.");
+        }
+
+        if (dtPagto != null && dtEntrega != null && dtPagto.isAfter(dtEntrega)) {
+            throw new IllegalArgumentException("A Data de Pagamento não pode ser posterior à Data de Entrega.");
+        }
+
         prestacao.setUser(user);
+        prestacao.setValorPago(prestacao.getValorPago());
+
         PrestacaoContasSubseccional savedPrestacao = prestacaoContasSubseccionalRepository.save(prestacao);
         PrestacaoContasSubseccionalResponseDTO dto = mapper.map(savedPrestacao, PrestacaoContasSubseccionalResponseDTO.class);
         dto.setUsuarioId(prestacao.getUser().getId());
-        return dto;
     }
 
     public PrestacaoContasSubseccionalResponseDTO update(Long id, PrestacaoContasSubseccionalRequestDTO request) {
