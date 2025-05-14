@@ -24,7 +24,7 @@ public class PrestacaoContasSubseccionalResponseDTO {
     private String observacao;
     private String status;
     private BigDecimal valorPago;
-    private Long subseccionalId;
+    private String subseccional;
     private String usuarioId;
     private Long tipoDescontoId;
 

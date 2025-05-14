@@ -15,7 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/prestacao-contas")
+@RequestMapping("/v1/prestacao-contas")
 @RequiredArgsConstructor
 @Tag(name = "Prestação de Contas", description = "Gerencia registros de prestação de contas das subseccionais")
 public class PrestacaoContasSubseccionalController {

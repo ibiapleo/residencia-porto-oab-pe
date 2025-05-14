@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABRequestDTO;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
@@ -32,7 +31,6 @@ import java.util.List;
 public class BalanceteCFOABController {
 
     private final BalanceteCFOABService balanceteCFOABService;
-    private final BalanceteCFOABImportService balanceteCFOABImportService;
 
     @Operation(
             summary = "Listar Balancetes",
@@ -146,7 +144,7 @@ public class BalanceteCFOABController {
             @Parameter(hidden = true) Authentication authentication
     ) throws IOException {
         User user = (User) authentication.getPrincipal();
-        List<BalanceteCFOABResponseDTO> result = balanceteCFOABImportService.importFromFile(file, user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        balanceteCFOABService.importarArquivo(file, user);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
