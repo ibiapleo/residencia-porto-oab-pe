@@ -9,7 +9,10 @@ import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dt
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalRequestDTO;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalResponseDTO;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.Subseccional;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.SubseccionalRepository;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.dto.SubseccionalRequest;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto.TipoDesconto;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto.TipoDescontoRepository;
 import org.portodigital.residencia.oabpe.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +25,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PrestacaoContasSubseccionalService extends AbstractFileImportService<PrestacaoContasSubseccionalRequestDTO> {
 
     private final PrestacaoContasSubseccionalRepository prestacaoContasSubseccionalRepository;
+    private final SubseccionalRepository subseccionalRepository;
+    private final TipoDescontoRepository tipoDescontoRepository;
     private final PrestacaoContasImportProcessor processor;
     private final ModelMapper mapper;
 
@@ -71,18 +77,41 @@ public class PrestacaoContasSubseccionalService extends AbstractFileImportServic
         prestacao.setUser(user);
         prestacao.setValorPago(prestacao.getValorPago());
 
-        PrestacaoContasSubseccional savedPrestacao = prestacaoContasSubseccionalRepository.save(prestacao);
-        PrestacaoContasSubseccionalResponseDTO dto = mapper.map(savedPrestacao, PrestacaoContasSubseccionalResponseDTO.class);
-        dto.setUsuarioId(prestacao.getUser().getId());
+        prestacaoContasSubseccionalRepository.save(prestacao);
     }
 
     public PrestacaoContasSubseccionalResponseDTO update(Long id, PrestacaoContasSubseccionalRequestDTO request) {
         PrestacaoContasSubseccional existing = prestacaoContasSubseccionalRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Prestação de contas não encontrada com id: " + id));
 
-        mapper.map(request, existing);
+        applyUpdates(request, existing);
+
         PrestacaoContasSubseccional updated = prestacaoContasSubseccionalRepository.save(existing);
         return mapper.map(updated, PrestacaoContasSubseccionalResponseDTO.class);
+    }
+
+    private void applyUpdates(PrestacaoContasSubseccionalRequestDTO request, PrestacaoContasSubseccional existing) {
+        Optional.ofNullable(request.getMesReferencia()).ifPresent(existing::setMesReferencia);
+        Optional.ofNullable(request.getAno()).ifPresent(existing::setAno);
+        Optional.ofNullable(request.getDtPrevEntr()).ifPresent(existing::setDtPrevEntr);
+        Optional.ofNullable(request.getDtEntrega()).ifPresent(existing::setDtEntrega);
+        Optional.ofNullable(request.getDtPagto()).ifPresent(existing::setDtPagto);
+        Optional.ofNullable(request.getValorDuodecimo()).ifPresent(existing::setValorDuodecimo);
+        Optional.ofNullable(request.getValorDesconto()).ifPresent(existing::setValorDesconto);
+        Optional.ofNullable(request.getProtocoloSGD()).ifPresent(existing::setProtocoloSGD);
+        Optional.ofNullable(request.getObservacao()).ifPresent(existing::setObservacao);
+
+        if (request.getSubseccionalId() != null) {
+            Subseccional subseccional = subseccionalRepository.findById(request.getSubseccionalId())
+                    .orElseThrow(() -> new EntityNotFoundException("Subseccional não encontrada com ID: " + request.getSubseccionalId()));
+            existing.setSubseccional(subseccional);
+        }
+
+        if (request.getTipoDescontoId() != null) {
+            TipoDesconto tipoDesconto = tipoDescontoRepository.findById(request.getTipoDescontoId())
+                    .orElseThrow(() -> new EntityNotFoundException("Tipo de desconto não encontrado com ID: " + request.getTipoDescontoId()));
+            existing.setTipoDesconto(tipoDesconto);
+        }
     }
 
     public void delete(Long id) {
