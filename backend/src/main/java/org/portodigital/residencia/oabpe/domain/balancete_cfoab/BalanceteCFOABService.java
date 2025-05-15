@@ -2,6 +2,7 @@ package org.portodigital.residencia.oabpe.domain.balancete_cfoab;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABFilteredRequest;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABRequestDTO;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
 import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
@@ -35,9 +36,14 @@ public class BalanceteCFOABService extends AbstractFileImportService<BalanceteCF
         balanceteCFOABRepository.saveAll(entidades.stream().map(e -> (BalanceteCFOAB) e).toList());
     }
 
-    public Page<BalanceteCFOABResponseDTO> getAll(Pageable pageable) {
-        return balanceteCFOABRepository.findAllAtivos(pageable)
-                .map(balancete -> mapper.map(balancete, BalanceteCFOABResponseDTO.class));
+    public Page<BalanceteCFOABResponseDTO> getAllFiltered(BalanceteCFOABFilteredRequest filter, Pageable pageable) {
+        return balanceteCFOABRepository.findAllActiveByFilter(filter, pageable)
+                .map(balancete -> {
+                    BalanceteCFOABResponseDTO dto = mapper.map(balancete, BalanceteCFOABResponseDTO.class);
+                    dto.setDemonstrativoId(balancete.getDemonstrativo().getId());
+                    dto.setNomeDemonstrativo(balancete.getDemonstrativo().getNome());
+                    return dto;
+                });
     }
 
     public BalanceteCFOABResponseDTO getById(Long id) {
