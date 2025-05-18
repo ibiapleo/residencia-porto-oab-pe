@@ -1,7 +1,7 @@
 package org.portodigital.residencia.oabpe.infra.security;
 
-import org.portodigital.residencia.oabpe.domain.user.User;
-import org.portodigital.residencia.oabpe.domain.user.UserRepository;
+import org.portodigital.residencia.oabpe.domain.identidade.model.User;
+import org.portodigital.residencia.oabpe.domain.identidade.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

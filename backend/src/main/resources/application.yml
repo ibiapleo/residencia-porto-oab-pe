@@ -12,6 +12,10 @@ spring:
         dialect: org.hibernate.dialect.SQLServerDialect
     show_sql: true
     defer-datasource-initialization: true
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 50MB
 
 openapi:
   service:
