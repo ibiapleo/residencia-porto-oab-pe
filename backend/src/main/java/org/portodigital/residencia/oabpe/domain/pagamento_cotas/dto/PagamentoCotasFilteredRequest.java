@@ -3,6 +3,7 @@ package org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,20 +11,17 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PagamentoCotasResponseDTO {
+public class PagamentoCotasFilteredRequest {
 
-    private Long id;
+
     private Long instituicaoId;
     private String mesReferencia;
     private String ano;
-    private LocalDate dtPrevEntr;
-    private BigDecimal valorDuodecimo;
-    private BigDecimal valorDesconto;
+    private String status;
     private Long tipoDescontoId;
-    private BigDecimal valorPago;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate dtPrevEntr;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dtPagto;
-    private String observacao;
-    private boolean status;
-
-
+    private BigDecimal valorPago;
 }
