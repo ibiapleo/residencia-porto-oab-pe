@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "PagamentoCotas")
-public class PagamentoCotas {
+public class    PagamentoCotas {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -58,8 +58,8 @@ public class PagamentoCotas {
     @Column(name = "Observacao", length = 255)
     private String observacao;
 
-    @Column(name = "Status", length = 1)
-    private String status;
+    @Column(name = "Status", nullable = false)
+    private Boolean status = true;
 
     @Column(name = "DAT_CRIACAO_REGISTRO")
     @Temporal(TemporalType.TIMESTAMP)
