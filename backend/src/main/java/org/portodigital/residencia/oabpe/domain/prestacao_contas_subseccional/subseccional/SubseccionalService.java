@@ -44,7 +44,8 @@ public class SubseccionalService extends AbstractFileImportService<SubseccionalR
     public SubseccionalResponse create(SubseccionalRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
-        Subseccional subseccional = modelMapper.map(request, Subseccional.class);
+        Subseccional subseccional = new Subseccional();
+        subseccional.setSubSeccional(request.getSubSeccional());
         subseccional.setUsuario(user);
         Subseccional saved = subseccionalRepository.save(subseccional);
         return modelMapper.map(saved, SubseccionalResponse.class);
