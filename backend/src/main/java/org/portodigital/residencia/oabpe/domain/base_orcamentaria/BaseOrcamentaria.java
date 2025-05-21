@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.portodigital.residencia.oabpe.domain.audit_log.AuditLogListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@EntityListeners(AuditLogListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

@@ -5,9 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.portodigital.residencia.oabpe.domain.audit_log.AuditLogListener;
 
 @Getter
 @Setter
+@EntityListeners(AuditLogListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

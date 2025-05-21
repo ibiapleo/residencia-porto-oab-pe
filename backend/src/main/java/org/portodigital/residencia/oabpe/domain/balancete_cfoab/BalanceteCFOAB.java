@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.portodigital.residencia.oabpe.domain.audit_log.AuditLogListener;
 import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 
@@ -14,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 
 @Entity
 @Data
+@EntityListeners(AuditLogListener.class)
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "BalanceteCFOAB")
