@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
-import org.portodigital.residencia.oabpe.domain.subseccional.Subseccional;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.Subseccional;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto.TipoDesconto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -48,6 +49,9 @@ public class PrestacaoContasSubseccional {
 
     @Column(name = "ValorDesconto", precision = 15, scale = 2)
     private BigDecimal valorDesconto;
+
+    @Column(name = "ValorPago", precision = 15, scale = 2)
+    private BigDecimal valorPago;
 
     @Column(name = "ProtocoloSGD", length = 17)
     private String protocoloSGD;

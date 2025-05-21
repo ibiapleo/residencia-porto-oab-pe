@@ -2,20 +2,20 @@ package org.portodigital.residencia.oabpe.domain.balancete_cfoab;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "BalanceteCFOAB")
 public class BalanceteCFOAB {
 
@@ -23,8 +23,9 @@ public class BalanceteCFOAB {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "Demonstracao", length = 80, nullable = false)
-    private String demonstracao;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "Id_demonstrativo", referencedColumnName = "id")
+    private Demonstrativo demonstrativo;
 
     @Column(name = "Referencia", length = 80, nullable = false)
     private String referencia;
@@ -41,18 +42,28 @@ public class BalanceteCFOAB {
     @Column(name = "DtEntrega")
     private LocalDate dtEntr;
 
-    @Column(name = "Status", length = 1)
-    private String status;
+    @Column(name = "Status", nullable = false)
+    private Boolean status = true;
 
-    @Column(name = "Eficiencia", length = 1)
+    @Column(name = "Eficiencia")
     private Long eficiencia;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "Id_usuario", referencedColumnName = "id")
     private User user;
 
+    @Column(name = "DAT_CRIACAO_REGISTRO")
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    private LocalDateTime dataCriacaoRegistro;
+
+    @Column(name = "DAT_ALTERACAO_REGISTRO")
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    private LocalDateTime dataAlteracaoRegistro;
+
     public Long getEficiencia() {
-        if (dtEntr == null) {
+        if (dtEntr == null || dtPrevEntr == null) {
             return null;
         }
         long diasAtraso = ChronoUnit.DAYS.between(dtPrevEntr, dtEntr);

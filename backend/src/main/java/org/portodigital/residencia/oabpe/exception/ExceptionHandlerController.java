@@ -36,6 +36,15 @@ public class ExceptionHandlerController {
         return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> illegalArgumentException(IllegalArgumentException ex) {
+        ErrorResponse message = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                timestamp,
+                ex.getMessage());
+        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> entityNotFoundException(EntityNotFoundException ex) {
         ErrorResponse message = new ErrorResponse(

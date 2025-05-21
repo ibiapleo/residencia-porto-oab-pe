@@ -1,4 +1,4 @@
-package org.portodigital.residencia.oabpe.domain.subseccional;
+package org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,6 @@ import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 public class Subseccional {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "SubSeccional", nullable = false, length = 100)
