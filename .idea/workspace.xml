@@ -5,15 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="58ef6694-5138-4c73-a136-164ab2eceedc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/dto/PagamentoCotasFilteredRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasImportProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotas.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotas.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/instituicao/Instituicao.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/instituicao/Instituicao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/instituicao/InstituicaoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/instituicao/InstituicaoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/instituicao/InstituicaoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/instituicao/InstituicaoRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/instituicao/InstituicaoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/instituicao/InstituicaoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/instituicao/dto/InstituicaoRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/instituicao/dto/InstituicaoRequestDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/dto/PagamentoCotasResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/dto/PagamentoCotasResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/test/java/org/portodigital/residencia/oabpe/domain/PagamentoCotasServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/org/portodigital/residencia/oabpe/domain/PagamentoCotasServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/dto/PagamentoCotasRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/dto/PagamentoCotasRequestDTO.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,30 +36,33 @@
   &quot;associatedIndex&quot;: 3
 }</component>
   <component name="ProjectId" id="2x68qPAE8UCMpzqkbYp3U5fIO5u" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;JUnit.PagamentoCotasServiceTest.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;test/modulo-pagamento-cotas&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/luccas/Área de trabalho/programacao&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "JUnit.PagamentoCotasServiceTest.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "feature/importancao-csv-xlsx-pagamento-de-cotas-e-base-orcamentaria",
+    "last_opened_file_path": "/home/luccas/Área de trabalho/programacao",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="JUnit.PagamentoCotasServiceTest">
     <configuration name="PagamentoCotasServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="oabpe" />

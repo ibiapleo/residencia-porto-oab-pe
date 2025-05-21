@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class InstituicaoRequestDTO {
 
-    private String descricao;
+    private String nome;
 }

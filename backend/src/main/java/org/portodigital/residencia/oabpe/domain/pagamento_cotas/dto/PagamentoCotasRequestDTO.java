@@ -22,5 +22,6 @@ public class PagamentoCotasRequestDTO {
     private BigDecimal valorPago;
     private LocalDate dtPagto;
     private String observacao;
+    private String instituicao;
 
 }
