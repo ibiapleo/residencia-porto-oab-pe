@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.domain.instituicao.Instituicao;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto.TipoDesconto;
 
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "PagamentoCotas")
-public class PagamentoCotas {
+public class    PagamentoCotas {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,8 +58,8 @@ public class PagamentoCotas {
     @Column(name = "Observacao", length = 255)
     private String observacao;
 
-    @Column(name = "Status", length = 1)
-    private String status;
+    @Column(name = "Status", nullable = false)
+    private Boolean status = true;
 
     @Column(name = "DAT_CRIACAO_REGISTRO")
     @Temporal(TemporalType.TIMESTAMP)
@@ -70,4 +71,7 @@ public class PagamentoCotas {
     @UpdateTimestamp
     private LocalDateTime dataAlteracaoRegistro;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "Id_usuario", referencedColumnName = "id")
+    private User user;
 }
