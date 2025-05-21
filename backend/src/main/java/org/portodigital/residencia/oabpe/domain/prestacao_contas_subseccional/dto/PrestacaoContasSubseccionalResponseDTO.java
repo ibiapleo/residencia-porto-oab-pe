@@ -24,7 +24,6 @@ public class PrestacaoContasSubseccionalResponseDTO {
     private String status;
     private BigDecimal valorPago;
     private String subseccional;
-    private String usuarioId;
     private String tipoDesconto;
 
 }
