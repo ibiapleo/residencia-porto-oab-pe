@@ -55,8 +55,10 @@ public class SubseccionalService extends AbstractFileImportService<SubseccionalR
         Subseccional existing = subseccionalRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Subseccional não encontrada com id: " + id));
 
-        modelMapper.map(request, existing);
+        existing.setSubSeccional(request.getSubSeccional());
+
         Subseccional updated = subseccionalRepository.save(existing);
+
         return modelMapper.map(updated, SubseccionalResponse.class);
     }
 
