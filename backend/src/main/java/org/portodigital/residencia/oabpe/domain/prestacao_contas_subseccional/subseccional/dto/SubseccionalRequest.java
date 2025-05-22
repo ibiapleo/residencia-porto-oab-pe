@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SubseccionalRequest {
 
-    private Long id;
     @NotBlank
     private String subSeccional;
 }

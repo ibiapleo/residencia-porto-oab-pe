@@ -23,6 +23,7 @@ public class PagamentoCotasResponseDTO {
     private BigDecimal valorPago;
     private LocalDate dtPagto;
     private String observacao;
-    private String status;
+    private boolean status;
+
 
 }
