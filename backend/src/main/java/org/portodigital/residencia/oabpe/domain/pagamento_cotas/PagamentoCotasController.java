@@ -35,13 +35,14 @@ public class PagamentoCotasController {
 
     @Operation(
             summary = "Listar Pagamentos de Cotas",
-            description = "Retorna uma lista paginada  e filtrada de todos os Pagamnetos de Cotas cadastrados"
+            description = "Retorna uma lista paginada e filtrada de todos os Pagamnetos de Cotas cadastrados"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista recuperada com sucesso"),
             @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
     })
     @GetMapping
+    @PreAuthorize("hasPermission('modulo_pagamento_cotas', 'LEITURA')")
     public ResponseEntity<Page<PagamentoCotasResponseDTO>> getAllFiltered(
             PagamentoCotasFilteredRequest filter,
             Pageable pageable) {

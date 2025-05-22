@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="58ef6694-5138-4c73-a136-164ab2eceedc" name="Changes" comment="" />
+    <list default="true" id="58ef6694-5138-4c73-a136-164ab2eceedc" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/base_orcamentaria/dto/BaseOrcamentariaFilteredRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/base_orcamentaria/BaseOrcamentaria.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/base_orcamentaria/BaseOrcamentaria.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/base_orcamentaria/BaseOrcamentariaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/base_orcamentaria/BaseOrcamentariaRepository.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

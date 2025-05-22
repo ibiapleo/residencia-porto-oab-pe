@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -40,7 +41,7 @@ public class BaseOrcamentaria {
     private LocalDate dtLancto;
 
     @Column(name = "Ano", nullable = false)
-    private Integer ano;
+    private BigDecimal ano;
 
     @Column(name = "Tipo", length = 50, nullable = false)
     private String tipo;
@@ -57,4 +58,8 @@ public class BaseOrcamentaria {
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     private LocalDateTime dataAlteracaoRegistro;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "Id_usuario", referencedColumnName = "id")
+    private User user;
 }
