@@ -31,7 +31,6 @@ public class SubseccionalImportProcessor implements ImportProcessor<Subseccional
     public SubseccionalRequest parse(Map<String, String> rowData) {
         SubseccionalRequest dto = new SubseccionalRequest();
         dto.setSubSeccional(rowData.get("Seccional"));
-        dto.setId(Long.valueOf(rowData.get("IdSeccional")));
         return dto;
     }
 
@@ -51,7 +50,6 @@ public class SubseccionalImportProcessor implements ImportProcessor<Subseccional
     public Object convertToEntity(SubseccionalRequest dto, User user) {
         Subseccional entity = new Subseccional();
         entity.setSubSeccional(dto.getSubSeccional());
-        entity.setId(dto.getId());
         entity.setUsuario(user);
         return entity;
     }
