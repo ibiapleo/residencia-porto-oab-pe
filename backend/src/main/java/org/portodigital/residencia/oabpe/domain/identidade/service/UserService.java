@@ -30,12 +30,18 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
 
-    public void registerUser(RegisterRequestDTO registerRequestDTO) {
+    public UserResponseDTO registerUser(RegisterRequestDTO registerRequestDTO) {
         User newUser = new User();
         newUser.setName(registerRequestDTO.getName());
         newUser.setUsername(registerRequestDTO.getUsername());
         newUser.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
-        userRepository.save(newUser);
+
+        User savedUser = userRepository.save(newUser);
+
+        return UserResponseDTO.builder()
+                .id(savedUser.getId())
+                .name(savedUser.getName())
+                .build();
     }
 
     @Transactional
