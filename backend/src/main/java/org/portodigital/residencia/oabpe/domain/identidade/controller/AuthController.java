@@ -54,11 +54,10 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos ou usuário já existe", content = @Content)
     })
     @PostMapping(value = "/register")
-    public ResponseEntity<Void> register(
+    public ResponseEntity<UserResponseDTO> register(
             @RequestBody RegisterRequestDTO registerRequestDTO) {
 
-        userService.registerUser(registerRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(registerRequestDTO));
     }
 
     @Operation(
