@@ -32,7 +32,7 @@ public class BalanceteImportProcessor implements ImportProcessor<BalanceteCFOABR
     @Override
     public BalanceteCFOABRequestDTO parse(Map<String, String> rowData) {
         BalanceteCFOABRequestDTO dto = new BalanceteCFOABRequestDTO();
-        dto.setDemonstrativoId(Long.valueOf(rowData.get("Id_Demostrativo")));
+        dto.setDemonstrativoNome(rowData.get("Demonstrativo").trim());
         dto.setReferencia(rowData.get("Referencia"));
         dto.setAno(rowData.get("Ano"));
         dto.setPeriodicidade(rowData.get("Periodicidade"));
@@ -59,8 +59,8 @@ public class BalanceteImportProcessor implements ImportProcessor<BalanceteCFOABR
     @Override
     public Object convertToEntity(BalanceteCFOABRequestDTO dto, User user) {
 
-        Demonstrativo demonstrativo = demonstrativoRepository.findByIdAtivo(dto.getDemonstrativoId())
-                .orElseThrow(() -> new EntityNotFoundException("Demonstrativo não encontrado com ID: " + dto.getDemonstrativoId()));
+        Demonstrativo demonstrativo = demonstrativoRepository.findByNomeAtivo(dto.getDemonstrativoNome())
+                .orElseThrow(() -> new EntityNotFoundException("Demonstrativo não encontrado com nome: " + dto.getDemonstrativoNome()));
 
         BalanceteCFOAB entity = new BalanceteCFOAB();
         entity.setDemonstrativo(demonstrativo);

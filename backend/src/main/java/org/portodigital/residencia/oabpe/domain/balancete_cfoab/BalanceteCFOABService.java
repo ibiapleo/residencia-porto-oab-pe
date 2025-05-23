@@ -58,8 +58,8 @@ public class BalanceteCFOABService extends AbstractFileImportService<BalanceteCF
             throw new SecurityException("Acesso não autorizado");
         }
 
-        Demonstrativo demonstrativo = demonstrativoRepository.findByIdAtivo(request.getDemonstrativoId())
-                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Demonstrativo não encontrado com ID: " + request.getDemonstrativoId()));
+        Demonstrativo demonstrativo = demonstrativoRepository.findByNomeAtivo(request.getDemonstrativoNome())
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Demonstrativo não encontrado com nome: " + request.getDemonstrativoNome()));
 
         User user = (User) authentication.getPrincipal();
         BalanceteCFOAB balancete = mapper.map(request, BalanceteCFOAB.class);
