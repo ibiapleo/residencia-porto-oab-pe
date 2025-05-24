@@ -194,7 +194,7 @@ export function MainSidebar() {
                                 asChild
                                 isActive={pathname.includes("/pagamento-cotas")}
                               >
-                                <Link aria-disabled href="/balancete">
+                                <Link href="/pagamento-cotas">
                                   <CreditCard className="h-3 w-3" />
                                   <span>Pagamento Cotas</span>
                                 </Link>
