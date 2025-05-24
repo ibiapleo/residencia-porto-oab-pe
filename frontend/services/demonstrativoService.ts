@@ -16,7 +16,7 @@ export const getDemonstrativos = async (
 };
 
 export const getDemonstrativoById = async (
-  id: number
+  id: string
 ): Promise<DemonstrativoResponseDTO> => {
   return await fetcher<DemonstrativoResponseDTO>(
     `/demonstrativos/${id}`
@@ -33,7 +33,7 @@ export const criarDemonstrativo = async (
 };
 
 export const atualizarDemonstrativo = async (
-  id: number,
+  id: string,
   data: DemonstrativoRequestDTO
 ): Promise<DemonstrativoResponseDTO> => {
   return fetcher<DemonstrativoResponseDTO>(
@@ -45,7 +45,7 @@ export const atualizarDemonstrativo = async (
   );
 };
 
-export const excluirDemonstrativo = async (id: number): Promise<void> => {
+export const excluirDemonstrativo = async (id: string): Promise<void> => {
   return fetcher<void>(`/demonstrativos/${id}`, {
     method: "DELETE",
   });

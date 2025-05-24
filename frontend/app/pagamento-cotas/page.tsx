@@ -55,7 +55,7 @@ export default function PagamentoCotasPage() {
     setPage(pagination.page);
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     setIsDeleting(true);
     try {
       await excluirPagamentoCotas(id);
@@ -284,7 +284,7 @@ export default function PagamentoCotasPage() {
                     </AlertDialogCancel>
                     <AlertDialogAction
                       disabled={isDeleting}
-                      onClick={() => handleDelete(row.id)}
+                      onClick={() => handleDelete(row.id.toString())}
                       className="bg-destructive hover:bg-destructive/90"
                     >
                       {isDeleting ? "Excluindo..." : "Excluir"}

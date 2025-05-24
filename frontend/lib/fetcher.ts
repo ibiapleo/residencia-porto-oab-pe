@@ -50,5 +50,9 @@ export const fetcher = async <T>(
     return undefined as unknown as T;
   }
 
+  if(response.status === 201 && response.bodyUsed === false) {
+    return undefined as unknown as T;
+  }
+
   return response.json();
 };

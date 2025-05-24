@@ -2,15 +2,7 @@
 
 import { useCallback, useState } from "react";
 import Link from "next/link";
-import {
-  Plus,
-  Trash2,
-  Pencil,
-  FileText,
-  CheckCircle,
-  XCircle,
-  Clock,
-} from "lucide-react";
+import { Plus, Trash2, Pencil, FileText, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DataTable,
@@ -38,21 +30,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { BalanceteResponseDTO } from "@/types/balancete";
-import { useBalancete } from "@/hooks/useBalancete";
+import { TransparenciaResponseDTO } from "@/types/transparencia";
+import { useTransparencia } from "@/hooks/useTransparencia";
 import { PaginationParams, Sort } from "@/types/paginacao";
-import { deleteBalancete } from "@/services/balanceteService";
+import { excluirTransparencia } from "@/services/transparenciaService";
 
-export default function BalancetePage() {
+export default function TransparenciaPage() {
   const { toast } = useToast();
 
   const [page, setPage] = useState(0);
-  const [sort, setSort] = useState<Sort[]>([]); // { field, direction }
+  const [sort, setSort] = useState<Sort[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState<PaginationParams["filters"]>({});
 
-  const { data, isLoading, error, isEmpty, refetch } = useBalancete({
+  const { data, isLoading, error, isEmpty, refetch } = useTransparencia({
     page: 0,
     size: 10,
     sort,
@@ -66,10 +58,10 @@ export default function BalancetePage() {
   const handleDelete = async (id: string) => {
     setIsDeleting(true);
     try {
-      await deleteBalancete(id);
+      await excluirTransparencia(id);
       toast({
         title: "Sucesso",
-        description: "Balancete excluído com sucesso",
+        description: "Registro de transparência excluído com sucesso",
       });
       refetch();
     } catch (error) {
@@ -78,7 +70,7 @@ export default function BalancetePage() {
         description:
           error instanceof Error
             ? error.message
-            : "Não foi possível excluir o balancete",
+            : "Não foi possível excluir o registro de transparência",
         variant: "destructive",
       });
     } finally {
@@ -87,9 +79,15 @@ export default function BalancetePage() {
     }
   };
 
-  const getStatusBadge = (balancete: BalanceteResponseDTO) => {
-    if (!balancete.dtEntr) {
-      const prevDate = new Date(balancete.dtPrevEntr);
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("pt-BR");
+  };
+
+  const getStatusBadge = (transparencia: TransparenciaResponseDTO) => {
+    if (!transparencia.dtEntrega) {
+      const prevDate = new Date(transparencia.dtPrevEntr);
       const today = new Date();
 
       if (today > prevDate) {
@@ -113,54 +111,52 @@ export default function BalancetePage() {
     );
   };
 
-  const columns: ColumnDef<BalanceteResponseDTO>[] = [
+  const columns: ColumnDef<TransparenciaResponseDTO>[] = [
     {
       accessorKey: "nomeDemonstrativo",
       header: "Demonstrativo",
-      enableSorting: false,
+      enableSorting: true,
       enableFiltering: true,
+      cell: ({ row }) => {
+        return <span className="font-medium">{row.nomeDemonstrativo}</span>;
+      },
       filter: {
         type: "text",
-        placeholder: "Filtrar por Demonstrativo...",
+        placeholder: "Filtrar por demonstrativo...",
       },
     },
     {
-      accessorKey: "ano",
-      header: "Ano",
-      enableSorting: ["ano"],
+      accessorKey: "referencia",
+      header: "Referência",
+      cell: ({ row }) => `${row.referencia}/${row.ano}`,
+      enableSorting: true,
       enableFiltering: true,
       filter: {
-        type: "select",
-        options: [
-          { label: "2023", value: "2023" },
-          { label: "2024", value: "2024" },
-          { label: "2025", value: "2025" },
-        ],
+        type: "text",
+        placeholder: "Filtrar por referência...",
       },
     },
     {
       accessorKey: "periodicidade",
       header: "Periodicidade",
-      enableSorting: false,
-      enableFiltering: false,
-      cell: ({ row }) => {
-        const periodicidade = row?.periodicidade;
-        if (!periodicidade) return "-";
-
-        const map: Record<string, string> = {
-          MENSAL: "Mensal",
-          TRIMESTRAL: "Trimestral",
-          SEMESTRAL: "Semestral",
-          ANUAL: "Anual",
-        };
-
-        return map[periodicidade] || periodicidade;
+      cell: ({ row }) => row.periodicidade,
+      enableSorting: true,
+      enableFiltering: true,
+      filter: {
+        type: "select",
+        options: [
+          { label: "Mensal", value: "MENSAL" },
+          { label: "Bimestral", value: "BIMESTRAL" },
+          { label: "Trimestral", value: "TRIMESTRAL" },
+          { label: "Semestral", value: "SEMESTRAL" },
+          { label: "Anual", value: "ANUAL" },
+        ],
       },
     },
     {
       accessorKey: "dtPrevEntr",
       header: "Prev. Entrega",
-      cell: ({ row }) => row?.dtPrevEntr,
+      cell: ({ row }) => formatDate(row.dtPrevEntr),
       enableSorting: true,
       enableFiltering: true,
       filter: {
@@ -168,21 +164,14 @@ export default function BalancetePage() {
       },
     },
     {
-      accessorKey: "dtEntr",
+      accessorKey: "dtEntrega",
       header: "Entrega",
-      cell: ({ row }) => `${row?.dtEntr ?? "-"}`,
+      cell: ({ row }) => formatDate(row.dtEntrega ?? null),
       enableSorting: true,
       enableFiltering: true,
       filter: {
         type: "dateRange",
       },
-    },
-    {
-      accessorKey: "eficiencia",
-      header: "Atraso",
-      cell: ({ row }) => `${row?.eficiencia ?? 0}`,
-      enableSorting: true,
-      enableFiltering: false,
     },
     {
       accessorKey: "status",
@@ -196,7 +185,7 @@ export default function BalancetePage() {
           { label: "Entregue", value: "entregue" },
           { label: "Pendente", value: "pendente" },
           { label: "Atrasado", value: "atrasado" },
-        ].filter((option) => option.value && option.value.trim() !== ""),
+        ],
       },
     },
     {
@@ -229,7 +218,16 @@ export default function BalancetePage() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
                 <Link
-                  href={`/balancete/edit/${row?.id}`}
+                  href={`/transparencia/${row.id.toString()}`}
+                  className="flex items-center"
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span>Visualizar</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={`/transparencia/edit/${row.id}`}
                   className="flex items-center"
                 >
                   <Pencil className="mr-2 h-4 w-4" />
@@ -255,8 +253,8 @@ export default function BalancetePage() {
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                       Essa ação não pode ser desfeita. Isso excluirá
-                      permanentemente o balancete e removerá os dados de nossos
-                      servidores.
+                      permanentemente o registro de transparência e removerá os dados
+                      de nossos servidores.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -284,18 +282,20 @@ export default function BalancetePage() {
     return (
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold tracking-tight">Balancetes</h2>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Transparência
+          </h2>
           <Button asChild className="bg-secondary hover:bg-secondary/90">
-            <Link href="/balancete/new">
-              <Plus className="mr-2 h-4 w-4" /> Novo Balancete
+            <Link href="/transparencia/new">
+              <Plus className="mr-2 h-4 w-4" /> Novo Registro
             </Link>
           </Button>
         </div>
         <div className="rounded-md border border-red-200 bg-red-50 p-4">
           <p className="text-red-600">
-            Erro ao carregar balancetes: {error.message}
+            Erro ao carregar registros de transparência: {error.message}
           </p>
-          <Button variant="outline" className="mt-2">
+          <Button variant="outline" className="mt-2" onClick={() => refetch()}>
             Tentar novamente
           </Button>
         </div>
@@ -306,10 +306,12 @@ export default function BalancetePage() {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Balancete CFOAB</h2>
+        <h2 className="text-3xl font-bold tracking-tight">
+          Transparência
+        </h2>
         <Button asChild className="bg-secondary hover:bg-secondary/90">
-          <Link href="/balancete/new">
-            <Plus className="mr-2 h-4 w-4" /> Novo Balancete
+          <Link href="/transparencia/new">
+            <Plus className="mr-2 h-4 w-4" /> Novo Registro
           </Link>
         </Button>
       </div>
@@ -317,13 +319,15 @@ export default function BalancetePage() {
       {isEmpty ? (
         <div className="flex flex-col items-center justify-center space-y-4 rounded-md border p-8 text-center">
           <FileText className="h-12 w-12 text-muted-foreground" />
-          <h3 className="text-xl font-semibold">Nenhum balancete encontrado</h3>
+          <h3 className="text-xl font-semibold">
+            Nenhum registro encontrado
+          </h3>
           <p className="text-muted-foreground">
-            Você ainda não cadastrou nenhum balancete
+            Você ainda não cadastrou nenhum demonstrativo de transparência
           </p>
           <Button asChild>
-            <Link href="/balancete/new">
-              <Plus className="mr-2 h-4 w-4" /> Criar primeiro balancete
+            <Link href="/transparencia/new">
+              <Plus className="mr-2 h-4 w-4" /> Criar primeiro registro
             </Link>
           </Button>
         </div>
@@ -332,7 +336,7 @@ export default function BalancetePage() {
           columns={columns}
           data={data?.content || []}
           loading={isLoading}
-          searchPlaceholder="Buscar balancetes..."
+          searchPlaceholder="Buscar demonstrativos..."
           enableServerSidePagination
           totalCount={data?.totalElements}
           onSortChange={setSort}

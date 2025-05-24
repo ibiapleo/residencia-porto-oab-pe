@@ -21,6 +21,7 @@ const ROUTE_TO_MODULE_MAP: { [path: string]: string } = {
   '/subseccional': 'modulo_subseccional',
   '/prestacao-contas': 'modulo_prestacao_contas_subseccional',
   '/balancete': 'modulo_balancetes_cfoab',
+  '/tipos-desconto': 'modulo_balancetes_cfoab',
 };
 
 // Aliases para módulos com múltiplos nomes
@@ -28,19 +29,30 @@ const MODULE_ALIASES: { [module: string]: string[] } = {
   'modulo_usuarios': ['modulo_usuarios', 'modulo_gestao_usuarios'],
 };
 
-// Rotas que requerem apenas permissão de LEITURA
 const READ_ONLY_PATHS = [
   /^\/usuarios$/,
   /^\/balancete$/,
   /^\/instituicao$/,
-  // ... outros paths de leitura
+  /^\/demonstrativo$/,
+  /^\/pagamento-cotas$/,
+  /^\/base-orcamentaria$/,
+  /^\/transparencia$/,
+  /^\/subseccional$/,
+  /^\/prestacao-contas$/,
+  /^\/tipos-desconto$/,
 ];
 
-// Rotas que requerem permissão de ESCRITA ou ADMIN
 const WRITE_PATHS = [
   /^\/usuarios\/(new|edit)/,
   /^\/balancete\/(new|edit)/,
-  // ... outros paths de escrita
+  /^\/instituicao\/(new|edit)/,
+  /^\/demonstrativo\/(new|edit)/,
+  /^\/pagamento-cotas\/(new|edit)/,
+  /^\/base-orcamentaria\/(new|edit)/,
+  /^\/transparencia\/(new|edit)/,
+  /^\/subseccional\/(new|edit)/,
+  /^\/prestacao-contas\/(new|edit)/,
+  /^\/tipos-desconto\/(new|edit)/,
 ];
 
 // Função para verificar permissão considerando aliases

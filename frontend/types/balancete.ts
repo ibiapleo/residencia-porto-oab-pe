@@ -1,5 +1,7 @@
+import { Periodicidade } from "./periodicidade";
+
 export type CreateBalanceteDTO = {
-  demonstrativoId: string;
+  demonstrativoNome: string;
   referencia: string;
   ano: string;
   periodicidade: string;
@@ -13,7 +15,7 @@ export type BalanceteResponseDTO = {
   demonstrativoId: string;
   referencia: string;
   ano: string;
-  periodicidade: 'MENSAL' | 'TRIMESTRAL' | 'SEMESTRAL' | 'ANUAL';
+  periodicidade: Periodicidade;
   dtPrevEntr: string;
   dtEntr: string | null;
   eficiencia: number | null;

@@ -30,7 +30,7 @@ import { useDemonstrativos } from "@/hooks/useDemonstrativos";
 import { CreateBalanceteDTO } from "@/types/balancete";
 
 const formSchema = z.object({
-  demonstrativoId: z
+  demonstrativoNome: z
     .string()
     .min(1, { message: "Demonstrativo é obrigatório" }),
   referencia: z.string().min(1, { message: "Referência é obrigatória" }),
@@ -73,7 +73,7 @@ export default function EditBalancetePage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      demonstrativoId: "",
+      demonstrativoNome: "",
       referencia: "",
       ano: new Date().getFullYear().toString(),
       periodicidade: "",
@@ -94,7 +94,7 @@ export default function EditBalancetePage() {
 
         form.reset({
           ...balancete,
-          demonstrativoId: balancete.demonstrativoId,
+          demonstrativoNome: balancete.nomeDemonstrativo,
           dtPrevEntr: balancete.dtPrevEntr,
           dtEntr: balancete.dtEntr || null,
         });
@@ -183,7 +183,7 @@ export default function EditBalancetePage() {
               >
                 <FormField
                   control={form.control}
-                  name="demonstrativoId"
+                  name="demonstrativoNome"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Demonstrativo</FormLabel>

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -25,46 +25,31 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { createBalancete } from "@/services/balanceteService";
-import { useDemonstrativos } from "@/hooks/useDemonstrativos";
-import { CreateBalanceteDTO } from "@/types/balancete";
+import { TransparenciaRequestDTO } from "@/types/transparencia";
+import { getTransparenciaById, atualizarTransparencia } from "@/services/transparenciaService";
 
 const formSchema = z.object({
-  demonstrativoNome: z.string({ required_error: "Selecione um demonstrativo" }).min(1),
+  demonstrativoNome: z.string().min(1, { message: "Nome do demonstrativo é obrigatório" }),
   referencia: z.string().min(1, { message: "Referência é obrigatória" }),
   ano: z.string().length(4, { message: "O ano deve ter 4 dígitos" }),
   periodicidade: z.string().min(1, { message: "Periodicidade é obrigatória" }),
   dtPrevEntr: z.string().min(1, { message: "Data prevista é obrigatória" }),
-  dtEntr: z.string().optional(),
+  dtEntrega: z.string().optional(),
 });
 
 const periodicidades = [
   { value: "Mensal", label: "Mensal" },
-  { value: "Bimestral", label: "Bimestral" },
   { value: "Trimestral", label: "Trimestral" },
   { value: "Semestral", label: "Semestral" },
   { value: "Anual", label: "Anual" },
 ];
 
-const referencias = [
-  { value: "Janeiro", label: "Janeiro" },
-  { value: "Fevereiro", label: "Fevereiro" },
-  { value: "Março", label: "Março" },
-  { value: "Abril", label: "Abril" },
-  { value: "Maio", label: "Maio" },
-  { value: "Junho", label: "Junho" },
-  { value: "Julho", label: "Julho" },
-  { value: "Agosto", label: "Agosto" },
-  { value: "Setembro", label: "Setembro" },
-  { value: "Outubro", label: "Outubro" },
-  { value: "Novembro", label: "Novembro" },
-  { value: "Dezembro", label: "Dezembro" },
-];
-
-export default function NewBalancoCFOABPage() {
+export default function EditTransparenciaPage() {
   const router = useRouter();
+  const params = useParams();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -74,38 +59,67 @@ export default function NewBalancoCFOABPage() {
       ano: new Date().getFullYear().toString(),
       periodicidade: "",
       dtPrevEntr: "",
-      dtEntr: "",
+      dtEntrega: "",
     },
   });
 
-  const { data: demonstrativos, isLoading: isLoadingDemonstrativos } =
-    useDemonstrativos({
-      size: 100,
-    });
+  // Carrega os dados da transparência
+  useEffect(() => {
+    const loadTransparencia = async () => {
+      try {
+        const transparencia = await getTransparenciaById(params.id as string);
+
+        form.reset({
+          demonstrativoNome: transparencia.nomeDemonstrativo ?? "",
+          referencia: transparencia.referencia,
+          ano: transparencia.ano,
+          periodicidade: transparencia.periodicidade,
+          dtPrevEntr: transparencia.dtPrevEntr,
+          dtEntrega: transparencia.dtEntrega ?? "",
+        });
+      } catch (error) {
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar os dados da transparência",
+          variant: "destructive",
+        });
+        router.push("/transparencia");
+      } finally {
+        setIsFetching(false);
+      }
+    };
+
+    loadTransparencia();
+  }, [params.id, form, router, toast]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  setIsLoading(true);
-  try {
-    const requestData: CreateBalanceteDTO = {
-      ...values,
-      dtEntr: values.dtEntr ?? null,
-    };
-    await createBalancete(requestData);
-    toast({
-      title: "Balancete criado",
-      description: "O balancete foi criado com sucesso",
-    });
-    router.push("/balancete");
-  } catch (error) {
-    toast({
-      title: "Erro",
-      description: "Não foi possível criar o balancete",
-      variant: "destructive",
-    });
-  } finally {
-    setIsLoading(false);
-  }
-};
+    setIsLoading(true);
+    try {
+      const requestData: TransparenciaRequestDTO = {
+        demonstrativoNome: values.demonstrativoNome,
+        referencia: values.referencia,
+        ano: values.ano,
+        periodicidade: values.periodicidade,
+        dtPrevEntr: values.dtPrevEntr,
+        dtEntrega: values.dtEntrega ?? undefined,
+      };
+
+      await atualizarTransparencia(params.id as string, requestData);
+      toast({
+        title: "Sucesso",
+        description: "Transparência atualizada com sucesso",
+      });
+      router.push("/transparencia");
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar a transparência",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -120,80 +134,38 @@ export default function NewBalancoCFOABPage() {
           <span className="sr-only">Voltar</span>
         </Button>
         <h2 className="text-3xl font-bold tracking-tight">
-          Novo Balanço CFOAB
+          Editar Demonstrativo de Transparência
         </h2>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           <div className="rounded-lg border shadow-sm p-6">
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6"
-              >
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                   control={form.control}
                   name="demonstrativoNome"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Demonstrativo</FormLabel>
-                      <Select
-                        onValueChange={(value) => field.onChange(String(value))}
-                        value={field.value}
-                        disabled={isLoadingDemonstrativos}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={
-                                isLoadingDemonstrativos
-                                  ? "Carregando..."
-                                  : "Selecione um demonstrativo"
-                              }
-                            />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {demonstrativos &&
-                            demonstrativos.content.map((item) => (
-                              <SelectItem
-                                key={item.id}
-                                value={item.nome}
-                              >
-                                {item.nome}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>Nome do Demonstrativo</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Nome do demonstrativo" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="referencia"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Referência</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecione" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {referencias.map((item) => (
-                              <SelectItem key={item.value} value={item.value}>
-                                {item.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormControl>
+                          <Input placeholder="Ex: Janeiro, 1º Trimestre" {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -211,19 +183,19 @@ export default function NewBalancoCFOABPage() {
                       </FormItem>
                     )}
                   />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
                     name="periodicidade"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Periodicidade</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecione" />
+                              <SelectValue placeholder="Selecione a periodicidade" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -256,12 +228,16 @@ export default function NewBalancoCFOABPage() {
                   />
                   <FormField
                     control={form.control}
-                    name="dtEntr"
+                    name="dtEntrega"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Data de Entrega</FormLabel>
+                        <FormLabel>Data de Entrega (Opcional)</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} />
+                          <Input
+                            type="date"
+                            {...field}
+                            value={field.value ?? ""}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -278,7 +254,7 @@ export default function NewBalancoCFOABPage() {
                     className="bg-secondary hover:bg-secondary/90"
                     disabled={isLoading}
                   >
-                    {isLoading ? "Salvando..." : "Salvar"}
+                    {isLoading ? "Salvando..." : "Salvar Alterações"}
                   </Button>
                 </div>
               </form>
@@ -289,28 +265,22 @@ export default function NewBalancoCFOABPage() {
           <div className="rounded-lg border shadow-sm p-6">
             <h3 className="text-lg font-medium mb-4">Informações</h3>
             <div className="space-y-4 text-sm">
-              <p>Preencha os campos para registrar um novo balanço CFOAB.</p>
+              <p>
+                Edite os campos para atualizar o demonstrativo de transparência.
+              </p>
               <p>
                 <strong>Campos obrigatórios:</strong>
               </p>
               <ul className="list-disc list-inside space-y-1">
-                <li>Demonstração</li>
+                <li>Nome do demonstrativo</li>
                 <li>Referência</li>
                 <li>Ano</li>
                 <li>Periodicidade</li>
                 <li>Data prevista de entrega</li>
-                <li>Usuário responsável</li>
               </ul>
               <p className="mt-4">
-                <strong>Tipos de demonstração:</strong>
+                <strong>Dica:</strong> A data de entrega pode ser preenchida posteriormente quando ocorrer.
               </p>
-              <ul className="list-disc list-inside space-y-1">
-                <li>Balanço Patrimonial</li>
-                <li>Demonstração do Resultado do Exercício</li>
-                <li>Fluxo de Caixa</li>
-                <li>Demonstração das Mutações do Patrimônio Líquido</li>
-                <li>Notas Explicativas</li>
-              </ul>
             </div>
           </div>
         </div>

@@ -13,7 +13,7 @@ export const getPagamentosCotas = async (
 };
 
 export const getPagamentoCotasById = async (
-    id: number
+    id: string
 ): Promise<PagamentoCotasResponseDTO> => {
     return await fetcher<PagamentoCotasResponseDTO>(
         `/pagamento-cotas/${id}`
@@ -30,7 +30,7 @@ export const criarPagamentoCotas = async (
 };
 
 export const atualizarPagamentoCotas = async (
-    id: number,
+    id: string,
     data: PagamentoCotasRequestDTO
 ): Promise<PagamentoCotasResponseDTO> => {
     return fetcher<PagamentoCotasResponseDTO>(
@@ -42,7 +42,7 @@ export const atualizarPagamentoCotas = async (
     );
 };
 
-export const excluirPagamentoCotas = async (id: number): Promise<void> => {
+export const excluirPagamentoCotas = async (id: string): Promise<void> => {
     return fetcher<void>(`/pagamento-cotas/${id}`, {
         method: "DELETE",
     });

@@ -141,15 +141,6 @@ export default function SubseccionalPage() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
                 <Link
-                  href={`/subseccional/${row.id}`}
-                  className="flex items-center"
-                >
-                  <FileText className="mr-2 h-4 w-4" />
-                  <span>Visualizar</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link
                   href={`/subseccional/edit/${row.id}`}
                   className="flex items-center"
                 >

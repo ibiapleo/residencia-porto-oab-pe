@@ -67,7 +67,7 @@ export default function DemonstrativoPage() {
   }, []);
 
   // Handler para deletar demonstrativo
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     setIsDeleting(true);
     try {
       await excluirDemonstrativo(id);
@@ -137,13 +137,7 @@ export default function DemonstrativoPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
-                <Link href={`/demonstrativos/${row.id}`} className="flex items-center">
-                  <FileText className="mr-2 h-4 w-4" />
-                  <span>Visualizar</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/demonstrativos/edit/${row.id}`} className="flex items-center">
+                <Link href={`/demonstrativo/edit/${row.id}`} className="flex items-center">
                   <Pencil className="mr-2 h-4 w-4" />
                   <span>Editar</span>
                 </Link>
@@ -172,7 +166,7 @@ export default function DemonstrativoPage() {
                     </AlertDialogCancel>
                     <AlertDialogAction
                       disabled={isDeleting}
-                      onClick={() => handleDelete(row.id)}
+                      onClick={() => handleDelete(row.id.toString())}
                       className="bg-destructive hover:bg-destructive/90"
                     >
                       {isDeleting ? "Excluindo..." : "Excluir"}

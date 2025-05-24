@@ -222,7 +222,7 @@ export function MainSidebar() {
                                 asChild
                                 isActive={pathname.includes("/transparencia")}
                               >
-                                <Link aria-disabled href="/balancete">
+                                <Link href="/transparencia">
                                   <FileBarChart className="h-3 w-3" />
                                   <span>Transparência</span>
                                 </Link>

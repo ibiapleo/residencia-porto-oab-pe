@@ -137,12 +137,6 @@ export default function InstituicaoPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
-                <Link href={`/instituicoes/${row.id}`} className="flex items-center">
-                  <FileText className="mr-2 h-4 w-4" />
-                  <span>Visualizar</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
                 <Link href={`/instituicoes/edit/${row.id}`} className="flex items-center">
                   <Pencil className="mr-2 h-4 w-4" />
                   <span>Editar</span>
