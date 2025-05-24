@@ -39,10 +39,10 @@ public class TransparenciaImportProcessor implements ImportProcessor<Transparenc
         dto.setReferencia(rowData.get("Referencia"));
         dto.setAno(rowData.get("Ano"));
         dto.setPeriodicidade(rowData.get("Periodicidade"));
-        dto.setDtPrevEntr(LocalDate.parse(rowData.get("Previsao"), DateTimeFormatter.ofPattern("dd/mm/yyyy")));
+        dto.setDtPrevEntr(LocalDate.parse(rowData.get("Previsao"), DateTimeFormatter.ofPattern("d/M/yyyy")));
         dto.setDtEntrega(Optional.ofNullable(rowData.get("DataEntrega"))
                 .filter(s -> !s.isBlank())
-                .map(d -> LocalDate.parse(d, DateTimeFormatter.ofPattern("dd/mm/yyyy")))
+                .map(d -> LocalDate.parse(d, DateTimeFormatter.ofPattern("d/M/yyyy")))
                 .orElse(null));
 
 

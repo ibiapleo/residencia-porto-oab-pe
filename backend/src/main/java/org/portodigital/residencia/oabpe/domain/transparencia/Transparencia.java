@@ -58,11 +58,4 @@ public class Transparencia {
     @UpdateTimestamp
     private LocalDateTime dataAlteracaoRegistro;
 
-    public Long getEficiencia() {
-        if (dtEntrega == null || dtPrevEntr == null) {
-            return null;
-        }
-        long diasAtraso = ChronoUnit.DAYS.between(dtPrevEntr, dtEntrega);
-        return diasAtraso > 0 ? diasAtraso : 0L;
-    }
 }

@@ -22,7 +22,7 @@ public class TransparenciaRequestDTO {
     @NotBlank(message = "Periodicidade é obrigatória")
     private String periodicidade;
 
-    @NotBlank(message = "Data de previsão de entrega é obrigatória")
+    @NotNull(message = "Data de previsão de entrega é obrigatória")
     private LocalDate dtPrevEntr;
 
     private LocalDate dtEntrega;

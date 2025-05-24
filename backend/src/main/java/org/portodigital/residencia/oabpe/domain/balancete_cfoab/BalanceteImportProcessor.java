@@ -36,10 +36,10 @@ public class BalanceteImportProcessor implements ImportProcessor<BalanceteCFOABR
         dto.setReferencia(rowData.get("Referencia"));
         dto.setAno(rowData.get("Ano"));
         dto.setPeriodicidade(rowData.get("Periodicidade"));
-        dto.setDtPrevEntr(LocalDate.parse(rowData.get("PrevisaoEntrega"), DateTimeFormatter.ofPattern("M/d/yyyy")));
+        dto.setDtPrevEntr(LocalDate.parse(rowData.get("PrevisaoEntrega"), DateTimeFormatter.ofPattern("d/M/yyyy")));
         dto.setDtEntr(Optional.ofNullable(rowData.get("DataEntrega"))
                 .filter(s -> !s.isBlank())
-                .map(d -> LocalDate.parse(d, DateTimeFormatter.ofPattern("M/d/yyyy")))
+                .map(d -> LocalDate.parse(d, DateTimeFormatter.ofPattern("d/M/yyyy")))
                 .orElse(null));
         return dto;
     }

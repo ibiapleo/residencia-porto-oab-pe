@@ -23,7 +23,7 @@ import java.util.*;
 @Service
 public abstract class AbstractFileImportService<T> {
 
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
     public List<Object> importFile(MultipartFile file, User user, ImportProcessor<T> processor) throws IOException {
         String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();
@@ -47,10 +47,6 @@ public abstract class AbstractFileImportService<T> {
                     .map(record -> {
                         try {
                             Map<String, String> rowMap = record.toMap();
-                            if (rowMap.values().stream().allMatch(String::isEmpty)) {
-                                logError(record.getRecordNumber(), new IllegalArgumentException("Linha vazia"));
-                                return null;
-                            }
                             T dto = processor.parse(rowMap);
                             processor.validate(dto);
                             return processor.convertToEntity(dto, user);
@@ -79,18 +75,10 @@ public abstract class AbstractFileImportService<T> {
             int rowIndex = 1;
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
-                if (row == null || isRowEmpty(row)) {
-                    rowIndex++;
-                    continue;
-                }
+                if (row == null || isRowEmpty(row)) continue;
 
                 try {
                     Map<String, String> rowData = getRowData(row, headers);
-                    if (rowData.values().stream().allMatch(String::isEmpty)) {
-                        logError(rowIndex + 1, new IllegalArgumentException("Linha vazia"));
-                        rowIndex++;
-                        continue;
-                    }
                     T dto = processor.parse(rowData);
                     processor.validate(dto);
                     result.add(processor.convertToEntity(dto, user));
@@ -107,18 +95,9 @@ public abstract class AbstractFileImportService<T> {
     }
 
     private boolean isRowEmpty(Row row) {
-        if (row == null) return true;
         for (Cell cell : row) {
-            if (cell != null) {
-                String cellValue;
-                switch (cell.getCellType()) {
-                    case STRING -> cellValue = cell.getStringCellValue().trim();
-                    case BLANK -> cellValue = "";
-                    default -> cellValue = cell.toString().trim();
-                }
-                if (!cellValue.isEmpty()) {
-                    return false;
-                }
+            if (cell != null && !cell.toString().trim().isEmpty()) {
+                return false;
             }
         }
         return true;

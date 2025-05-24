@@ -22,6 +22,6 @@ public class TransparenciaResponseDTO {
     private LocalDate dtPrevEntr;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dtEntrega;
-    private Long eficiencia;
     private boolean status;
+
 }
