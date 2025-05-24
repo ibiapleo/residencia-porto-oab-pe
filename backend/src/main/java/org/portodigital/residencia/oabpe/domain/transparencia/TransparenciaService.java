@@ -23,8 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
- @Service
+@Service
 @RequiredArgsConstructor
 public class TransparenciaService extends AbstractFileImportService<TransparenciaRequestDTO> {
 
@@ -85,8 +86,24 @@ public class TransparenciaService extends AbstractFileImportService<Transparenci
          Transparencia existing = transparenciaRepository.findById(id)
                  .orElseThrow(() -> new EntityNotFoundException("Transparência não encontrada com o id: " + id));
 
-         mapper.map(request, existing);
+         applyUpdates(request, existing);
+
          Transparencia updated = transparenciaRepository.save(existing);
          return mapper.map(updated, TransparenciaResponseDTO.class);
      }
+
+    private void applyUpdates(TransparenciaRequestDTO request, Transparencia existing) {
+        Optional.ofNullable(request.getReferencia()).ifPresent(existing::setReferencia);
+        Optional.ofNullable(request.getAno()).ifPresent(existing::setAno);
+        Optional.ofNullable(request.getDtPrevEntr()).ifPresent(existing::setDtPrevEntr);
+        Optional.ofNullable(request.getDtEntrega()).ifPresent(existing::setDtEntrega);
+        Optional.ofNullable(request.getPeriodicidade()).ifPresent(existing::setPeriodicidade);
+
+        if (request.getDemonstrativoNome() != null) {
+            Demonstrativo demonstrativo = demonstrativoRepository.findByNomeAtivo(request.getDemonstrativoNome())
+                    .orElseThrow(() -> new EntityNotFoundException("Demonstrativo não encontrado com nome: " + request.getDemonstrativoNome()));
+            existing.setDemonstrativo(demonstrativo);
+        }
+
+    }
  }

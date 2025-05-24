@@ -23,7 +23,7 @@ public class Transparencia {
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "Id_Demonstrativo", referencedColumnName = "id")
+    @JoinColumn(name = "Id_demonstrativo", referencedColumnName = "id")
     private Demonstrativo demonstrativo;
 
     @Column(name = "Referencia", length = 80, nullable = false)
