@@ -77,7 +77,6 @@ public class TransparenciaImportProcessor implements ImportProcessor<Transparenc
         entity.setDtEntrega(dto.getDtEntrega());
         entity.setUser(user);
         entity.setStatus(true);
-        entity.setEficiencia(entity.getEficiencia());
         return entity;
     }
 }

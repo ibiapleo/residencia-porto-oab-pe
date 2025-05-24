@@ -44,9 +44,6 @@ public class Transparencia {
     @Column(name = "Status", nullable = false)
     private boolean status = true;
 
-    @Column(name = "Eficiencia")
-    private Long eficiencia;
-
     @ManyToOne(optional = false)
     @JoinColumn(name = "Id_usuario", referencedColumnName = "id")
     private User user;

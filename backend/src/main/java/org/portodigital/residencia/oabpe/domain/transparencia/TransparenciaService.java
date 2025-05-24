@@ -67,7 +67,6 @@ public class TransparenciaService extends AbstractFileImportService<Transparenci
          Transparencia transparencia = mapper.map(request, Transparencia.class);
          transparencia.setUser(user);
          transparencia.setDemonstrativo(demonstrativo);
-         transparencia.setEficiencia(transparencia.getEficiencia());
          Transparencia savedTransparencia = transparenciaRepository.save(transparencia);
          TransparenciaResponseDTO dto = mapper.map(savedTransparencia, TransparenciaResponseDTO.class);
          dto.setNomeDemonstrativo(savedTransparencia.getDemonstrativo().getNome());

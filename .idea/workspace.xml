@@ -5,15 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="58ef6694-5138-4c73-a136-164ab2eceedc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/balancete_cfoab/BalanceteCFOAB.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/balancete_cfoab/BalanceteCFOAB.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaImportProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaImportProcessor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/dto/TransparenciaRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/dto/TransparenciaRequestDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/dto/TransparenciaResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/dto/TransparenciaResponseDTO.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -125,7 +120,7 @@
       <workItem from="1747657749787" duration="10257000" />
       <workItem from="1747700191036" duration="2174000" />
       <workItem from="1748056018721" duration="5842000" />
-      <workItem from="1748092264296" duration="7131000" />
+      <workItem from="1748092264296" duration="8515000" />
     </task>
     <servers />
   </component>
