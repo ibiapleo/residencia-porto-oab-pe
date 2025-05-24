@@ -31,23 +31,53 @@ import { PrestacaoContasSubseccionalRequestDTO } from "@/types/prestacaoContas";
 import { useSubseccionais } from "@/hooks/useSubseccionais";
 import { useTiposDesconto } from "@/hooks/useTiposDesconto";
 
-const formSchema = z.object({
-  subseccionalId: z
-    .string({ required_error: "Selecione uma subseccional" })
-    .min(1),
-  mesReferencia: z.string({ required_error: "Selecione um mês" }).min(1),
-  ano: z
-    .string({ required_error: "Informe o ano" })
-    .length(4, { message: "O ano deve ter 4 dígitos" }),
-  dtPrevEntr: z.string({ required_error: "Informe a data prevista" }).min(1),
-  dtEntrega: z.string().optional(),
-  dtPagto: z.string().optional(),
-  valorDuodecimo: z.number().min(1, { message: "Informe o valor" }),
-  valorDesconto: z.number().optional(),
-  protocoloSGD: z.string().optional(),
-  observacao: z.string().optional(),
-  tipoDescontoId: z.string().optional(),
-});
+const formSchema = z
+  .object({
+    subseccionalId: z
+      .string({ required_error: "Selecione uma subseccional" })
+      .min(1),
+    mesReferencia: z.string({ required_error: "Selecione um mês" }).min(1),
+    ano: z
+      .string({ required_error: "Informe o ano" })
+      .length(4, { message: "O ano deve ter 4 dígitos" }),
+    dtPrevEntr: z.string({ required_error: "Informe a data prevista" }).min(1),
+    dtEntrega: z.string().optional(),
+    dtPagto: z.string().optional(),
+    valorDuodecimo: z.number().min(1, { message: "Informe o valor" }),
+    valorDesconto: z.number().optional(),
+    protocoloSGD: z.string().optional(),
+    observacao: z.string().optional(),
+    tipoDescontoId: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (!data.dtEntrega) return true;
+
+      const prevDate = new Date(data.dtPrevEntr);
+      const entregaDate = new Date(data.dtEntrega);
+
+      return entregaDate <= prevDate;
+    },
+    {
+      message: "A data de entrega não pode ser maior que a data prevista",
+      path: ["dtEntrega"],
+    }
+  )
+  .refine(
+    (data) => {
+      // Validação dtPagto ≤ dtEntrega (se dtEntrega existir)
+      if (!data.dtPagto || !data.dtEntrega) return true;
+
+      const entregaDate = new Date(data.dtEntrega);
+      const pagtoDate = new Date(data.dtPagto);
+
+      return pagtoDate <= entregaDate;
+    },
+    {
+      message: "A data de pagamento não pode ser maior que a data de entrega",
+      path: ["dtPagto"],
+    }
+  );
 
 const meses = [
   { value: "Janeiro", label: "Janeiro" },
@@ -61,7 +91,7 @@ const meses = [
   { value: "Setembro", label: "Setembro" },
   { value: "Outubro", label: "Outubro" },
   { value: "Novembro", label: "Novembro" },
-  { value: "Dezembro", label: "Dezembro" },
+  { value: "Dezembro", label: "Dezembro"},
 ];
 
 export default function NewPrestacaoContasPage() {

@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { User } from "@/types/auth";
-import Cookies from "js-cookie"; // ✅ IMPORTANTE
+import Cookies from "js-cookie";
 
 interface AuthContextProps {
   user: User | null;
