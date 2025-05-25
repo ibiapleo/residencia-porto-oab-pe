@@ -34,7 +34,7 @@ public class BaseOrcamentariaImportProcessor implements ImportProcessor<BaseOrca
         dto.setLancto(rowData.get("Lançamento"));
         dto.setDtLancto(LocalDate.parse(rowData.get("Data Lançamento"), DateTimeFormatter.ofPattern("M/d/yyyy")));
         dto.setValor(parseBigDecimal(rowData.get("Valor")));
-        dto.setAno(parseBigDecimal(rowData.get("Ano")));
+        dto.setAno(rowData.get("Ano"));
         return dto;
     }
 

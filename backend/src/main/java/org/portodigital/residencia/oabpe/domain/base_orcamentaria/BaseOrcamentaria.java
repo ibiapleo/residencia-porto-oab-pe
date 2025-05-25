@@ -41,7 +41,7 @@ public class BaseOrcamentaria {
     private LocalDate dtLancto;
 
     @Column(name = "Ano", nullable = false)
-    private BigDecimal ano;
+    private String ano;
 
     @Column(name = "Tipo", length = 50, nullable = false)
     private String tipo;

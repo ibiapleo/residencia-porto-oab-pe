@@ -19,6 +19,6 @@ public class BaseOrcamentariaFilteredRequest {
     private LocalDate dtDocto;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dtLancto;
-    private BigDecimal ano;
+    private String ano;
     private String tipo;
 }

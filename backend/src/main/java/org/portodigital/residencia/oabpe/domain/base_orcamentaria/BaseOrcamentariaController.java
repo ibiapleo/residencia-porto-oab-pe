@@ -140,6 +140,7 @@ public class BaseOrcamentariaController {
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
     })
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasPermission('modulo_base_orcamentaria', 'ESCRITA')")
     public void uploadFile(
             @RequestParam("file") MultipartFile file,
             @Parameter(hidden = true) Authentication authentication
