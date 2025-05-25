@@ -1,7 +1,9 @@
 package org.portodigital.residencia.oabpe.domain.pagamento_cotas;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.portodigital.residencia.oabpe.domain.balancete_cfoab.BalanceteCFOAB;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.domain.instituicao.InstituicaoRepository;
 import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasFilteredRequest;
@@ -14,15 +16,27 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
+
+import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PagamentoCotasService {
+public class PagamentoCotasService extends AbstractFileImportService<PagamentoCotasRequestDTO>{
 
     private final PagamentoCotasRepository pagamentoCotasRepository;
     private final InstituicaoRepository instituicaoRepository;
     private final TipoDescontoRepository tipoDescontoRepository;
+    private final PagamentoCotasImportProcessor processor;
     private final ModelMapper mapper;
+
+    @Transactional
+    public void importarArquivo(MultipartFile file, User user) throws IOException{
+        List<Object> entidades = importFile(file, user, processor);
+        pagamentoCotasRepository.saveAll(entidades.stream().map(e -> (PagamentoCotas) e).toList());
+    }
 
     public Page<PagamentoCotasResponseDTO> getAllFiltered(PagamentoCotasFilteredRequest filter, Pageable pageable) {
         return pagamentoCotasRepository.findAllActiveByFilter(filter, pageable)

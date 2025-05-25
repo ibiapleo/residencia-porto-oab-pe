@@ -16,6 +16,6 @@ public class BaseOrcamentariaRequestDTO {
     private BigDecimal valor;
     private LocalDate dtDocto;
     private LocalDate dtLancto;
-    private Integer ano;
+    private String ano;
     private String tipo;
 }

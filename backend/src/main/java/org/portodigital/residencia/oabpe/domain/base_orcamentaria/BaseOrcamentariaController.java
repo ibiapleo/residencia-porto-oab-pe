@@ -2,18 +2,28 @@ package org.portodigital.residencia.oabpe.domain.base_orcamentaria;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaFilteredRequest;
 import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaRequestDTO;
 import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaResponseDTO;
+import org.portodigital.residencia.oabpe.domain.identidade.model.User;
+import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/v1/base-orcamentaria")
@@ -25,7 +35,7 @@ public class BaseOrcamentariaController {
 
     @Operation(
             summary = "Listar Bases Orçamentárias",
-            description = "Retorna uma lista paginada de todos as Bases Orçamentárias cadastradas"
+            description = "Retorna uma lista paginada e filtrada de todos as Bases Orçamentárias cadastradas"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista recuperada com sucesso"),
@@ -33,10 +43,10 @@ public class BaseOrcamentariaController {
     })
     @GetMapping
     @PreAuthorize("hasPermission('modulo_base_orcamentaria', 'LEITURA')")
-    public ResponseEntity<Page<BaseOrcamentariaResponseDTO>> getAll(
-            @Parameter(description = "Parâmetros de paginação (page, size, sort)")
+    public ResponseEntity<Page<BaseOrcamentariaResponseDTO>> getAllFiltered(
+            BaseOrcamentariaFilteredRequest filter,
             Pageable pageable) {
-        return ResponseEntity.ok(baseOrcamentariaService.getAll(pageable));
+        return ResponseEntity.ok(baseOrcamentariaService.getAllFiltered(filter, pageable));
     }
 
     @Operation(
@@ -110,5 +120,32 @@ public class BaseOrcamentariaController {
             @Parameter(description = "Novos dados da Base")
             @RequestBody BaseOrcamentariaRequestDTO request) {
         return ResponseEntity.ok(baseOrcamentariaService.update(id, request));
+    }
+
+    @Operation(
+            summary = "Faz o upload de uma Base Orçamentaria",
+            description = "Permite que um usuário envie um arquivo",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Dados do arquivo a ser enviado",
+                    required = true,
+                    content = @Content(
+                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE
+                    )
+            )
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Base criado com sucesso",
+                    content = @Content(schema = @Schema(implementation = BaseOrcamentariaResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Erro interno no servidor", content = @Content)
+    })
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasPermission('modulo_base_orcamentaria', 'ESCRITA')")
+    public void uploadFile(
+            @RequestParam("file") MultipartFile file,
+            @Parameter(hidden = true) Authentication authentication
+    ) throws IOException {
+        User user = (User) authentication.getPrincipal();
+        baseOrcamentariaService.importarArquivo(file, user);
     }
 }

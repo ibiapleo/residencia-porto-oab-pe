@@ -5,6 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.portodigital.residencia.oabpe.domain.identidade.model.User;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -19,4 +24,21 @@ public class Instituicao {
 
     @Column(name = "Descricao", length = 100, nullable = false)
     private String descricao;
+
+    @Column(name = "Status", nullable = false)
+    private Boolean status = true;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "Id_usuario", referencedColumnName = "id")
+    private User user;
+
+    @Column(name = "DAT_CRIACAO_REGISTRO")
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    private LocalDateTime dataCriacaoRegistro;
+
+    @Column(name = "DAT_ALTERACAO_REGISTRO")
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    private LocalDateTime dataAlteracaoRegistro;
 }
