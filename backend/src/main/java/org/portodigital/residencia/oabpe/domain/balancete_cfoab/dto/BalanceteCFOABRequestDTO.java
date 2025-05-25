@@ -13,8 +13,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class BalanceteCFOABRequestDTO {
 
-    @NotNull(message = "Id do demonstrativo é obrigatório")
-    private Long demonstrativoId;
+    @NotBlank(message = "Nome do demonstrativo é obrigatório")
+    private String demonstrativoNome;
 
     @NotBlank(message = "Referência é obrigatória")
     private String referencia;

@@ -23,7 +23,7 @@ import java.util.*;
 @Service
 public abstract class AbstractFileImportService<T> {
 
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d/M/yyyy");
 
     public List<Object> importFile(MultipartFile file, User user, ImportProcessor<T> processor) throws IOException {
         String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();

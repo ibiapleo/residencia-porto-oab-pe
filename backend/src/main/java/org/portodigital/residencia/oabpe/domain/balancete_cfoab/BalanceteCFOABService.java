@@ -9,6 +9,10 @@ import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportServic
 import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
 import org.portodigital.residencia.oabpe.domain.demonstrativo.DemonstrativoRepository;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.PrestacaoContasSubseccional;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalRequestDTO;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.Subseccional;
+import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto.TipoDesconto;
 import org.portodigital.residencia.oabpe.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -58,8 +63,8 @@ public class BalanceteCFOABService extends AbstractFileImportService<BalanceteCF
             throw new SecurityException("Acesso não autorizado");
         }
 
-        Demonstrativo demonstrativo = demonstrativoRepository.findByIdAtivo(request.getDemonstrativoId())
-                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Demonstrativo não encontrado com ID: " + request.getDemonstrativoId()));
+        Demonstrativo demonstrativo = demonstrativoRepository.findByNomeAtivo(request.getDemonstrativoNome())
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Demonstrativo não encontrado com nome: " + request.getDemonstrativoNome()));
 
         User user = (User) authentication.getPrincipal();
         BalanceteCFOAB balancete = mapper.map(request, BalanceteCFOAB.class);
@@ -82,9 +87,24 @@ public class BalanceteCFOABService extends AbstractFileImportService<BalanceteCF
         BalanceteCFOAB existing = balanceteCFOABRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Balancete não encontrado com id: " + id));
 
-        mapper.map(request, existing);
+        applyUpdates(request, existing);
+
         BalanceteCFOAB updated = balanceteCFOABRepository.save(existing);
         return mapper.map(updated, BalanceteCFOABResponseDTO.class);
     }
 
+    private void applyUpdates(BalanceteCFOABRequestDTO request, BalanceteCFOAB existing) {
+        Optional.ofNullable(request.getReferencia()).ifPresent(existing::setReferencia);
+        Optional.ofNullable(request.getAno()).ifPresent(existing::setAno);
+        Optional.ofNullable(request.getDtPrevEntr()).ifPresent(existing::setDtPrevEntr);
+        Optional.ofNullable(request.getDtEntr()).ifPresent(existing::setDtEntr);
+        Optional.ofNullable(request.getPeriodicidade()).ifPresent(existing::setPeriodicidade);
+
+        if (request.getDemonstrativoNome() != null) {
+            Demonstrativo demonstrativo = demonstrativoRepository.findByNomeAtivo(request.getDemonstrativoNome())
+                    .orElseThrow(() -> new EntityNotFoundException("Demonstrativo não encontrado com nome: " + request.getDemonstrativoNome()));
+            existing.setDemonstrativo(demonstrativo);
+        }
+
+    }
 }

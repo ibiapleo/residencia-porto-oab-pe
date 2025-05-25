@@ -34,6 +34,7 @@ public interface PrestacaoContasSubseccionalRepository extends JpaRepository<Pre
       AND (:#{#filtro.observacao} IS NULL OR LOWER(PCS.observacao) LIKE LOWER(CONCAT('%', :#{#filtro.observacao}, '%')))
       AND (:#{#filtro.subseccional} IS NULL OR LOWER(SUB.subSeccional) LIKE LOWER(CONCAT('%', :#{#filtro.subseccional}, '%')))
       AND (:#{#filtro.tipoDesconto} IS NULL OR LOWER(TD.nome) LIKE LOWER(CONCAT('%', :#{#filtro.tipoDesconto}, '%')))
+      AND PCS.status = true
     """)
     Page<PrestacaoContasSubseccional> findAllByFiltros(
             @Param("filtro") PrestacaoContasSubseccionalFiltroRequest filtro,

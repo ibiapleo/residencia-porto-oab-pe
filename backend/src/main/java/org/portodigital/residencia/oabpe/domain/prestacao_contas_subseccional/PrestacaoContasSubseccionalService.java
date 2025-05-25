@@ -42,14 +42,31 @@ public class PrestacaoContasSubseccionalService extends AbstractFileImportServic
                 .map(prestacao -> {
                     PrestacaoContasSubseccionalResponseDTO dto = mapper.map(prestacao, PrestacaoContasSubseccionalResponseDTO.class);
                     dto.setSubseccional(prestacao.getSubseccional().getSubSeccional());
-                    dto.setTipoDesconto(prestacao.getTipoDesconto().getNome());
+                    dto.setIdSubseccional(prestacao.getSubseccional().getId());
+
+                    Optional.ofNullable(prestacao.getTipoDesconto()).ifPresent(tipoDesconto -> {
+                        dto.setTipoDesconto(tipoDesconto.getNome());
+                        dto.setIdTipoDesconto(tipoDesconto.getId());
+                    });
+
                     return dto;
                 });
     }
 
     public PrestacaoContasSubseccionalResponseDTO getById(Long id) {
         return prestacaoContasSubseccionalRepository.findById(id)
-                .map(prestacao -> mapper.map(prestacao, PrestacaoContasSubseccionalResponseDTO.class))
+                .map(prestacao -> {
+                    PrestacaoContasSubseccionalResponseDTO dto = mapper.map(prestacao, PrestacaoContasSubseccionalResponseDTO.class);
+                    dto.setSubseccional(prestacao.getSubseccional().getSubSeccional());
+                    dto.setIdSubseccional(prestacao.getSubseccional().getId());
+
+                    Optional.ofNullable(prestacao.getTipoDesconto()).ifPresent(tipoDesconto -> {
+                        dto.setTipoDesconto(tipoDesconto.getNome());
+                        dto.setIdTipoDesconto(tipoDesconto.getId());
+                    });
+
+                    return dto;
+                })
                 .orElseThrow(() -> new EntityNotFoundException("Prestação de contas não encontrado."));
     }
 

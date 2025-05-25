@@ -6,6 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="58ef6694-5138-4c73-a136-164ab2eceedc" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaImportProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaImportProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,24 +25,24 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "DavidaMendes"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;JoaoLucasmcS&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/GabrielMorais2/residencia-porto-oab-pe/",
-    "accountId": "0559fad1-4f61-4176-b6d4-de7150659c78"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/GabrielMorais2/residencia-porto-oab-pe.git&quot;,
+    &quot;accountId&quot;: &quot;2c8f19dd-1ada-46ef-ab5a-0e70fc0d95ee&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
 }</component>
   <component name="ProjectId" id="2x68qPAE8UCMpzqkbYp3U5fIO5u" />
   <component name="ProjectLevelVcsManager">
-    <ConfirmationsSetting value="2" id="Add" />
+    <ConfirmationsSetting value="1" id="Add" />
   </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -51,9 +54,10 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "#7 on feature/importancao-csv-xlsx-paga…taria",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/davig/Documentos/Cadeira_POO_CESAR/Trabalhos/JaVaCortando/Projeto-POO/server",
+    "Spring Boot.ResidenciaPortoDigitalOabPeApplication.executor": "Run",
+    "git-widget-placeholder": "#3 on feature/implementacao-modulo-transparencia",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "/home/luccas/Área de trabalho/programacao",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -66,7 +70,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="JUnit.PagamentoCotasServiceTest">
+  <component name="RunManager" selected="Spring Boot.ResidenciaPortoDigitalOabPeApplication">
     <configuration name="PagamentoCotasServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="oabpe" />
       <extension name="coverage">
@@ -99,8 +103,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.24978.46" />
-        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-IU-243.24978.46" />
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.109" />
+        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.109" />
       </set>
     </attachedChunks>
   </component>
@@ -116,7 +120,8 @@
       <workItem from="1747424050966" duration="3000" />
       <workItem from="1747657749787" duration="10257000" />
       <workItem from="1747700191036" duration="2174000" />
-      <workItem from="1747999189884" duration="148000" />
+      <workItem from="1748056018721" duration="5842000" />
+      <workItem from="1748092264296" duration="8515000" />
     </task>
     <servers />
   </component>
