@@ -1,5 +1,7 @@
 package org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,16 +14,26 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class PagamentoCotasRequestDTO {
 
-    private Long instituicaoId;
+    @NotBlank(message = "Nome da instituicao é obrigatório")
+    private String instituicaoNome;
+
+    @NotBlank(message = "Mês de referência é obrigatório")
     private String mesReferencia;
+
+    @NotBlank(message = "Ano é obrigatório")
     private String ano;
+
+    @NotNull(message = "Data de Previsão de Entrega é obrigatória")
     private LocalDate dtPrevEntr;
+
     private BigDecimal valorDuodecimo;
     private BigDecimal valorDesconto;
-    private Long tipoDescontoId;
+
+    @NotBlank(message = "Tipo de desconto é obrigatório")
+    private String tipoDesconto;
+
     private BigDecimal valorPago;
     private LocalDate dtPagto;
     private String observacao;
-    private String instituicao;
 
 }

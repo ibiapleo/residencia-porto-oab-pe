@@ -17,6 +17,18 @@ export const getSubseccionais = async (
   );
 };
 
+export const uploadSubseccional = async (
+  file: File
+): Promise<SubseccionalResponseDTO> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return fetcher<SubseccionalResponseDTO>('/subseccional/upload', {
+    method: 'POST',
+    body: formData,
+  });
+};
+
 export const getSubseccionalById = async (
   id: string
 ): Promise<SubseccionalResponseDTO> => {

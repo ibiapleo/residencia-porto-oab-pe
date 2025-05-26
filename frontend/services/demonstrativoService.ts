@@ -23,6 +23,18 @@ export const getDemonstrativoById = async (
   );
 };
 
+export const uploadDemonstrativo = async (
+  file: File
+): Promise<DemonstrativoResponseDTO> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return fetcher<DemonstrativoResponseDTO>('/demonstrativo/upload', {
+    method: 'POST',
+    body: formData,
+  });
+};
+
 export const criarDemonstrativo = async (
   data: DemonstrativoRequestDTO
 ): Promise<DemonstrativoResponseDTO> => {

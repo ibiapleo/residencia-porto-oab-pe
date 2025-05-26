@@ -3,6 +3,7 @@ package org.portodigital.residencia.oabpe.domain.identidade.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -30,33 +31,49 @@ public class AuthController {
 
     @Operation(
             summary = "Login de usuário",
-            description = "Realiza o login e retorna o token JWT"
+            description = "Realiza o login e retorna o token JWT",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = LoginRequestDTO.class),
+                            examples = @ExampleObject(
+                                    value = "{\"username\": \"joao.silva\", \"password\": \"senha@123\"}"
+                            )
+                    )
+            )
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login bem-sucedido",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponseDTO.class))),
-            @ApiResponse(responseCode = "401", description = "Credenciais inválidas", content = @Content)
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Login bem sucedido!"),
+            @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
     })
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDTO> login(
-            @Valid @RequestBody LoginRequestDTO loginRequestDTO) {
-        TokenResponseDTO jwtToken = userService.login(loginRequestDTO);
+            @Valid @RequestBody LoginRequestDTO request
+    ) {
+        TokenResponseDTO jwtToken = userService.login(request);
         return ResponseEntity.ok(jwtToken);
     }
 
     @Operation(
             summary = "Registro de novo usuário",
-            description = "Registra um novo usuário no sistema"
+            description = "Registra um novo usuário no sistema",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = RegisterRequestDTO.class),
+                            examples = @ExampleObject(
+                                    value = "{\"nome\": \"João Ribeiro da Silva\", \"username\": \"joao.silva\", \"password\": \"senha@123\"}"
+                            )
+                    )
+            )
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Usuário registrado com sucesso",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RegisterResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos ou usuário já existe", content = @Content)
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Usuário registrado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos ou usuário já existe")
     })
     @PostMapping(value = "/register")
     public ResponseEntity<UserResponseDTO> register(
             @RequestBody RegisterRequestDTO registerRequestDTO) {
-
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(registerRequestDTO));
     }
 

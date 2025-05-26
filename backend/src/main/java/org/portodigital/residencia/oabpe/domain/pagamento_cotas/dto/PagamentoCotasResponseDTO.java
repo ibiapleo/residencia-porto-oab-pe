@@ -14,12 +14,14 @@ public class PagamentoCotasResponseDTO {
 
     private Long id;
     private Long instituicaoId;
+    private String instituicaoNome;
     private String mesReferencia;
     private String ano;
     private LocalDate dtPrevEntr;
     private BigDecimal valorDuodecimo;
     private BigDecimal valorDesconto;
     private Long tipoDescontoId;
+    private String tipoDescontoNome;
     private BigDecimal valorPago;
     private LocalDate dtPagto;
     private String observacao;

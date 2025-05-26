@@ -25,12 +25,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { createBalancete } from "@/services/balanceteService";
+import { createBalancete, uploadBalancete } from "@/services/balanceteService";
 import { useDemonstrativos } from "@/hooks/useDemonstrativos";
 import { CreateBalanceteDTO } from "@/types/balancete";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileImport } from "@/components/file-import";
 
 const formSchema = z.object({
-  demonstrativoNome: z.string({ required_error: "Selecione um demonstrativo" }).min(1),
+  demonstrativoNome: z
+    .string({ required_error: "Selecione um demonstrativo" })
+    .min(1),
   referencia: z.string().min(1, { message: "Referência é obrigatória" }),
   ano: z.string().length(4, { message: "O ano deve ter 4 dígitos" }),
   periodicidade: z.string().min(1, { message: "Periodicidade é obrigatória" }),
@@ -66,6 +70,30 @@ export default function NewBalancoCFOABPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleUpload = async (file: File) => {
+    return await uploadBalancete(file);
+  };
+
+  const handleSuccess = () => {
+    toast({
+      title: "Sucesso",
+      description: "Planilha importada com sucesso!",
+    });
+
+    router.push("/balancete");
+  };
+
+  const handleError = (error: any) => {
+    toast({
+      title: "Erro",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Não foi possível excluir o balancete",
+      variant: "destructive",
+    });
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -84,28 +112,28 @@ export default function NewBalancoCFOABPage() {
     });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  setIsLoading(true);
-  try {
-    const requestData: CreateBalanceteDTO = {
-      ...values,
-      dtEntr: values.dtEntr ?? null,
-    };
-    await createBalancete(requestData);
-    toast({
-      title: "Balancete criado",
-      description: "O balancete foi criado com sucesso",
-    });
-    router.push("/balancete");
-  } catch (error) {
-    toast({
-      title: "Erro",
-      description: "Não foi possível criar o balancete",
-      variant: "destructive",
-    });
-  } finally {
-    setIsLoading(false);
-  }
-};
+    setIsLoading(true);
+    try {
+      const requestData: CreateBalanceteDTO = {
+        ...values,
+        dtEntr: values.dtEntr ?? null,
+      };
+      await createBalancete(requestData);
+      toast({
+        title: "Balancete criado",
+        description: "O balancete foi criado com sucesso",
+      });
+      router.push("/balancete");
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível criar o balancete",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -156,10 +184,7 @@ export default function NewBalancoCFOABPage() {
                         <SelectContent>
                           {demonstrativos &&
                             demonstrativos.content.map((item) => (
-                              <SelectItem
-                                key={item.id}
-                                value={item.nome}
-                              >
+                              <SelectItem key={item.id} value={item.nome}>
                                 {item.nome}
                               </SelectItem>
                             ))}
@@ -313,6 +338,20 @@ export default function NewBalancoCFOABPage() {
               </ul>
             </div>
           </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Importação em lote</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FileImport
+                uploadService={handleUpload}
+                onSuccess={handleSuccess}
+                onError={handleError}
+                templateFileUrl="/templates/balancete-template.xlsx"
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

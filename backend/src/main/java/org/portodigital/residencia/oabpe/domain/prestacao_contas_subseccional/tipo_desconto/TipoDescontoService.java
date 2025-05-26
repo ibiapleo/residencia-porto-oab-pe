@@ -3,12 +3,16 @@ package org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.t
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
+import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
+import org.portodigital.residencia.oabpe.domain.demonstrativo.dto.DemonstrativoResponseDTO;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto.dto.TipoDescontoRequest;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto.dto.TipoDescontoResponse;
 import org.portodigital.residencia.oabpe.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,34 +29,42 @@ public class TipoDescontoService extends AbstractFileImportService<TipoDescontoR
     private final ModelMapper modelMapper;
 
     public Page<TipoDescontoResponse> getAll(String nome, Pageable pageable) {
-        Page<TipoDesconto> page = tipoDescontoRepository.findByNomeContainingIgnoreCase(nome != null ? nome : "", pageable);
-        return page.map(tipoDesconto -> modelMapper.map(tipoDesconto, TipoDescontoResponse.class));
+        return tipoDescontoRepository.findAllAtivos(pageable)
+                .map(tipodesconto -> modelMapper.map(tipodesconto, TipoDescontoResponse.class));
     }
 
     public TipoDescontoResponse getById(Long id) {
-        TipoDesconto tipoDesconto = tipoDescontoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("TipoDesconto não encontrado com id: " + id));
-        return modelMapper.map(tipoDesconto, TipoDescontoResponse.class);
+        return tipoDescontoRepository.findByIdAtivo(id)
+                .map(tipodesconto -> modelMapper.map(tipodesconto, TipoDescontoResponse.class))
+                .orElseThrow(() -> new EntityNotFoundException("Tipo de Desconto não encontrado."));
     }
 
     public TipoDescontoResponse create(TipoDescontoRequest request) {
-        TipoDesconto tipoDesconto = modelMapper.map(request, TipoDesconto.class);
-        TipoDesconto saved = tipoDescontoRepository.save(tipoDesconto);
-        return modelMapper.map(saved, TipoDescontoResponse.class);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new SecurityException("Acesso não autorizado");
+        }
+        User user = (User) authentication.getPrincipal();
+        TipoDesconto tipodesconto = modelMapper.map(request, TipoDesconto.class);
+        tipodesconto.setUser(user);
+        TipoDesconto savedTipoDesconto = tipoDescontoRepository.save(tipodesconto);
+        return modelMapper.map(savedTipoDesconto, TipoDescontoResponse.class);
     }
 
     public TipoDescontoResponse update(Long id, TipoDescontoRequest request) {
         TipoDesconto existing = tipoDescontoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("TipoDesconto não encontrado com id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Tipo de Desconto não encontrado com id: " + id));
+
         modelMapper.map(request, existing);
         TipoDesconto updated = tipoDescontoRepository.save(existing);
         return modelMapper.map(updated, TipoDescontoResponse.class);
     }
 
     public void delete(Long id) {
-        TipoDesconto tipoDesconto = tipoDescontoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("TipoDesconto não encontrado com id: " + id));
-        tipoDescontoRepository.delete(tipoDesconto);
+        TipoDesconto existing = tipoDescontoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Tipo de Desconto encontrado com id: " + id));
+        existing.setStatus(false);
+        tipoDescontoRepository.save(existing);
     }
 
     @Transactional

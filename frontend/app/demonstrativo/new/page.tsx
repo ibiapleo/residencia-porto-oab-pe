@@ -17,7 +17,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { criarDemonstrativo } from "@/services/demonstrativoService";
+import { criarDemonstrativo, uploadDemonstrativo } from "@/services/demonstrativoService";
+import { toast } from "@/hooks/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileImport } from "@/components/file-import";
 
 const formSchema = z.object({
   nome: z
@@ -37,12 +40,40 @@ export default function NewSubseccionalPage() {
     },
   });
 
+  const handleUpload = async (file: File) => {
+    return await uploadDemonstrativo(file);
+  };
+
+  const handleSuccess = () => {
+    toast({
+      title: "Sucesso",
+      description: "Planilha importada com sucesso!",
+    });
+
+    router.push("/demonstrativo");
+  };
+
+  const handleError = (error: any) => {
+    toast({
+      title: "Erro",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Não foi possível importar a planilha",
+      variant: "destructive",
+    });
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
 
     try {
       await criarDemonstrativo({
         nome: values.nome,
+      });
+      toast({
+        title: "Sucesso",
+        description: "Demonstrativo criado com sucesso",
       });
 
       router.push("/demonstrativo");
@@ -65,7 +96,9 @@ export default function NewSubseccionalPage() {
           <ArrowLeft className="h-4 w-4" />
           <span className="sr-only">Voltar</span>
         </Button>
-        <h2 className="text-3xl font-bold tracking-tight">Novo Demonstrativo</h2>
+        <h2 className="text-3xl font-bold tracking-tight">
+          Novo Demonstrativo
+        </h2>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
@@ -116,6 +149,19 @@ export default function NewSubseccionalPage() {
               </p>
             </div>
           </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Importação em lote</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FileImport
+                uploadService={handleUpload}
+                onSuccess={handleSuccess}
+                onError={handleError}
+                templateFileUrl="/templates/balancete-template.xlsx"
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

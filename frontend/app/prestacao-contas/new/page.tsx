@@ -26,10 +26,12 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { criarPrestacaoContas } from "@/services/prestacaoContasService";
+import { criarPrestacaoContas, uploadPrestacaoContas } from "@/services/prestacaoContasService";
 import { PrestacaoContasSubseccionalRequestDTO } from "@/types/prestacaoContas";
 import { useSubseccionais } from "@/hooks/useSubseccionais";
 import { useTiposDesconto } from "@/hooks/useTiposDesconto";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileImport } from "@/components/file-import";
 
 const formSchema = z
   .object({
@@ -91,7 +93,7 @@ const meses = [
   { value: "Setembro", label: "Setembro" },
   { value: "Outubro", label: "Outubro" },
   { value: "Novembro", label: "Novembro" },
-  { value: "Dezembro", label: "Dezembro"},
+  { value: "Dezembro", label: "Dezembro" },
 ];
 
 export default function NewPrestacaoContasPage() {
@@ -124,6 +126,30 @@ export default function NewPrestacaoContasPage() {
       tipoDescontoId: "",
     },
   });
+
+  const handleUpload = async (file: File) => {
+    return await uploadPrestacaoContas(file);
+  };
+
+  const handleSuccess = () => {
+    toast({
+      title: "Sucesso",
+      description: "Planilha importada com sucesso!",
+    });
+
+    router.push("/prestacao-contas");
+  };
+
+  const handleError = (error: any) => {
+    toast({
+      title: "Erro",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Não foi importar a planilha",
+      variant: "destructive",
+    });
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -469,6 +495,19 @@ export default function NewPrestacaoContasPage() {
               </ul>
             </div>
           </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Importação em lote</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FileImport
+                uploadService={handleUpload}
+                onSuccess={handleSuccess}
+                onError={handleError}
+                templateFileUrl="/templates/balancete-template.xlsx"
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

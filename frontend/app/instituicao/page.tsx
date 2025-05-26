@@ -9,6 +9,7 @@ import {
   type ColumnDef,
   PaginationState,
   SortingState,
+  FilterState,
 } from "@/components/data-table";
 import {
   AlertDialog,
@@ -28,27 +29,27 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { useSubseccionais } from "@/hooks/useSubseccionais";
 import { PaginationParams, Sort } from "@/types/paginacao";
-import { InstituicaoResponseDTO } from "@/types/instituicao";
+import { SubseccionalResponseDTO } from "@/types/subseccional";
+import { excluirSubseccional } from "@/services/subseccionalService";
 import { excluirInstituicao } from "@/services/instituicaoService";
+import { InstituicaoResponseDTO } from "@/types/instituicao";
 import { useInstituicoes } from "@/hooks/useInstituicoes";
 
 export default function InstituicaoPage() {
   const { toast } = useToast();
 
-  // Estado da paginação
   const [pagination, setPagination] = useState({
     page: 0,
     pageSize: 10,
   });
 
-  // Estados para ordenação, loading e modais
   const [sort, setSort] = useState<Sort[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState<PaginationParams["filters"]>({});
 
-  // Hook personalizado para buscar instituições
   const { data, isLoading, error, isEmpty, refetch } = useInstituicoes({
     page: pagination.page,
     size: pagination.pageSize,
@@ -56,56 +57,61 @@ export default function InstituicaoPage() {
     filters,
   });
 
-  // Handler para mudança de paginação
-  const handlePaginationChange = useCallback((newPagination: PaginationState) => {
-    setPagination(prev => {
-      if (prev.page !== newPagination.page || prev.pageSize !== newPagination.pageSize) {
-        return newPagination;
-      }
-      return prev;
-    });
-  }, []);
+  const handlePaginationChange = useCallback(
+    (newPagination: PaginationState) => {
+      setPagination((prev) => {
+        if (
+          prev.page !== newPagination.page ||
+          prev.pageSize !== newPagination.pageSize
+        ) {
+          return newPagination;
+        }
+        return prev;
+      });
+    },
+    []
+  );
 
-  // Handler para deletar instituição
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     setIsDeleting(true);
     try {
       await excluirInstituicao(id);
       toast({
         title: "Sucesso",
-        description: "Instituição excluída com sucesso",
+        description: "instituição excluída com sucesso",
       });
       refetch();
     } catch (error) {
       toast({
         title: "Erro",
-        description: error instanceof Error ? error.message : "Não foi possível excluir a instituição",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Não foi possível excluir a instituição",
         variant: "destructive",
       });
     } finally {
       setIsDeleting(false);
-      setOpenDeleteDialog(false);
+      setOpen(false);
     }
   };
 
-  // Atualiza os dados quando a paginação muda
   useEffect(() => {
     refetch();
   }, [pagination, refetch]);
-
-  // Definição das colunas da tabela
+  
   const columns: ColumnDef<InstituicaoResponseDTO>[] = [
     {
       accessorKey: "descricao",
-      header: "Descrição",
+      header: "Instituição",
       enableSorting: true,
       enableFiltering: true,
       cell: ({ row }) => {
-        return <span className="font-medium">{row.descricao}</span>;
+        return <span className="font-medium">{row.nome}</span>;
       },
       filter: {
         type: "text",
-        placeholder: "Filtrar por descrição...",
+        placeholder: "Filtrar por instituição...",
       },
     },
     {
@@ -137,16 +143,21 @@ export default function InstituicaoPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
-                <Link href={`/instituicoes/edit/${row.id}`} className="flex items-center">
+                <Link
+                  href={`/instituicao/edit/${row.id}`}
+                  className="flex items-center"
+                >
                   <Pencil className="mr-2 h-4 w-4" />
                   <span>Editar</span>
                 </Link>
               </DropdownMenuItem>
-              <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+              <AlertDialog open={open} onOpenChange={setOpen}>
                 <AlertDialogTrigger asChild>
                   <DropdownMenuItem
-                    className="text-destructive focus:text-destructive"
-                    onSelect={(e) => e.preventDefault()}
+                    className="text-destructive focus:text-destructive "
+                    onSelect={(e) => {
+                      e.preventDefault();
+                    }}
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
                     <span>Excluir</span>
@@ -154,10 +165,13 @@ export default function InstituicaoPage() {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      Você tem certeza absoluta?
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      Essa ação não pode ser desfeita. Isso excluirá permanentemente
-                      a instituição e removerá os dados de nossos servidores.
+                      Essa ação não pode ser desfeita. Isso excluirá
+                      permanentemente a instituição e removerá os dados de
+                      nossos servidores.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -166,7 +180,7 @@ export default function InstituicaoPage() {
                     </AlertDialogCancel>
                     <AlertDialogAction
                       disabled={isDeleting}
-                      onClick={() => handleDelete(row.id)}
+                      onClick={() => handleDelete(row.id.toString())}
                       className="bg-destructive hover:bg-destructive/90"
                     >
                       {isDeleting ? "Excluindo..." : "Excluir"}
@@ -181,21 +195,20 @@ export default function InstituicaoPage() {
     },
   ];
 
-  // Tratamento de erro
   if (error) {
     return (
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold tracking-tight">Instituições</h2>
           <Button asChild className="bg-secondary hover:bg-secondary/90">
-            <Link href="/instituicoes/new">
+            <Link href="/instituicao/new">
               <Plus className="mr-2 h-4 w-4" /> Nova Instituição
             </Link>
           </Button>
         </div>
         <div className="rounded-md border border-red-200 bg-red-50 p-4">
           <p className="text-red-600">
-            Erro ao carregar instituições: {error.message}
+            Erro ao carregar Instituições: {error.message}
           </p>
           <Button variant="outline" className="mt-2" onClick={() => refetch()}>
             Tentar novamente
@@ -205,13 +218,12 @@ export default function InstituicaoPage() {
     );
   }
 
-  // Renderização principal
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Instituições</h2>
         <Button asChild className="bg-secondary hover:bg-secondary/90">
-          <Link href="/instituicoes/new">
+          <Link href="/instituicao/new">
             <Plus className="mr-2 h-4 w-4" /> Nova Instituição
           </Link>
         </Button>
@@ -220,13 +232,15 @@ export default function InstituicaoPage() {
       {isEmpty ? (
         <div className="flex flex-col items-center justify-center space-y-4 rounded-md border p-8 text-center">
           <FileText className="h-12 w-12 text-muted-foreground" />
-          <h3 className="text-xl font-semibold">Nenhuma instituição encontrada</h3>
+          <h3 className="text-xl font-semibold">
+            Nenhuma Instituição encontrada
+          </h3>
           <p className="text-muted-foreground">
-            Você ainda não cadastrou nenhuma instituição
+            Você ainda não cadastrou nenhuma Instituição
           </p>
           <Button asChild>
-            <Link href="/instituicoes/new">
-              <Plus className="mr-2 h-4 w-4" /> Criar primeira instituição
+            <Link href="/instituicao/new">
+              <Plus className="mr-2 h-4 w-4" /> Criar primeira Instituição
             </Link>
           </Button>
         </div>
@@ -235,7 +249,7 @@ export default function InstituicaoPage() {
           columns={columns}
           data={data?.content || []}
           loading={isLoading}
-          searchPlaceholder="Buscar instituições..."
+          searchPlaceholder="Buscar subseccionais..."
           enableServerSidePagination
           totalCount={data?.totalElements}
           onSortChange={setSort}

@@ -17,72 +17,75 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { criarSubseccional, uploadSubseccional } from "@/services/subseccionalService";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { criarInstituicao, uploadInstituicao } from "@/services/instituicaoService";
+import { InstituicaoRequestDTO } from "@/types/instituicao";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileImport } from "@/components/file-import";
 
 const formSchema = z.object({
-  subseccional: z
-    .string()
-    .min(2, { message: "Nome deve ter pelo menos 2 caracteres" })
-    .max(100, { message: "Nome deve ter no máximo 100 caracteres" }),
+  nome: z.string().min(1, { message: "Descrição é obrigatória" }),
 });
 
-export default function NewSubseccionalPage() {
+export default function CreateInstituicaoPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      subseccional: "",
+      nome: "",
     },
   });
 
   const handleUpload = async (file: File) => {
-    return await uploadSubseccional(file);
-  };
-
-  const handleSuccess = () => {
-    toast({
-      title: "Sucesso",
-      description: "Planilha importada com sucesso!",
-    });
-
-    router.push("/subseccional");
-  };
-
-  const handleError = (error: any) => {
-    toast({
-      title: "Erro",
-      description:
-        error instanceof Error
-          ? error.message
-          : "Não foi possível importar a planilha",
-      variant: "destructive",
-    });
-  };
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-
-    try {
-      await criarSubseccional({
-        subSeccional: values.subseccional,
-      });
+      return await uploadInstituicao(file);
+    };
+  
+    const handleSuccess = () => {
       toast({
         title: "Sucesso",
-        description: "Subseccional Criada com sucesso!",
+        description: "Planilha importada com sucesso!",
       });
+  
+      router.push("/instituicao");
+    };
+  
+    const handleError = (error: any) => {
+      toast({
+        title: "Erro",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Não foi possível excluir o balancete",
+        variant: "destructive",
+      });
+    };
+  
 
-      router.push("/subseccional");
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
+    try {
+      const requestData: InstituicaoRequestDTO = {
+        nome: values.nome,
+      };
+      await criarInstituicao(requestData);
+      toast({
+        title: "Instituição criada",
+        description: "A instituição foi criada com sucesso",
+      });
+      router.push("/instituicao"); // Ajuste a rota conforme necessário
     } catch (error) {
-      console.error(error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível criar a instituição",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -96,7 +99,7 @@ export default function NewSubseccionalPage() {
           <ArrowLeft className="h-4 w-4" />
           <span className="sr-only">Voltar</span>
         </Button>
-        <h2 className="text-3xl font-bold tracking-tight">Nova Subseccional</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Nova Instituição</h2>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
@@ -108,24 +111,29 @@ export default function NewSubseccionalPage() {
               >
                 <FormField
                   control={form.control}
-                  name="subseccional"
+                  name="nome"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome da Subseccional</FormLabel>
+                      <FormLabel>Descrição</FormLabel>
                       <FormControl>
-                        <Input placeholder="Nome da subseccional" {...field} />
+                        <Input
+                          placeholder="Digite o nome da instituição"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <div className="flex justify-end space-x-5">
-                  <a
-                    className="flex justify-center items-center text-sm text-muted-foreground hover:cursor-pointer"
+
+                <div className="flex justify-end space-x-2">
+                  <Button
+                    variant="outline"
+                    type="button"
                     onClick={() => router.back()}
                   >
                     Cancelar
-                  </a>
+                  </Button>
                   <Button
                     type="submit"
                     className="bg-secondary hover:bg-secondary/90"
@@ -142,9 +150,7 @@ export default function NewSubseccionalPage() {
           <div className="rounded-lg border shadow-sm p-6">
             <h3 className="text-lg font-medium mb-4">Informações</h3>
             <div className="space-y-4 text-sm">
-              <p>
-                Preencha os campos para criar uma nova subseccional no sistema.
-              </p>
+              <p>Preencha os campos para criar uma nova instituição.</p>
             </div>
           </div>
           <Card>

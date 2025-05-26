@@ -26,10 +26,12 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { criarPagamentoCotas } from "@/services/pagamentoCotasService";
+import { criarPagamentoCotas, uploadPagamentoCotas } from "@/services/pagamentoCotasService";
 import { PagamentoCotasRequestDTO } from "@/types/pagamentoCotas";
 import { useInstituicoes } from "@/hooks/useInstituicoes";
 import { useTiposDesconto } from "@/hooks/useTiposDesconto";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileImport } from "@/components/file-import";
 
 const formSchema = z
   .object({
@@ -82,14 +84,39 @@ export default function NewPagamentoCotasPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const { data: instituicoes, isLoading: isLoadingInstituicoes } = useInstituicoes({
-    size: 100,
-  });
+  const { data: instituicoes, isLoading: isLoadingInstituicoes } =
+    useInstituicoes({
+      size: 100,
+    });
 
   const { data: tiposDesconto, isLoading: isLoadingTiposDesconto } =
     useTiposDesconto({
       size: 100,
     });
+
+  const handleUpload = async (file: File) => {
+    return await uploadPagamentoCotas(file);
+  };
+
+  const handleSuccess = () => {
+    toast({
+      title: "Sucesso",
+      description: "Planilha importada com sucesso!",
+    });
+
+    router.push("/pagamento-cotas");
+  };
+
+  const handleError = (error: any) => {
+    toast({
+      title: "Erro",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Não foi possível importar a planilha",
+      variant: "destructive",
+    });
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -121,7 +148,9 @@ export default function NewPagamentoCotasPage() {
         valorDesconto: Number(values.valorDesconto) || 0,
         valorPago: Number(values.valorPago) || 0,
         observacao: values.observacao || "",
-        tipoDescontoId: values.tipoDescontoId ? Number(values.tipoDescontoId) : 0,
+        tipoDescontoId: values.tipoDescontoId
+          ? Number(values.tipoDescontoId)
+          : 0,
       };
 
       await criarPagamentoCotas(requestData);
@@ -162,7 +191,10 @@ export default function NewPagamentoCotasPage() {
         <div className="space-y-4 lg:col-span-2">
           <div className="rounded-lg border shadow-sm p-6">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
@@ -193,7 +225,7 @@ export default function NewPagamentoCotasPage() {
                                   key={item.id}
                                   value={item.id.toString()}
                                 >
-                                  {item.descricao}
+                                  {item.nome}
                                 </SelectItem>
                               ))}
                           </SelectContent>
@@ -351,10 +383,7 @@ export default function NewPagamentoCotasPage() {
                           <SelectContent>
                             {tiposDesconto &&
                               tiposDesconto.content.map((item) => (
-                                <SelectItem
-                                  key={item.id}
-                                  value={item.nome}
-                                >
+                                <SelectItem key={item.id} value={item.nome}>
                                   {item.nome}
                                 </SelectItem>
                               ))}
@@ -447,11 +476,27 @@ export default function NewPagamentoCotasPage() {
                 <strong>Observações:</strong>
               </p>
               <ul className="list-disc list-inside space-y-1">
-                <li>Data de pagamento e valor pago podem ser preenchidos posteriormente</li>
+                <li>
+                  Data de pagamento e valor pago podem ser preenchidos
+                  posteriormente
+                </li>
                 <li>Descontos são opcionais</li>
               </ul>
             </div>
           </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Importação em lote</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FileImport
+                uploadService={handleUpload}
+                onSuccess={handleSuccess}
+                onError={handleError}
+                templateFileUrl="/templates/balancete-template.xlsx"
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

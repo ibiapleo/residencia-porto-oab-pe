@@ -25,9 +25,6 @@ public class BaseOrcamentaria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "Id_Lancto", nullable = false)
-    private Long idLancto;
-
     @Column(length = 50, name = "Lancto", nullable = false)
     private String lancto;
 

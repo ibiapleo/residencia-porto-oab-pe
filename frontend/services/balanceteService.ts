@@ -19,6 +19,18 @@ export const createBalancete = async (
   });
 };
 
+export const uploadBalancete = async (
+  file: File
+): Promise<BalanceteResponseDTO> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return fetcher<BalanceteResponseDTO>('/balancete-cfoab/upload', {
+    method: 'POST',
+    body: formData,
+  });
+};
+
 export const getBalanceteById = async (
   id: string
 ): Promise<BalanceteResponseDTO> => {

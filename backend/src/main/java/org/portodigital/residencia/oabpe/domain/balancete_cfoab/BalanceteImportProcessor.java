@@ -19,7 +19,7 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
-public class BalanceteImportProcessor implements ImportProcessor<BalanceteCFOABRequestDTO> {
+public class    BalanceteImportProcessor implements ImportProcessor<BalanceteCFOABRequestDTO> {
 
     private final Validator validator;
     private final DemonstrativoRepository demonstrativoRepository;

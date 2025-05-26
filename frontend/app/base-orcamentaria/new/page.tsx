@@ -26,8 +26,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { criarBaseOrcamentaria } from "@/services/baseOrcamentariaService";
+import { criarBaseOrcamentaria, uploadBaseOrcamentaria } from "@/services/baseOrcamentariaService";
 import { BaseOrcamentariaRequestDTO } from "@/types/baseOrcamentaria";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileImport } from "@/components/file-import";
 
 const formSchema = z.object({
   lancto: z.string({ required_error: "Informe o lançamento" }).min(1),
@@ -42,8 +44,8 @@ const formSchema = z.object({
 });
 
 const tiposBase = [
-  { value: "receita", label: "Receita" },
-  { value: "despesa", label: "Despesa" },
+  { value: "Receita", label: "Receita" },
+  { value: "Despesa", label: "Despesa" },
 ];
 
 export default function NewBaseOrcamentariaPage() {
@@ -63,6 +65,30 @@ export default function NewBaseOrcamentariaPage() {
       status: "ativo",
     },
   });
+
+  const handleUpload = async (file: File) => {
+    return await uploadBaseOrcamentaria(file);
+  };
+
+  const handleSuccess = () => {
+    toast({
+      title: "Sucesso",
+      description: "Planilha importada com sucesso!",
+    });
+
+    router.push("/base-orcamentaria");
+  };
+
+  const handleError = (error: any) => {
+    toast({
+      title: "Erro",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Não foi possível importar a planilha",
+      variant: "destructive",
+    });
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -283,6 +309,19 @@ export default function NewBaseOrcamentariaPage() {
               </ul>
             </div>
           </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Importação em lote</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FileImport
+                uploadService={handleUpload}
+                onSuccess={handleSuccess}
+                onError={handleError}
+                templateFileUrl="/templates/balancete-template.xlsx"
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

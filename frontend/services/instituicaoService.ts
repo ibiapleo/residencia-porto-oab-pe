@@ -18,12 +18,25 @@ export const getInstituicoes = async (
 };
 
 export const getInstituicaoById = async (
-  id: number
+  id: string
 ): Promise<InstituicaoResponseDTO> => {
   return await fetcher<InstituicaoResponseDTO>(
     `/instituicoes/${id}`
   );
 };
+
+export const uploadInstituicao = async (
+  file: File
+): Promise<InstituicaoResponseDTO> => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return fetcher<InstituicaoResponseDTO>("/instituicoes/upload", {
+    method: "POST",
+    body: formData,
+  });
+};
+
 
 export const criarInstituicao = async (
   data: InstituicaoRequestDTO
@@ -35,7 +48,7 @@ export const criarInstituicao = async (
 };
 
 export const atualizarInstituicao = async (
-  id: number,
+  id: string,
   data: InstituicaoRequestDTO
 ): Promise<InstituicaoResponseDTO> => {
   return fetcher<InstituicaoResponseDTO>(
@@ -47,7 +60,7 @@ export const atualizarInstituicao = async (
   );
 };
 
-export const excluirInstituicao = async (id: number): Promise<void> => {
+export const excluirInstituicao = async (id: string): Promise<void> => {
   return fetcher<void>(`/instituicoes/${id}`, {
     method: "DELETE",
   });
