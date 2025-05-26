@@ -20,6 +20,18 @@ export const getPagamentoCotasById = async (
     );
 };
 
+export const uploadPagamentoCotas = async (
+  file: File
+): Promise<PagamentoCotasResponseDTO> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return fetcher<PagamentoCotasResponseDTO>('/pagamento-cotas/upload', {
+    method: 'POST',
+    body: formData,
+  });
+};
+
 export const criarPagamentoCotas = async (
     data: PagamentoCotasRequestDTO
 ): Promise<PagamentoCotasResponseDTO> => {

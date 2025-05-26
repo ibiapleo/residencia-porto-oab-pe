@@ -1,8 +1,8 @@
 export type InstituicaoResponseDTO = {
   id: number;
-  descricao: string;
+  nome: string;
 };
 
 export type InstituicaoRequestDTO = {
-  descricao: string;
+  nome: string;
 };

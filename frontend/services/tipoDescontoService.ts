@@ -23,6 +23,18 @@ export const getDescontoById = async (
   );
 };
 
+export const uploadTiposDesconto = async (
+  file: File
+): Promise<DescontoResponseDTO> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return fetcher<DescontoResponseDTO>('/tipo-desconto/upload', {
+    method: 'POST',
+    body: formData,
+  });
+};
+
 export const criarDesconto = async (
   data: DescontoRequestDTO
 ): Promise<DescontoResponseDTO> => {

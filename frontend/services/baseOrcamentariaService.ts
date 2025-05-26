@@ -15,6 +15,18 @@ export const getBaseOrcamentarias = async (
   );
 };
 
+export const uploadBaseOrcamentaria = async (
+  file: File
+): Promise<BaseOrcamentariaResponseDTO> => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return fetcher<BaseOrcamentariaResponseDTO>('/base-orcamentaria/upload', {
+    method: 'POST',
+    body: formData,
+  });
+};
+
 export const getBaseOrcamentariaById = async (
   id: string
 ): Promise<BaseOrcamentariaResponseDTO> => {

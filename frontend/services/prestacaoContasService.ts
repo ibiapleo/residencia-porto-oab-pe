@@ -3,7 +3,7 @@
 import { fetcher } from "@/lib/fetcher";
 import {
   PrestacaoContasSubseccionalResponseDTO,
-  PrestacaoContasSubseccionalRequestDTO
+  PrestacaoContasSubseccionalRequestDTO,
 } from "@/types/prestacaoContas";
 import { PaginationParams, Page } from "@/types/paginacao";
 import { buildQuery } from "@/lib/query-builder";
@@ -34,7 +34,17 @@ export const criarPrestacaoContas = async (
   });
 };
 
+export const uploadPrestacaoContas = async (
+  file: File
+): Promise<PrestacaoContasSubseccionalResponseDTO> => {
+  const formData = new FormData();
+  formData.append("file", file);
 
+  return fetcher<PrestacaoContasSubseccionalResponseDTO>("/prestacao-contas/upload", {
+    method: "POST",
+    body: formData,
+  });
+};
 
 export const atualizarPrestacaoContas = async (
   id: string,

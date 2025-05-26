@@ -26,17 +26,25 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { criarTransparencia } from "@/services/transparenciaService";
+import { criarTransparencia, uploadTransparencia } from "@/services/transparenciaService";
 import { TransparenciaRequestDTO } from "@/types/transparencia";
 import { useDemonstrativos } from "@/hooks/useDemonstrativos";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileImport } from "@/components/file-import";
 
 const formSchema = z
   .object({
-    demonstrativoNome: z.string({ required_error: "Nome do demonstrativo é obrigatório" }).min(1),
+    demonstrativoNome: z
+      .string({ required_error: "Nome do demonstrativo é obrigatório" })
+      .min(1),
     referencia: z.string({ required_error: "Referência é obrigatória" }).min(1),
     ano: z.string({ required_error: "Ano é obrigatório" }).length(4),
-    periodicidade: z.string({ required_error: "Periodicidade é obrigatória" }).min(1),
-    dtPrevEntr: z.string({ required_error: "Data prevista é obrigatória" }).min(1),
+    periodicidade: z
+      .string({ required_error: "Periodicidade é obrigatória" })
+      .min(1),
+    dtPrevEntr: z
+      .string({ required_error: "Data prevista é obrigatória" })
+      .min(1),
     dtEntrega: z.string().optional(),
   })
   .refine(
@@ -66,9 +74,34 @@ export default function NewTransparenciaPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const { data: demonstrativos, isLoading: isLoadingDemonstrativos } = useDemonstrativos({
-    size: 100,
-  });
+  const { data: demonstrativos, isLoading: isLoadingDemonstrativos } =
+    useDemonstrativos({
+      size: 100,
+    });
+
+  const handleUpload = async (file: File) => {
+    return await uploadTransparencia(file);
+  };
+
+  const handleSuccess = () => {
+    toast({
+      title: "Sucesso",
+      description: "Planilha importada com sucesso!",
+    });
+
+    router.push("/transparencia");
+  };
+
+  const handleError = (error: any) => {
+    toast({
+      title: "Erro",
+      description:
+        error instanceof Error
+          ? error.message
+          : "Não foi possível importar a planilha",
+      variant: "destructive",
+    });
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -133,7 +166,10 @@ export default function NewTransparenciaPage() {
         <div className="space-y-4 lg:col-span-2">
           <div className="rounded-lg border shadow-sm p-6">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
@@ -142,7 +178,10 @@ export default function NewTransparenciaPage() {
                       <FormItem>
                         <FormLabel>Nome do Demonstrativo</FormLabel>
                         <FormControl>
-                          <Input placeholder="Nome do demonstrativo" {...field} />
+                          <Input
+                            placeholder="Nome do demonstrativo"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -183,7 +222,10 @@ export default function NewTransparenciaPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Periodicidade</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Selecione a periodicidade" />
@@ -253,7 +295,8 @@ export default function NewTransparenciaPage() {
             <h3 className="text-lg font-medium mb-4">Informações</h3>
             <div className="space-y-4 text-sm">
               <p>
-                Preencha os campos para registrar um novo demonstrativo de transparência.
+                Preencha os campos para registrar um novo demonstrativo de
+                transparência.
               </p>
               <p>
                 <strong>Campos obrigatórios:</strong>
@@ -270,10 +313,25 @@ export default function NewTransparenciaPage() {
               </p>
               <ul className="list-disc list-inside space-y-1">
                 <li>A data de entrega pode ser informada posteriormente</li>
-                <li>A referência deve identificar o período do demonstrativo</li>
+                <li>
+                  A referência deve identificar o período do demonstrativo
+                </li>
               </ul>
             </div>
           </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Importação em lote</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FileImport
+                uploadService={handleUpload}
+                onSuccess={handleSuccess}
+                onError={handleError}
+                templateFileUrl="/templates/balancete-template.xlsx"
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

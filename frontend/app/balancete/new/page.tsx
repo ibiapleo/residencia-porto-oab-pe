@@ -79,6 +79,8 @@ export default function NewBalancoCFOABPage() {
       title: "Sucesso",
       description: "Planilha importada com sucesso!",
     });
+
+    router.push("/balancete");
   };
 
   const handleError = (error: any) => {

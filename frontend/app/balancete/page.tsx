@@ -53,19 +53,26 @@ export default function BalancetePage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState<PaginationParams["filters"]>({});
+  const [pagination, setPagination] = useState<PaginationState>({
+    page: 0,
+    pageSize: 10,
+  });
+
+  const handlePaginationChange = useCallback(
+    (newPagination: PaginationState) => {
+      setPagination(newPagination);
+      setPage(newPagination.page);
+    },
+    []
+  );
 
   const { data, isLoading, error, isEmpty, refetch } = useBalancete({
-    page,
-    size: 10,
+    page: pagination.page, // Use o estado controlado
+    size: pagination.pageSize, // Adicione o pageSize
     sort,
     filters,
   });
 
-  const handlePaginationChange = (pagination: PaginationState) => {
-    setPage(pagination.page);
-  };
-
-  
   const handleDelete = async (id: string) => {
     setIsDeleting(true);
     try {
@@ -333,9 +340,11 @@ export default function BalancetePage() {
         enableServerSidePagination
         totalCount={data?.totalElements}
         onSortChange={setSort}
-        onPaginationChange={handlePaginationChange}
         onFilterChange={setFilters}
+        onPaginationChange={handlePaginationChange} // Adicione esta linha
+        controlledPaginationState={pagination} // Adicione esta linha
         pageSizeOptions={[10, 20, 50]}
+        refetch={refetch} // Adicione esta linha para garantir atualizações
       />
     </div>
   );

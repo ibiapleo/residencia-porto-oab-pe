@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -18,21 +18,22 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { criarDesconto, uploadTiposDesconto } from "@/services/tipoDescontoService";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileImport } from "@/components/file-import";
+import {
+  getInstituicaoById,
+  atualizarInstituicao,
+} from "@/services/instituicaoService";
+import { InstituicaoRequestDTO } from "@/types/instituicao";
 
 const formSchema = z.object({
-  nome: z
-    .string()
-    .min(2, { message: "Nome deve ter pelo menos 2 caracteres" })
-    .max(100, { message: "Nome deve ter no máximo 100 caracteres" }),
+  nome: z.string().min(1, { message: "Nome é obrigatório" }),
 });
 
-export default function NewDescontoPage() {
+export default function EditInstituicaoPage() {
   const router = useRouter();
+  const params = useParams();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,55 +42,52 @@ export default function NewDescontoPage() {
     },
   });
 
-  const handleUpload = async (file: File) => {
-    return await uploadTiposDesconto(file);
-  };
+  // Carrega os dados da instituição
+  useEffect(() => {
+    const loadInstituicao = async () => {
+      try {
+        const instituicao = await getInstituicaoById(params.id as string);
+        form.reset({
+          nome: instituicao.nome,
+        });
+      } catch (error) {
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar os dados da instituição",
+          variant: "destructive",
+        });
+        router.push("/instituicoes");
+      } finally {
+        setIsFetching(false);
+      }
+    };
 
-  const handleSuccess = () => {
-    toast({
-      title: "Sucesso",
-      description: "Planilha importada com sucesso!",
-    });
+    loadInstituicao();
+  }, [params.id, form, router, toast]);
 
-    router.push("/tipos-desconto");
-  };
-
-  const handleError = (error: any) => {
-    toast({
-      title: "Erro",
-      description:
-        error instanceof Error
-          ? error.message
-          : "Não foi possível importar a planilha",
-      variant: "destructive",
-    });
-  };
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-
     try {
-      await criarDesconto({
+      const requestData: InstituicaoRequestDTO = {
         nome: values.nome,
-      });
+      };
 
+      await atualizarInstituicao(params.id as string, requestData);
       toast({
-        title: "Sucesso",
-        description: "Desconto criado com sucesso",
+        title: "Instituição atualizada",
+        description: "A instituição foi atualizada com sucesso",
       });
-
-      router.push("/tipos-desconto");
+      router.push("/instituicao");
     } catch (error) {
       toast({
         title: "Erro",
-        description: "Não foi possível criar o desconto",
+        description: "Não foi possível atualizar a instituição",
         variant: "destructive",
       });
-      console.error(error);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -103,7 +101,9 @@ export default function NewDescontoPage() {
           <ArrowLeft className="h-4 w-4" />
           <span className="sr-only">Voltar</span>
         </Button>
-        <h2 className="text-3xl font-bold tracking-tight">Novo Desconto</h2>
+        <h2 className="text-3xl font-bold tracking-tight">
+          Editar Instituição
+        </h2>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
@@ -118,32 +118,30 @@ export default function NewDescontoPage() {
                   name="nome"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome do Desconto</FormLabel>
+                      <FormLabel>Nome da Instituição</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Digite o nome do desconto"
+                          placeholder="Digite o nome da instituição"
                           {...field}
+                          disabled={isFetching}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <div className="flex justify-end space-x-5">
+
+                <div className="flex justify-end space-x-2">
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => router.back()}
+                    onClick={() => router.push("/instituicoes")}
                     disabled={isLoading}
                   >
                     Cancelar
                   </Button>
-                  <Button
-                    type="submit"
-                    className="bg-secondary hover:bg-secondary/90"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Salvando..." : "Salvar"}
+                  <Button type="submit" disabled={isLoading || isFetching}>
+                    {isLoading ? "Salvando..." : "Salvar Alterações"}
                   </Button>
                 </div>
               </form>
@@ -154,32 +152,19 @@ export default function NewDescontoPage() {
           <div className="rounded-lg border shadow-sm p-6">
             <h3 className="text-lg font-medium mb-4">Informações</h3>
             <div className="space-y-4 text-sm">
-              <p>Preencha os campos para criar um novo desconto no sistema.</p>
+              <p>Edite o nome da instituição conforme necessário.</p>
               <p>
                 <strong>Campo obrigatório:</strong>
               </p>
-              <ul className="list-disc list-inside">
-                <li>Nome do Desconto (2-100 caracteres)</li>
+              <ul className="list-disc list-inside space-y-1">
+                <li>Nome da Instituição</li>
               </ul>
               <p className="mt-4">
-                <strong>Dica:</strong> Utilize um nome claro e descritivo para
-                facilitar a identificação.
+                <strong>Dica:</strong> Certifique-se de que o nome esteja
+                correto e completo, representando adequadamente a instituição.
               </p>
             </div>
           </div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Importação em lote</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <FileImport
-                uploadService={handleUpload}
-                onSuccess={handleSuccess}
-                onError={handleError}
-                templateFileUrl="/templates/balancete-template.xlsx"
-              />
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
