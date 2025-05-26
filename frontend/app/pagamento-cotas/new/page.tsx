@@ -188,7 +188,7 @@ export default function NewPagamentoCotasPage() {
                           </FormControl>
                           <SelectContent>
                             {instituicoes &&
-                              instituicoes.map((item) => (
+                              instituicoes?.content.map((item) => (
                                 <SelectItem
                                   key={item.id}
                                   value={item.id.toString()}
@@ -353,7 +353,7 @@ export default function NewPagamentoCotasPage() {
                               tiposDesconto.content.map((item) => (
                                 <SelectItem
                                   key={item.id}
-                                  value={item.id.toString()}
+                                  value={item.nome}
                                 >
                                   {item.nome}
                                 </SelectItem>

@@ -208,7 +208,7 @@ export function MainSidebar() {
                                 asChild
                                 isActive={pathname.includes("/base-orcamentaria")}
                               >
-                                <Link aria-disabled href="/base-orcamentaria">
+                                <Link href="/base-orcamentaria">
                                   <Tag className="h-3 w-3" />
                                   <span>Base Orçamentária</span>
                                 </Link>

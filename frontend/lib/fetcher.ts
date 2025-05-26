@@ -46,13 +46,16 @@ export const fetcher = async <T>(
   }
 
   // Se for status 204 (No Content), retorna void
-  if (response.status === 204) {
+  const contentLength = response.headers.get("content-length");
+  if (
+    response.status === 204 ||
+    (contentLength && parseInt(contentLength) === 0)
+  ) {
     return undefined as unknown as T;
   }
-
-  if(response.status === 201 && response.bodyUsed === false) {
+  try {
+    return await response.json();
+  } catch (error) {
     return undefined as unknown as T;
   }
-
-  return response.json();
 };

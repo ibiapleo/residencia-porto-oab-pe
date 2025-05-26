@@ -201,7 +201,7 @@ export default function EditPagamentoCotasPage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {instituicoes?.map((item) => (
+                            {instituicoes?.content.map((item) => (
                               <SelectItem
                                 key={item.id}
                                 value={item.id.toString()}

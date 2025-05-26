@@ -2,48 +2,39 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { 
-  ArrowLeft, 
-  Pencil, 
-  FileText, 
-  Calendar, 
-  DollarSign, 
-  Percent, 
-  CheckCircle, 
-  XCircle, 
-  Clock,
-  Building,
-  FileSearch,
-  CalendarCheck,
-  CalendarX
-} from "lucide-react";
+import { ArrowLeft, Pencil, FileText, Calendar, DollarSign, Percent, CheckCircle, XCircle, Clock, Building, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { PrestacaoContasSubseccionalResponseDTO } from "@/types/prestacaoContas";
-import { getPrestacaoContasById } from "@/services/prestacaoContasService";
+import { PagamentoCotasResponseDTO } from "@/types/pagamentoCotas";
+import { getPagamentoCotasById } from "@/services/pagamentoCotasService";
 import Link from "next/link";
+import { useInstituicoes } from "@/hooks/useInstituicoes";
+import { useTiposDesconto } from "@/hooks/useTiposDesconto";
 
-export default function PrestacaoContasDetailsPage() {
+export default function PagamentoCotasDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const { toast } = useToast();
-  const [data, setData] = useState<PrestacaoContasSubseccionalResponseDTO | null>(null);
+  const [data, setData] = useState<PagamentoCotasResponseDTO | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { data: instituicoes } = useInstituicoes({ size: 100 });
+  const { data: tiposDesconto } = useTiposDesconto({ size: 100 });
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await getPrestacaoContasById(params.id as string);
+        const response = await getPagamentoCotasById(params.id as string);
         setData(response);
       } catch (error) {
         toast({
           title: "Erro",
-          description: "Não foi possível carregar os detalhes da prestação de contas",
+          description: "Não foi possível carregar os detalhes do pagamento",
           variant: "destructive",
         });
-        router.push("/prestacao-contas");
+        router.push("/pagamento-cotas");
       } finally {
         setIsLoading(false);
       }
@@ -66,9 +57,9 @@ export default function PrestacaoContasDetailsPage() {
     });
   };
 
-  const getStatusBadge = (prestacao: PrestacaoContasSubseccionalResponseDTO) => {
-    if (!prestacao.dtEntrega) {
-      const prevDate = new Date(prestacao.dtPrevEntr);
+  const getStatusBadge = (pagamento: PagamentoCotasResponseDTO) => {
+    if (!pagamento.status) {
+      const prevDate = new Date(pagamento.dtPrevEntr);
       const today = new Date();
 
       if (today > prevDate) {
@@ -85,10 +76,10 @@ export default function PrestacaoContasDetailsPage() {
       );
     }
 
-    if (!prestacao.dtPagto) {
+    if (!pagamento.dtPagto) {
       return (
         <Badge className="bg-blue-500 hover:bg-blue-600">
-          <Clock className="h-4 w-4 mr-1" /> Entregue
+          <Clock className="h-4 w-4 mr-1" /> Aguardando pagamento
         </Badge>
       );
     }
@@ -100,6 +91,27 @@ export default function PrestacaoContasDetailsPage() {
     );
   };
 
+  const getInstituicaoNome = (id: number) => {
+    return instituicoes?.content.find(i => i.id === id)?.descricao || `Instituição ${id}`;
+  };
+
+  const getTipoDescontoNome = (id: number | null) => {
+    if (!id) return "-";
+    return tiposDesconto?.content.find(t => t.id === id)?.nome || `Tipo ${id}`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (!data) {
     return (
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -107,19 +119,19 @@ export default function PrestacaoContasDetailsPage() {
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-2xl font-bold">Prestação não encontrada</h2>
+          <h2 className="text-2xl font-bold">Pagamento não encontrado</h2>
         </div>
         
         <div className="flex flex-col items-center justify-center space-y-4 rounded-md border p-8 text-center">
           <FileText className="h-12 w-12 text-muted-foreground" />
           <h3 className="text-xl font-semibold">
-            Prestação de contas não encontrada
+            Pagamento de cotas não encontrado
           </h3>
           <p className="text-muted-foreground">
-            A prestação solicitada não foi encontrada ou não existe mais
+            O pagamento solicitado não foi encontrado ou não existe mais
           </p>
           <Button asChild>
-            <Link href="/prestacao-contas">
+            <Link href="/pagamento-cotas">
               Voltar para a lista
             </Link>
           </Button>
@@ -135,18 +147,18 @@ export default function PrestacaoContasDetailsPage() {
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h2 className="text-2xl font-bold">Detalhes da Prestação de Contas</h2>
+          <h2 className="text-2xl font-bold">Detalhes do Pagamento</h2>
         </div>
         
         <div className="space-x-2">
           <Button asChild variant="outline">
-            <Link href={`/prestacao-contas/edit/${data.id}`}>
+            <Link href={`/pagamento-cotas/edit/${data.id}`}>
               <Pencil className="h-4 w-4 mr-2" />
               Editar
             </Link>
           </Button>
           <Button asChild>
-            <Link href="/prestacao-contas">
+            <Link href="/pagamento-cotas">
               Voltar para lista
             </Link>
           </Button>
@@ -158,18 +170,18 @@ export default function PrestacaoContasDetailsPage() {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
               <Building className="h-4 w-4 mr-2" />
-              Subseccional
+              Instituição
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.subseccional}</div>
+            <div className="text-2xl font-bold">{getInstituicaoNome(data.instituicaoId)}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
-              <FileSearch className="h-4 w-4 mr-2" />
+              <Calendar className="h-4 w-4 mr-2" />
               Referência
             </CardTitle>
           </CardHeader>
@@ -181,20 +193,8 @@ export default function PrestacaoContasDetailsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
-              <Percent className="h-4 w-4 mr-2" />
-              Tipo de Desconto
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{data.tipoDesconto || "-"}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium flex items-center">
-              <CalendarCheck className="h-4 w-4 mr-2" />
-              Previsão de Entrega
+              <Calendar className="h-4 w-4 mr-2" />
+              Data Prevista
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -206,23 +206,11 @@ export default function PrestacaoContasDetailsPage() {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
               <Calendar className="h-4 w-4 mr-2" />
-              Data de Entrega
+              Data Pagamento
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatDate(data.dtEntrega) || "-"}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium flex items-center">
-              <CalendarX className="h-4 w-4 mr-2" />
-              Data de Pagamento
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatDate(data.dtPagto) || "-"}</div>
+            <div className="text-2xl font-bold">{formatDate(data.dtPagto)}</div>
           </CardContent>
         </Card>
 
@@ -241,29 +229,32 @@ export default function PrestacaoContasDetailsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
-              <DollarSign className="h-4 w-4 mr-2" />
-              Valor Desconto
+              <Percent className="h-4 w-4 mr-2" />
+              Desconto
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(data.valorDesconto)}</div>
+            {data.tipoDescontoId && (
+              <div className="text-sm text-muted-foreground mt-1">
+                {getTipoDescontoNome(data.tipoDescontoId)}
+              </div>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
-              <FileText className="h-4 w-4 mr-2" />
-              Protocolo SGD
+              <DollarSign className="h-4 w-4 mr-2" />
+              Valor Pago
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.protocoloSGD || "-"}</div>
+            <div className="text-2xl font-bold">{formatCurrency(data.valorPago)}</div>
           </CardContent>
         </Card>
-      </div>
 
-      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
@@ -274,29 +265,31 @@ export default function PrestacaoContasDetailsPage() {
             <div className="text-lg">{getStatusBadge(data)}</div>
           </CardContent>
         </Card>
+      </div>
 
+      {data.observacao && (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
-              <FileText className="h-4 w-4 mr-2" />
-              ID do Registro
+              <Info className="h-4 w-4 mr-2" />
+              Observações
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm font-mono">{data.id}</div>
+            <div className="text-sm whitespace-pre-line">{data.observacao}</div>
           </CardContent>
         </Card>
-      </div>
+      )}
 
       <div className="flex justify-end space-x-2">
         <Button asChild variant="outline">
-          <Link href={`/prestacao-contas/edit/${data.id}`}>
+          <Link href={`/pagamento-cotas/edit/${data.id}`}>
             <Pencil className="h-4 w-4 mr-2" />
             Editar
           </Link>
         </Button>
         <Button asChild>
-          <Link href="/prestacao-contas">
+          <Link href="/pagamento-cotas">
             Voltar para lista
           </Link>
         </Button>

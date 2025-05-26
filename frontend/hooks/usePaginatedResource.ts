@@ -1,17 +1,19 @@
-// hooks/usePaginatedResource.ts
 import useSWR from 'swr';
-import { useMemo } from 'react';
-import { PaginationParams } from '@/types/paginacao';
-import { buildQuery } from '@/lib/query-builder';
 
 export function usePaginatedResource<T>(
   key: string,
-  fetcherFn: (params: PaginationParams) => Promise<T>,
-  params: PaginationParams
+  fetcherFn: (params: any) => Promise<T>,
+  params: any
 ) {
-  const query = useMemo(() => buildQuery(params), [params]);
-  const fullKey = `${key}?${query}`;
-  const { data, error, isLoading, mutate } = useSWR<T>(fullKey, () => fetcherFn(params));
+  const serializedParams = JSON.stringify(params);
+
+  const { data, error, isLoading, mutate } = useSWR<T>(
+    [key, serializedParams], // chave reativa
+    async ([, serialized]) => {
+      const parsed = JSON.parse(serialized as string);
+      return fetcherFn(parsed);
+    }
+  );
 
   return {
     data,

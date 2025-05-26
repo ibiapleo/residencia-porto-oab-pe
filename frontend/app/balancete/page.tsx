@@ -53,7 +53,7 @@ export default function BalancetePage() {
   const [filters, setFilters] = useState<PaginationParams["filters"]>({});
 
   const { data, isLoading, error, isEmpty, refetch } = useBalancete({
-    page: 0,
+    page,
     size: 10,
     sort,
     filters,
@@ -142,7 +142,7 @@ export default function BalancetePage() {
       accessorKey: "periodicidade",
       header: "Periodicidade",
       enableSorting: false,
-      enableFiltering: false,
+      enableFiltering: true,
       cell: ({ row }) => {
         const periodicidade = row?.periodicidade;
         if (!periodicidade) return "-";
@@ -229,6 +229,15 @@ export default function BalancetePage() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
                 <Link
+                  href={`/balancete/${row.id.toString()}`}
+                  className="flex items-center"
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span>Visualizar</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
                   href={`/balancete/edit/${row?.id}`}
                   className="flex items-center"
                 >
@@ -313,21 +322,6 @@ export default function BalancetePage() {
           </Link>
         </Button>
       </div>
-
-      {isEmpty ? (
-        <div className="flex flex-col items-center justify-center space-y-4 rounded-md border p-8 text-center">
-          <FileText className="h-12 w-12 text-muted-foreground" />
-          <h3 className="text-xl font-semibold">Nenhum balancete encontrado</h3>
-          <p className="text-muted-foreground">
-            Você ainda não cadastrou nenhum balancete
-          </p>
-          <Button asChild>
-            <Link href="/balancete/new">
-              <Plus className="mr-2 h-4 w-4" /> Criar primeiro balancete
-            </Link>
-          </Button>
-        </div>
-      ) : (
         <DataTable
           columns={columns}
           data={data?.content || []}
@@ -336,10 +330,11 @@ export default function BalancetePage() {
           enableServerSidePagination
           totalCount={data?.totalElements}
           onSortChange={setSort}
-          onPaginationChange={handlePaginationChange}
+          onPaginationChange={handlePaginationChange}   
+          onFilterChange={setFilters}
           pageSizeOptions={[10, 20, 50]}
         />
-      )}
+      
     </div>
   );
 }

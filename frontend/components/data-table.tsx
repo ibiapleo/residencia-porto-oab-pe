@@ -98,8 +98,8 @@ interface DataTableProps<TData extends Record<string, any>> {
   onSortChange?: (
     sorting: { field: string; direction: "asc" | "desc" }[]
   ) => void;
-
   onFilterChange?: (filters: FilterState) => void;
+  refetch?: () => void; // Adicione esta prop
 }
 
 // ========== UTILS ==========
@@ -178,6 +178,7 @@ export function DataTable<TData extends Record<string, any>>({
   onPaginationChange,
   onSortChange,
   onFilterChange,
+  refetch,
 }: DataTableProps<TData>) {
   // ========== STATE ==========
   const [searchTerm, setSearchTerm] = useState("");
@@ -365,6 +366,7 @@ export function DataTable<TData extends Record<string, any>>({
 
   useEffect(() => {
     onPaginationChange?.(effectivePagination);
+    refetch?.();
   }, [effectivePagination, onPaginationChange]);
 
   useEffect(() => {
@@ -374,10 +376,12 @@ export function DataTable<TData extends Record<string, any>>({
     }));
 
     onSortChange?.(mappedSorting);
+    refetch?.();
   }, [sorting, onSortChange]);
 
   useEffect(() => {
     onFilterChange?.(filters);
+    refetch?.();
   }, [filters, onFilterChange]);
 
   // ========== HANDLERS ==========
@@ -453,178 +457,133 @@ export function DataTable<TData extends Record<string, any>>({
     }
   };
 
-  // ========== RENDER ==========
   const renderFilterInput = (column: ColumnDef<TData>) => {
-    const accessorKey = String(column.accessorKey);
-    const currentValue = filters[accessorKey];
-    const filterType = column.filter?.type || "text";
+  const accessorKey = String(column.accessorKey);
+  const currentValue = filters[accessorKey];
+  const filterType = column.filter?.type || "text";
 
-    switch (filterType) {
-      case "select":
-        return (
-          <Select
-            value={currentValue?.[0] || ""}
-            onValueChange={(value) =>
-              handleFilter(accessorKey, value ? [value] : undefined)
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue
-                placeholder={column.filter?.placeholder || "Selecione..."}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">Todos</SelectItem>
-              {column.filter?.options?.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        );
+  switch (filterType) {
+    case "select":
+      return (
+        <Select
+          value={currentValue?.[0] || ""}
+          onValueChange={(value) =>
+            handleFilter(accessorKey, value ? [value] : undefined)
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder={column.filter?.placeholder || "Selecione..."} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">Todos</SelectItem>
+            {column.filter?.options?.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      );
 
-      case "date":
-        return (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !currentValue && "text-muted-foreground"
-                )}
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                {currentValue ? (
-                  format(new Date(currentValue), "PPP")
-                ) : (
-                  <span>
-                    {column.filter?.placeholder || "Selecione uma data"}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <CalendarComponent
-                mode="single"
-                selected={currentValue ? new Date(currentValue) : undefined}
-                onSelect={(date) => handleFilter(accessorKey, date)}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        );
+    case "date":
+      return (
+        <Input
+          type="date"
+          className="w-full"
+          value={currentValue || ""}
+          onChange={(e) => handleFilter(accessorKey, e.target.value)}
+        />
+      );
 
-      case "dateRange":
-        return (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !currentValue && "text-muted-foreground"
-                )}
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                {currentValue?.from ? (
-                  currentValue.to ? (
-                    <>
-                      {format(new Date(currentValue.from), "PPP")} -{" "}
-                      {format(new Date(currentValue.to), "PPP")}
-                    </>
-                  ) : (
-                    format(new Date(currentValue.from), "PPP")
-                  )
-                ) : (
-                  <span>
-                    {column.filter?.placeholder || "Selecione um período"}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <CalendarComponent
-                mode="range"
-                selected={{
-                  from: currentValue?.from
-                    ? new Date(currentValue.from)
-                    : undefined,
-                  to: currentValue?.to ? new Date(currentValue.to) : undefined,
-                }}
-                onSelect={(range) => handleFilter(accessorKey, range)}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        );
-
-      case "number":
-        return (
-          <div className="flex gap-2">
-            <Input
-              type="number"
-              placeholder="Mínimo"
-              value={currentValue?.min || ""}
-              onChange={(e) =>
-                handleFilter(accessorKey, {
-                  ...currentValue,
-                  min: e.target.value ? Number(e.target.value) : undefined,
-                })
-              }
-            />
-            <Input
-              type="number"
-              placeholder="Máximo"
-              value={currentValue?.max || ""}
-              onChange={(e) =>
-                handleFilter(accessorKey, {
-                  ...currentValue,
-                  max: e.target.value ? Number(e.target.value) : undefined,
-                })
-              }
-            />
-          </div>
-        );
-
-      case "boolean":
-        return (
-          <Select
-            value={
-              currentValue === undefined ? "" : currentValue ? "true" : "false"
-            }
-            onValueChange={(value) =>
-              handleFilter(
-                accessorKey,
-                value === "" ? undefined : value === "true"
-              )
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue
-                placeholder={column.filter?.placeholder || "Todos"}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">Todos</SelectItem>
-              <SelectItem value="true">Sim</SelectItem>
-              <SelectItem value="false">Não</SelectItem>
-            </SelectContent>
-          </Select>
-        );
-
-      default:
-        return (
+    case "dateRange":
+      return (
+        <div className="flex gap-2">
           <Input
-            type="text"
-            placeholder={column.filter?.placeholder || "Filtrar..."}
-            value={currentValue || ""}
-            onChange={(e) => handleFilter(accessorKey, e.target.value)}
+            type="date"
+            className="w-full"
+            value={currentValue?.from || ""}
+            onChange={(e) =>
+              handleFilter(accessorKey, {
+                ...currentValue,
+                from: e.target.value,
+              })
+            }
           />
-        );
-    }
-  };
+          <Input
+            type="date"
+            className="w-full"
+            value={currentValue?.to || ""}
+            onChange={(e) =>
+              handleFilter(accessorKey, {
+                ...currentValue,
+                to: e.target.value,
+              })
+            }
+          />
+        </div>
+      );
+
+    case "number":
+      return (
+        <div className="flex gap-2">
+          <Input
+            type="number"
+            placeholder="Mínimo"
+            value={currentValue?.min || ""}
+            onChange={(e) =>
+              handleFilter(accessorKey, {
+                ...currentValue,
+                min: e.target.value ? Number(e.target.value) : undefined,
+              })
+            }
+          />
+          <Input
+            type="number"
+            placeholder="Máximo"
+            value={currentValue?.max || ""}
+            onChange={(e) =>
+              handleFilter(accessorKey, {
+                ...currentValue,
+                max: e.target.value ? Number(e.target.value) : undefined,
+              })
+            }
+          />
+        </div>
+      );
+
+    case "boolean":
+      return (
+        <Select
+          value={
+            currentValue === undefined ? "" : currentValue ? "true" : "false"
+          }
+          onValueChange={(value) =>
+            handleFilter(accessorKey, value === "" ? undefined : value === "true")
+          }
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder={column.filter?.placeholder || "Todos"} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">Todos</SelectItem>
+            <SelectItem value="true">Sim</SelectItem>
+            <SelectItem value="false">Não</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+
+    default:
+      return (
+        <Input
+          type="text"
+          placeholder={column.filter?.placeholder || "Filtrar..."}
+          value={currentValue || ""}
+          onChange={(e) => handleFilter(accessorKey, e.target.value)}
+        />
+      );
+  }
+};
+
 
   return (
     <div className={cn("space-y-4", className)}>
