@@ -24,13 +24,12 @@ public class BaseOrcamentariaImportProcessor implements ImportProcessor<BaseOrca
 
     @Override
     public String[] getRequiredHeaders(){
-        return new String[]{"Id_Lançamento", "Lançamento", "Data Lançamento", "Valor", "Ano" };
+        return new String[]{"Lançamento", "Data Lançamento", "Valor", "Ano" };
     }
 
     @Override
     public BaseOrcamentariaRequestDTO parse(Map<String, String> rowData){
         BaseOrcamentariaRequestDTO dto = new BaseOrcamentariaRequestDTO();
-        dto.setIdLancto(Long.valueOf(rowData.get("Id_Lançamento")));
         dto.setLancto(rowData.get("Lançamento"));
         dto.setDtLancto(LocalDate.parse(rowData.get("Data Lançamento"), DateTimeFormatter.ofPattern("M/d/yyyy")));
         dto.setValor(parseBigDecimal(rowData.get("Valor")));
@@ -54,14 +53,12 @@ public class BaseOrcamentariaImportProcessor implements ImportProcessor<BaseOrca
     public Object convertToEntity(BaseOrcamentariaRequestDTO dto, User user){
 
         BaseOrcamentaria entity = new BaseOrcamentaria();
-        entity.setIdLancto(dto.getIdLancto());
         entity.setLancto(dto.getLancto());
         entity.setDtLancto(dto.getDtLancto());
         entity.setValor(dto.getValor());
         entity.setDtDocto(dto.getDtDocto());
         entity.setAno(dto.getAno());
         entity.setTipo(dto.getTipo());
-
         entity.setUser(user);
         entity.setStatus(true);
         return entity;

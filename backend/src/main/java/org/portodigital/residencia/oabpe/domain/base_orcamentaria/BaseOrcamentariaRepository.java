@@ -15,8 +15,7 @@ public interface BaseOrcamentariaRepository extends JpaRepository<BaseOrcamentar
     @Query("""
         SELECT b
         FROM BaseOrcamentaria b
-        WHERE (:#{#filter.idLancto} IS NULL OR b.idLancto = :#{#filter.idLancto})
-          AND (:#{#filter.lancto} IS NULL OR LOWER(b.lancto) LIKE LOWER(CONCAT('%', :#{#filter.lancto}, '%')))
+        WHERE  (:#{#filter.lancto} IS NULL OR LOWER(b.lancto) LIKE LOWER(CONCAT('%', :#{#filter.lancto}, '%')))
           AND (:#{#filter.valor} IS NULL OR b.valor = :#{#filter.valor})
           AND (:#{#filter.dtDocto} IS NULL OR b.dtDocto = :#{#filter.dtDocto})
           AND (:#{#filter.dtLancto} IS NULL OR b.dtLancto = :#{#filter.dtLancto})

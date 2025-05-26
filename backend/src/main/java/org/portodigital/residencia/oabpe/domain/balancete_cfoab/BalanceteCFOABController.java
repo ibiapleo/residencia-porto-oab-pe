@@ -82,9 +82,8 @@ public class BalanceteCFOABController {
     @PreAuthorize("hasPermission('modulo_balancetes_cfoab', 'ESCRITA')")
     public ResponseEntity<BalanceteCFOABResponseDTO> create(
             @Parameter(description = "Dados do balancete para criação")
-            @RequestBody BalanceteCFOABRequestDTO request) {
-        BalanceteCFOABResponseDTO response = balanceteCFOABService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            @Valid @RequestBody BalanceteCFOABRequestDTO request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(balanceteCFOABService.create(request));
     }
 
     @Operation(
