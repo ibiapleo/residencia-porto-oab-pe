@@ -41,7 +41,9 @@ import { useToast } from "@/hooks/use-toast";
 import { BalanceteResponseDTO } from "@/types/balancete";
 import { useBalancete } from "@/hooks/useBalancete";
 import { PaginationParams, Sort } from "@/types/paginacao";
-import { deleteBalancete } from "@/services/balanceteService";
+import { deleteBalancete, uploadBalancete } from "@/services/balanceteService";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FileImport } from "@/components/file-import";
 
 export default function BalancetePage() {
   const { toast } = useToast();
@@ -63,6 +65,7 @@ export default function BalancetePage() {
     setPage(pagination.page);
   };
 
+  
   const handleDelete = async (id: string) => {
     setIsDeleting(true);
     try {
@@ -322,19 +325,18 @@ export default function BalancetePage() {
           </Link>
         </Button>
       </div>
-        <DataTable
-          columns={columns}
-          data={data?.content || []}
-          loading={isLoading}
-          searchPlaceholder="Buscar balancetes..."
-          enableServerSidePagination
-          totalCount={data?.totalElements}
-          onSortChange={setSort}
-          onPaginationChange={handlePaginationChange}   
-          onFilterChange={setFilters}
-          pageSizeOptions={[10, 20, 50]}
-        />
-      
+      <DataTable
+        columns={columns}
+        data={data?.content || []}
+        loading={isLoading}
+        searchPlaceholder="Buscar balancetes..."
+        enableServerSidePagination
+        totalCount={data?.totalElements}
+        onSortChange={setSort}
+        onPaginationChange={handlePaginationChange}
+        onFilterChange={setFilters}
+        pageSizeOptions={[10, 20, 50]}
+      />
     </div>
   );
 }
