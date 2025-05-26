@@ -32,19 +32,22 @@ public class PagamentoCotasImportProcessor implements ImportProcessor<PagamentoC
 
     @Override
     public String[] getRequiredHeaders() {
-        return new String[]{"Id_Instituião", "Instituição", "Referencia", "Ano", "Prazo", "Valor Duodecimo", "Valor Desconto"};
+        return new String[]{"Instituição", "Referencia", "Ano", "Prazo", "Valor Duodecimo", "Valor Desconto"};
     }
 
     @Override
     public PagamentoCotasRequestDTO parse(Map<String, String> rowData){
         PagamentoCotasRequestDTO dto = new PagamentoCotasRequestDTO();
-        dto.setInstituicaoId(Long.valueOf(rowData.get("Id_Instituicao")));
-        dto.setInstituicao(rowData.get("Instituicao"));
+        dto.setInstituicaoNome(rowData.get("Instituição").trim());
         dto.setMesReferencia(rowData.get("Referencia"));
         dto.setAno(rowData.get("Ano"));
         dto.setDtPrevEntr(LocalDate.parse(rowData.get("Prazo"), DateTimeFormatter.ofPattern("M/d/yyyy")));
         dto.setValorDuodecimo(parseBigDecimal(rowData.get("Valor Duodecimo")));
         dto.setValorDesconto(parseBigDecimal(rowData.get("Valor Desconto")));
+        dto.setTipoDesconto(rowData.get("Tipo Desconto").trim());
+        dto.setValorPago(parseBigDecimal(rowData.get("Valor Pago")));
+        dto.setDtPagto(LocalDate.parse(rowData.get("Data de pagamento"), DateTimeFormatter.ofPattern("M/d/yyyy")));
+        dto.setObservacao(rowData.get("Observacao"));
         return dto;
 
     }
@@ -63,8 +66,8 @@ public class PagamentoCotasImportProcessor implements ImportProcessor<PagamentoC
 
     @Override
     public Object convertToEntity(PagamentoCotasRequestDTO dto, User user){
-        Instituicao instituicao = instituicaoRepository.findByIdAtivo(dto.getInstituicaoId())
-                .orElseThrow(() -> new EntityNotFoundException("Demonstrativo não encontrado com ID: " + dto.getInstituicaoId()));
+        Instituicao instituicao = instituicaoRepository.findByNomeAtivo(dto.getInstituicaoNome())
+                .orElseThrow(() -> new EntityNotFoundException("Demonstrativo não encontrado com ID: " + dto.getInstituicaoNome()));
 
         PagamentoCotas entity = new PagamentoCotas();
         entity.setInstituicao(instituicao);

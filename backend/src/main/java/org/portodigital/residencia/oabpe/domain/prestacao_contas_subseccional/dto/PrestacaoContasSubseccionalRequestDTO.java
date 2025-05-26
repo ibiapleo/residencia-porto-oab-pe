@@ -14,8 +14,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class PrestacaoContasSubseccionalRequestDTO {
 
-    @NotNull
-    private Long subseccionalId;
     @NotBlank
     private String mesReferencia;
     @NotBlank
@@ -29,7 +27,8 @@ public class PrestacaoContasSubseccionalRequestDTO {
     private String protocoloSGD;
     private String observacao;
     private BigDecimal valorPago;
+    @NotBlank
     private String subseccional;
-    private Long tipoDescontoId;
+    private String tipoDesconto;
 
 }

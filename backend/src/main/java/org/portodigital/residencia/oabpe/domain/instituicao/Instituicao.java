@@ -22,11 +22,11 @@ public class Instituicao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "Descricao", length = 100, nullable = false)
-    private String descricao;
+    @Column(name = "Nome", length = 100, nullable = false)
+    private String nome;
 
     @Column(name = "Status", nullable = false)
-    private Boolean status = true;
+    private boolean status = true;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "Id_usuario", referencedColumnName = "id")

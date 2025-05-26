@@ -22,13 +22,13 @@ public class InstituicaoImportProcessor implements ImportProcessor<InstituicaoRe
 
     @Override
     public String[] getRequiredHeaders() {
-        return new String[]{"Instituição"};
+        return new String[]{"Instituicao"};
     }
 
     @Override
     public InstituicaoRequestDTO parse(Map<String, String> rowData) {
         InstituicaoRequestDTO dto = new InstituicaoRequestDTO();
-        dto.setNome(rowData.get("Instituição"));
+        dto.setNome(rowData.get("Instituicao"));
         return dto;
     }
 
@@ -47,7 +47,7 @@ public class InstituicaoImportProcessor implements ImportProcessor<InstituicaoRe
     @Override
     public Object convertToEntity(InstituicaoRequestDTO dto, User user) {
         Instituicao entity = new Instituicao();
-        entity.setDescricao(dto.getNome());
+        entity.setNome(dto.getNome());
         entity.setUser(user);
         return entity;
     }

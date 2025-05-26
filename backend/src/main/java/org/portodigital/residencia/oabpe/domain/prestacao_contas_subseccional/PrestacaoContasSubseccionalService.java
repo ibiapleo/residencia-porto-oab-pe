@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
 import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
+import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalFiltroRequest;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalRequestDTO;
@@ -91,8 +92,16 @@ public class PrestacaoContasSubseccionalService extends AbstractFileImportServic
             throw new IllegalArgumentException("A Data de Pagamento não pode ser posterior à Data de Entrega.");
         }
 
+        Subseccional subseccional = subseccionalRepository.findByNomeAtivo(request.getSubseccional())
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Subseccional não encontrada com nome: " + request.getSubseccional()));
+
+        TipoDesconto tipoDesconto = tipoDescontoRepository.findByNomeAtivo(request.getTipoDesconto())
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Subseccional não encontrada com nome: " + request.getTipoDesconto()));
+
         prestacao.setUser(user);
         prestacao.setValorPago(prestacao.getValorPago());
+        prestacao.setSubseccional(subseccional);
+        prestacao.setTipoDesconto(tipoDesconto);
 
         prestacaoContasSubseccionalRepository.save(prestacao);
     }
@@ -118,15 +127,15 @@ public class PrestacaoContasSubseccionalService extends AbstractFileImportServic
         Optional.ofNullable(request.getProtocoloSGD()).ifPresent(existing::setProtocoloSGD);
         Optional.ofNullable(request.getObservacao()).ifPresent(existing::setObservacao);
 
-        if (request.getSubseccionalId() != null) {
-            Subseccional subseccional = subseccionalRepository.findById(request.getSubseccionalId())
-                    .orElseThrow(() -> new EntityNotFoundException("Subseccional não encontrada com ID: " + request.getSubseccionalId()));
+        if (request.getSubseccional() != null) {
+            Subseccional subseccional = subseccionalRepository.findByNomeAtivo(request.getSubseccional())
+                    .orElseThrow(() -> new EntityNotFoundException("Subseccional não encontrada com ID: " + request.getSubseccional()));
             existing.setSubseccional(subseccional);
         }
 
-        if (request.getTipoDescontoId() != null) {
-            TipoDesconto tipoDesconto = tipoDescontoRepository.findById(request.getTipoDescontoId())
-                    .orElseThrow(() -> new EntityNotFoundException("Tipo de desconto não encontrado com ID: " + request.getTipoDescontoId()));
+        if (request.getTipoDesconto() != null) {
+            TipoDesconto tipoDesconto = tipoDescontoRepository.findByNomeAtivo(request.getTipoDesconto())
+                    .orElseThrow(() -> new EntityNotFoundException("Tipo de desconto não encontrado com ID: " + request.getTipoDesconto()));
             existing.setTipoDesconto(tipoDesconto);
         }
     }

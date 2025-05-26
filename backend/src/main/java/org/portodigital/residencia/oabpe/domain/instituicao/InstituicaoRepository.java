@@ -1,5 +1,6 @@
 package org.portodigital.residencia.oabpe.domain.instituicao;
 
+import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,6 @@ public interface InstituicaoRepository  extends JpaRepository<Instituicao,Long> 
     @Query("SELECT i FROM Instituicao i WHERE i.status = true AND i.id = :id")
     Optional<Instituicao> findByIdAtivo(Long id);
 
+    @Query("SELECT i FROM Instituicao i WHERE i.status = true AND i.nome = :nome")
+    Optional<Instituicao> findByNomeAtivo(String nome);
 }

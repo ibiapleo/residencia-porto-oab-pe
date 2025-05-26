@@ -19,13 +19,13 @@ public class TipoDescontoImportProcessor implements ImportProcessor<TipoDesconto
 
     @Override
     public String[] getRequiredHeaders() {
-        return new String[]{"Nome"};
+        return new String[]{"Tipo Desconto"};
     }
 
     @Override
     public TipoDescontoRequest parse(Map<String, String> rowData) {
         TipoDescontoRequest dto = new TipoDescontoRequest();
-        dto.setNome(rowData.get("Nome"));
+        dto.setNome(rowData.get("Tipo Desconto"));
         return dto;
     }
 
@@ -45,6 +45,7 @@ public class TipoDescontoImportProcessor implements ImportProcessor<TipoDesconto
     public Object convertToEntity(TipoDescontoRequest dto, User user) {
         TipoDesconto entity = new TipoDesconto();
         entity.setNome(dto.getNome());
+        entity.setUser(user);
         return entity;
     }
 }
