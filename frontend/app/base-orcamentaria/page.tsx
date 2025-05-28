@@ -105,10 +105,10 @@ export default function BaseOrcamentariaPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
-      case "ativo":
+      case "true":
         return (
           <Badge className="bg-green-500 hover:bg-green-600">
-            <CheckCircle className="h-3 w-3 mr-1" /> Ativo
+            <CheckCircle className="h-3 w-3 mr-1" /> Lançado
           </Badge>
         );
       case "inativo":
@@ -137,7 +137,7 @@ export default function BaseOrcamentariaPage() {
       accessorKey: "lancto",
       header: "Lançamento",
       enableSorting: true,
-      enableFiltering: true,
+      enableFiltering: false,
       cell: ({ row }) => {
         return <span className="font-medium">{row.lancto}</span>;
       },
@@ -187,7 +187,7 @@ export default function BaseOrcamentariaPage() {
       accessorKey: "tipo",
       header: "Tipo",
       enableSorting: true,
-      enableFiltering: true,
+      enableFiltering: false,
       filter: {
         type: "text",
         placeholder: "Filtrar por tipo...",
@@ -198,7 +198,7 @@ export default function BaseOrcamentariaPage() {
       header: "Status",
       cell: ({ row }) => getStatusBadge(row.status),
       enableSorting: true,
-      enableFiltering: true,
+      enableFiltering: false,
       filter: {
         type: "select",
         options: [

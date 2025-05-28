@@ -35,7 +35,7 @@ import { useTiposDesconto } from "@/hooks/useTiposDesconto";
 import { PrestacaoContasSubseccionalRequestDTO } from "@/types/prestacaoContas";
 
 const formSchema = z.object({
-  subseccionalId: z.string().min(1, { message: "Subseccional é obrigatória" }),
+  subseccional: z.string().min(1, { message: "Subseccional é obrigatória" }),
   mesReferencia: z
     .string()
     .min(1, { message: "Mês de referência é obrigatório" }),
@@ -77,7 +77,7 @@ export default function EditPrestacaoContasPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      subseccionalId: "",
+      subseccional: "",
       mesReferencia: "",
       ano: new Date().getFullYear().toString(),
       dtPrevEntr: "",
@@ -108,7 +108,7 @@ export default function EditPrestacaoContasPage() {
         const prestacao = await getPrestacaoContasById(params.id as string);
 
         form.reset({
-          subseccionalId: prestacao.subseccionalId,
+          subseccional: prestacao.subseccional,
           mesReferencia: prestacao.mesReferencia,
           ano: prestacao.ano,
           dtPrevEntr: prestacao.dtPrevEntr,
@@ -143,6 +143,7 @@ export default function EditPrestacaoContasPage() {
         ...values,
         dtEntrega: values.dtEntrega ?? "",
         dtPagto: values.dtPagto ?? "",
+        valorDuodecimo: values.valorDuodecimo ?? 0,
         valorDesconto: values.valorDesconto ?? 0,
         protocoloSGD: values.protocoloSGD ?? "",
         observacao: values.observacao ?? "",
@@ -193,7 +194,7 @@ export default function EditPrestacaoContasPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
-                    name="subseccionalId"
+                    name="subseccional"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Subseccional</FormLabel>
@@ -217,7 +218,7 @@ export default function EditPrestacaoContasPage() {
                             {subseccionais?.content.map((item) => (
                               <SelectItem
                                 key={item.id}
-                                value={item.id.toString()}
+                                value={item.subSeccional}
                               >
                                 {item.subSeccional}
                               </SelectItem>
@@ -338,9 +339,10 @@ export default function EditPrestacaoContasPage() {
                             onChange={(e) => {
                               const value = e.target.value;
                               field.onChange(
-                                value === "" ? "" : parseFloat(value).toFixed(2)
+                                value === "" ? 0 : parseFloat(value)
                               );
                             }}
+                            value={field.value || ""}
                           />
                         </FormControl>
                         <FormMessage />

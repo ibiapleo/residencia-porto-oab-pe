@@ -95,7 +95,6 @@ export default function NewBaseOrcamentariaPage() {
 
     try {
       const requestData: BaseOrcamentariaRequestDTO = {
-        idLancto: 0, // Será gerado pelo backend
         lancto: values.lancto,
         valor: values.valor,
         dtDocto: values.dtDocto,
@@ -155,7 +154,7 @@ export default function NewBaseOrcamentariaPage() {
                         <FormLabel>Lançamento</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Número do lançamento"
+                            placeholder="Título do lançamento"
                             {...field}
                           />
                         </FormControl>

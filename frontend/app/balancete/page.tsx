@@ -128,7 +128,7 @@ export default function BalancetePage() {
       accessorKey: "nomeDemonstrativo",
       header: "Demonstrativo",
       enableSorting: false,
-      enableFiltering: true,
+      enableFiltering: false,
       filter: {
         type: "text",
         placeholder: "Filtrar por Demonstrativo...",
@@ -142,6 +142,7 @@ export default function BalancetePage() {
       filter: {
         type: "select",
         options: [
+          { label: "2022", value: "2022" },
           { label: "2023", value: "2023" },
           { label: "2024", value: "2024" },
           { label: "2025", value: "2025" },
@@ -170,7 +171,7 @@ export default function BalancetePage() {
     {
       accessorKey: "dtPrevEntr",
       header: "Prev. Entrega",
-      cell: ({ row }) => row?.dtPrevEntr,
+      cell: ({ row }) => row?.dtPrevEntr.toString(),
       enableSorting: true,
       enableFiltering: true,
       filter: {
@@ -199,7 +200,7 @@ export default function BalancetePage() {
       header: "Status",
       cell: ({ row }) => getStatusBadge(row),
       enableSorting: true,
-      enableFiltering: true,
+      enableFiltering: false,
       filter: {
         type: "select",
         options: [

@@ -217,11 +217,11 @@ export default function BalanceteDetailsPage() {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium flex items-center">
               <Percent className="h-4 w-4 mr-2" />
-              Eficiência
+              Atraso
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.eficiencia || 0}%</div>
+            <div className="text-2xl font-bold">{data.eficiencia || 0}</div>
           </CardContent>
         </Card>
       </div>
@@ -237,32 +237,6 @@ export default function BalanceteDetailsPage() {
             <div className="text-lg">{getStatusBadge(data)}</div>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium flex items-center">
-              <FileText className="h-4 w-4 mr-2" />
-              ID do Registro
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm font-mono">{data.id}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="flex justify-end space-x-2">
-        <Button asChild variant="outline">
-          <Link href={`/balancete/edit/${data.id}`}>
-            <Pencil className="h-4 w-4 mr-2" />
-            Editar
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link href="/balancete">
-            Voltar para lista
-          </Link>
-        </Button>
       </div>
     </div>
   );

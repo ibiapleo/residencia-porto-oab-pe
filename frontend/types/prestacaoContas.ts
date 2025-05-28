@@ -21,7 +21,7 @@ export interface PrestacaoContasSubseccionalResponseDTO {
 }
 
 export interface PrestacaoContasSubseccionalRequestDTO {
-  subseccionalId: string;
+  subseccional: string;
   mesReferencia: string;
   ano: string;
   dtPrevEntr: string; // ou Date se você converter

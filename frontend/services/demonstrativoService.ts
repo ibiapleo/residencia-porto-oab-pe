@@ -29,7 +29,7 @@ export const uploadDemonstrativo = async (
   const formData = new FormData();
   formData.append('file', file);
 
-  return fetcher<DemonstrativoResponseDTO>('/demonstrativo/upload', {
+  return fetcher<DemonstrativoResponseDTO>('/demonstrativos/upload', {
     method: 'POST',
     body: formData,
   });

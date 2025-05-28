@@ -26,7 +26,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { criarPrestacaoContas, uploadPrestacaoContas } from "@/services/prestacaoContasService";
+import {
+  criarPrestacaoContas,
+  uploadPrestacaoContas,
+} from "@/services/prestacaoContasService";
 import { PrestacaoContasSubseccionalRequestDTO } from "@/types/prestacaoContas";
 import { useSubseccionais } from "@/hooks/useSubseccionais";
 import { useTiposDesconto } from "@/hooks/useTiposDesconto";
@@ -35,7 +38,7 @@ import { FileImport } from "@/components/file-import";
 
 const formSchema = z
   .object({
-    subseccionalId: z
+    subseccional: z
       .string({ required_error: "Selecione uma subseccional" })
       .min(1),
     mesReferencia: z.string({ required_error: "Selecione um mês" }).min(1),
@@ -113,7 +116,7 @@ export default function NewPrestacaoContasPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      subseccionalId: "",
+      subseccional: "",
       mesReferencia: "",
       ano: new Date().getFullYear().toString(),
       dtPrevEntr: "",
@@ -144,9 +147,7 @@ export default function NewPrestacaoContasPage() {
     toast({
       title: "Erro",
       description:
-        error instanceof Error
-          ? error.message
-          : "Não foi importar a planilha",
+        error instanceof Error ? error.message : "Não foi importar a planilha",
       variant: "destructive",
     });
   };
@@ -156,7 +157,7 @@ export default function NewPrestacaoContasPage() {
 
     try {
       const requestData: PrestacaoContasSubseccionalRequestDTO = {
-        subseccionalId: values.subseccionalId?.toString() ?? "",
+        subseccional: values.subseccional,
         mesReferencia: values.mesReferencia,
         ano: values.ano,
         dtPrevEntr: values.dtPrevEntr,
@@ -214,13 +215,13 @@ export default function NewPrestacaoContasPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
-                    name="subseccionalId"
+                    name="subseccional"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Subseccional</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value ?? ""}
                           disabled={isLoadingSubseccionais}
                         >
                           <FormControl>
@@ -235,15 +236,14 @@ export default function NewPrestacaoContasPage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {subseccionais &&
-                              subseccionais.content.map((item) => (
-                                <SelectItem
-                                  key={item.id}
-                                  value={item.id.toString()}
-                                >
-                                  {item.subSeccional}
-                                </SelectItem>
-                              ))}
+                            {subseccionais?.content.map((item) => (
+                              <SelectItem
+                                key={item.id}
+                                value={item.subSeccional}
+                              >
+                                {item.subSeccional}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                         <FormMessage />

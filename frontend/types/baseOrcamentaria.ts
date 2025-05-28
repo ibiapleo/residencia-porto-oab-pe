@@ -10,7 +10,6 @@ export type BaseOrcamentariaResponseDTO = {
 };
 
 export type BaseOrcamentariaRequestDTO = {
-  idLancto: number;
   lancto: string;
   valor: number;
   dtDocto: string;
