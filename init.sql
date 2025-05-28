@@ -1,4 +1,0 @@
-IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'DM_TI_FINANCEIRO')
-BEGIN
-    CREATE DATABASE oabpe;
-END
