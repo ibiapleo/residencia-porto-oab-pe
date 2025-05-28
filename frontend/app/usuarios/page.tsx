@@ -103,7 +103,7 @@ export default function UsuarioPage() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
                 <Link
-                  href={`/usuarios/roles/${row?.id}`}
+                  href={`/usuarios/assign/${row?.id}`}
                   className="flex items-center"
                 >
                   <FileText className="mr-2 h-4 w-4" />

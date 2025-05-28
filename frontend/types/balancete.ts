@@ -16,8 +16,8 @@ export type BalanceteResponseDTO = {
   referencia: string;
   ano: string;
   periodicidade: Periodicidade;
-  dtPrevEntr: string;
-  dtEntr: string | null;
+  dtPrevEntr: Date;
+  dtEntr: Date | null;
   eficiencia: number | null;
   usuarioId: number | null;
 };

@@ -54,10 +54,10 @@ export default function BaseOrcamentariaDetailsPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
-      case "ativo":
+      case "true":
         return (
           <Badge className="bg-green-500 hover:bg-green-600">
-            <CheckCircle className="h-4 w-4 mr-1" /> Ativo
+            <CheckCircle className="h-4 w-4 mr-1" /> Lançado
           </Badge>
         );
       case "inativo":
@@ -231,33 +231,8 @@ export default function BaseOrcamentariaDetailsPage() {
             <div className="text-lg">{getStatusBadge(data.status)}</div>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium flex items-center">
-              <FileText className="h-4 w-4 mr-2" />
-              ID do Registro
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-sm font-mono">{data.id}</div>
-          </CardContent>
-        </Card>
       </div>
 
-      <div className="flex justify-end space-x-2">
-        <Button asChild variant="outline">
-          <Link href={`/base-orcamentaria/edit/${data.id}`}>
-            <Pencil className="h-4 w-4 mr-2" />
-            Editar
-          </Link>
-        </Button>
-        <Button asChild>
-          <Link href="/base-orcamentaria">
-            Voltar para lista
-          </Link>
-        </Button>
-      </div>
     </div>
   );
 }

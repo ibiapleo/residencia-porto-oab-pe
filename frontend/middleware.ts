@@ -43,7 +43,7 @@ const READ_ONLY_PATHS = [
 ];
 
 const WRITE_PATHS = [
-  /^\/usuarios\/(new|edit)/,
+  /^\/usuarios\/(new|assign)/,
   /^\/balancete\/(new|edit)/,
   /^\/instituicao\/(new|edit)/,
   /^\/demonstrativo\/(new|edit)/,

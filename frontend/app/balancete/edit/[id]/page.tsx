@@ -208,7 +208,7 @@ export default function EditBalancetePage() {
                             demonstrativos.content.map((item) => (
                               <SelectItem
                                 key={item.id}
-                                value={item.id.toString()}
+                                value={item.nome}
                               >
                                 {item.nome}
                               </SelectItem>

@@ -52,16 +52,27 @@ export default function PrestacaoContasPage() {
   const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState<PaginationParams["filters"]>({});
 
-  const { data, isLoading, error, isEmpty, refetch } = usePrestacaoContas({
+  const [pagination, setPagination] = useState<PaginationState>({
     page: 0,
-    size: 10,
+    pageSize: 10,
+  });
+
+  const handlePaginationChange = useCallback(
+    (newPagination: PaginationState) => {
+      setPagination(newPagination);
+      setPage(newPagination.page);
+    },
+    []
+  );
+  
+  const { data, isLoading, error, isEmpty, refetch } = usePrestacaoContas({
+    page: pagination.page,
+    size: pagination.pageSize,
     sort,
     filters,
   });
 
-  const handlePaginationChange = (pagination: PaginationState) => {
-    setPage(pagination.page);
-  };
+  
 
   const handleDelete = async (id: string) => {
     setIsDeleting(true);
@@ -142,7 +153,7 @@ export default function PrestacaoContasPage() {
       accessorKey: "subseccional",
       header: "Subseccional",
       enableSorting: true,
-      enableFiltering: true,
+      enableFiltering: false,
       cell: ({ row }) => {
         return <span className="font-medium">{row.subseccional}</span>;
       },
@@ -161,7 +172,7 @@ export default function PrestacaoContasPage() {
           "-"
         ),
       enableSorting: true,
-      enableFiltering: true,
+      enableFiltering: false,
       filter: {
         type: "text",
         placeholder: "Filtrar por desconto...",
@@ -171,8 +182,8 @@ export default function PrestacaoContasPage() {
       accessorKey: "referencia",
       header: "Referência",
       cell: ({ row }) => `${row.mesReferencia}/${row.ano}`,
-      enableSorting: true,
-      enableFiltering: true,
+      enableSorting: false,
+      enableFiltering: false,
       filter: {
         type: "text",
         placeholder: "Filtrar por referência...",
@@ -238,7 +249,7 @@ export default function PrestacaoContasPage() {
       header: "Status",
       cell: ({ row }) => getStatusBadge(row),
       enableSorting: true,
-      enableFiltering: true,
+      enableFiltering: false,
       filter: {
         type: "select",
         options: [
@@ -394,16 +405,19 @@ export default function PrestacaoContasPage() {
         </div>
       ) : (
         <DataTable
-          columns={columns}
-          data={data?.content || []}
-          loading={isLoading}
-          searchPlaceholder="Buscar prestações de contas..."
-          enableServerSidePagination
-          totalCount={data?.totalElements}
-          onSortChange={setSort}
-          onPaginationChange={handlePaginationChange}
-          pageSizeOptions={[10, 20, 50]}
-        />
+        columns={columns}
+        data={data?.content || []}
+        loading={isLoading}
+        searchPlaceholder="Buscar Prestações..."
+        enableServerSidePagination
+        totalCount={data?.totalElements}
+        onSortChange={setSort}
+        onFilterChange={setFilters}
+        onPaginationChange={handlePaginationChange} // Adicione esta linha
+        controlledPaginationState={pagination} // Adicione esta linha
+        pageSizeOptions={[10, 20, 50]}
+        refetch={refetch} // Adicione esta linha para garantir atualizações
+      />
       )}
     </div>
   );

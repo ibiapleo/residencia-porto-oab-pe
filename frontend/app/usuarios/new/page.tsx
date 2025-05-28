@@ -82,29 +82,28 @@ export default function NovoUsuarioPage() {
     try {
       const { confirmarSenha, cargoId, ...usuarioData } = values;
 
-      // Validação adicional do cargoId
       if (!cargoId || cargoId <= 0) {
         throw new Error("Selecione um cargo válido antes de continuar");
       }
 
-      // 1. Registrar usuário
       const usuarioCriado = await registrarUsuario(usuarioData);
 
       if (!usuarioCriado?.id) {
         throw new Error("Registro do usuário não retornou ID válido");
       }
 
-      // 2. Atribuir cargo - agora com validação explícita
       await atribuirCargoUsuario({
         userId: usuarioCriado.id,
-        rolesId: [cargoId], // Garantido que é um número > 0
+        rolesId: [cargoId],
       });
 
       toast({
         title: "Sucesso",
         description: "Usuário criado e cargo atribuído com sucesso",
       });
-      router.push("/usuarios");
+      if (!isLoading) {
+        router.push("/usuarios");
+      }
     } catch (error) {
       console.error("Erro no cadastro:", error);
 

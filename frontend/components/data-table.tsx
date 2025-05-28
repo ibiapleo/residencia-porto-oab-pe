@@ -24,13 +24,6 @@ import {
   ArrowDown,
   Calendar,
 } from "lucide-react";
-import { DateRange } from "react-day-picker";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import {
   Select,
@@ -42,6 +35,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import TableSkeleton from "@/components/ui/table-skeleton";
+import { PaginationParams } from "@/types/paginacao";
+import { buildQuery } from "@/lib/query-builder";
 
 // ========== TYPES ==========
 export type SortDirection = "asc" | "desc";
@@ -118,7 +113,10 @@ const applyDateFilter = (
   filterValue: Date | [Date?, Date?]
 ): boolean => {
   if (!value) return false;
-  const date = new Date(value);
+
+  // Properly parse the date value
+  const date = value instanceof Date ? value : new Date(value);
+  if (isNaN(date.getTime())) return false; // Invalid date
 
   if (Array.isArray(filterValue)) {
     const [start, end] = filterValue || [undefined, undefined];
@@ -198,6 +196,46 @@ export function DataTable<TData extends Record<string, any>>({
   );
 
   const effectivePagination = controlledPaginationState || internalPagination;
+
+  // Dentro do componente DataTable, antes do return
+  const buildQueryString = useCallback(() => {
+    const params: PaginationParams = {
+      page: effectivePagination.page,
+      size: effectivePagination.pageSize,
+      sort: sorting.map((s) => ({ field: s.column, direction: s.direction })),
+      filters: {},
+    };
+
+    // Processa os filtros para o formato correto
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value === null || value === undefined || value === "") return;
+
+      if (typeof value === "object" && "from" in value && "to" in value) {
+        // Filtro de intervalo de datas
+        params.filters![`${key}.from`] = value.from
+          ? format(new Date(value.from), "yyyy-MM-dd")
+          : undefined;
+        params.filters![`${key}.to`] = value.to
+          ? format(new Date(value.to), "yyyy-MM-dd")
+          : undefined;
+      } else if (value instanceof Date) {
+        // Filtro de data única
+        params.filters![key] = format(value, "yyyy-MM-dd");
+      } else {
+        // Outros tipos de filtro
+        params.filters![key] = value;
+      }
+    });
+
+    // Remove filtros vazios
+    Object.keys(params.filters!).forEach((key) => {
+      if (params.filters![key] === undefined) {
+        delete params.filters![key];
+      }
+    });
+
+    return buildQuery(params);
+  }, [effectivePagination, sorting, filters]);
 
   const filteredData = useMemo(() => {
     const items = Array.isArray(data)
@@ -338,15 +376,10 @@ export function DataTable<TData extends Record<string, any>>({
   // Atualize o useEffect que reseta a página
   useEffect(() => {
     if (enableServerSidePagination) {
-      onPaginationChange?.(effectivePagination);
+      const query = buildQueryString();
       refetch?.();
     }
-  }, [
-    effectivePagination,
-    enableServerSidePagination,
-    onPaginationChange,
-    refetch,
-  ]);
+  }, [enableServerSidePagination, onPaginationChange, refetch]);
 
   useEffect(() => {
     const active = Object.entries(filters)
@@ -500,8 +533,18 @@ export function DataTable<TData extends Record<string, any>>({
           <Input
             type="date"
             className="w-full"
-            value={currentValue || ""}
-            onChange={(e) => handleFilter(accessorKey, e.target.value)}
+            value={
+              currentValue ? format(new Date(currentValue), "yyyy-MM-dd") : ""
+            }
+            onChange={(e) => {
+              const date = e.target.value
+                ? new Date(e.target.value)
+                : undefined;
+              handleFilter(
+                accessorKey,
+                date ? format(date, "yyyy-MM-dd") : undefined
+              );
+            }}
           />
         );
 
@@ -511,22 +554,34 @@ export function DataTable<TData extends Record<string, any>>({
             <Input
               type="date"
               className="w-full"
-              value={currentValue?.from || ""}
+              value={
+                currentValue?.from
+                  ? format(new Date(currentValue.from), "yyyy-MM-dd")
+                  : ""
+              }
               onChange={(e) =>
                 handleFilter(accessorKey, {
                   ...currentValue,
-                  from: e.target.value,
+                  from: e.target.value
+                    ? format(new Date(e.target.value), "yyyy-MM-dd")
+                    : undefined,
                 })
               }
             />
             <Input
               type="date"
               className="w-full"
-              value={currentValue?.to || ""}
+              value={
+                currentValue?.to
+                  ? format(new Date(currentValue.to), "yyyy-MM-dd")
+                  : ""
+              }
               onChange={(e) =>
                 handleFilter(accessorKey, {
                   ...currentValue,
-                  to: e.target.value,
+                  to: e.target.value
+                    ? format(new Date(e.target.value), "yyyy-MM-dd")
+                    : undefined,
                 })
               }
             />

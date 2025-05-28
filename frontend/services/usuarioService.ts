@@ -27,7 +27,6 @@ export const registrarUsuario = async (
 export const atribuirCargoUsuario = async (
   data: AtribuicaoRequestDTO
 ): Promise<UsuarioResponseDTO> => {
-  // Validação adicional antes de enviar
   if (
     !data.rolesId ||
     data.rolesId.length === 0 ||

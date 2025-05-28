@@ -23,7 +23,7 @@ export const uploadSubseccional = async (
   const formData = new FormData();
   formData.append('file', file);
 
-  return fetcher<SubseccionalResponseDTO>('/subseccional/upload', {
+  return fetcher<SubseccionalResponseDTO>('/subseccionais/upload', {
     method: 'POST',
     body: formData,
   });
