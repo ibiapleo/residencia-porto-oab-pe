@@ -4,8 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
-import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABRequestDTO;
-import org.portodigital.residencia.oabpe.domain.commons.ImportProcessor;
+import org.portodigital.residencia.oabpe.domain.commons.imports.ImportProcessor;
 import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
 import org.portodigital.residencia.oabpe.domain.demonstrativo.DemonstrativoRepository;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
@@ -17,7 +16,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor

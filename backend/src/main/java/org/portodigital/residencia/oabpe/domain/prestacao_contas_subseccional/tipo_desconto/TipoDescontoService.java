@@ -2,9 +2,7 @@ package org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.t
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
-import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
-import org.portodigital.residencia.oabpe.domain.demonstrativo.dto.DemonstrativoResponseDTO;
+import org.portodigital.residencia.oabpe.domain.commons.imports.AbstractFileImportService;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto.dto.TipoDescontoRequest;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto.dto.TipoDescontoResponse;

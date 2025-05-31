@@ -7,11 +7,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasFilteredRequest;
 import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasRequestDTO;
 import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasResponseDTO;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -34,7 +36,7 @@ public class PagamentoCotasController {
 
     @Operation(
             summary = "Listar Pagamentos de Cotas",
-            description = "Retorna uma lista paginada e filtrada de todos os Pagamnetos de Cotas cadastrados"
+            description = "Retorna uma lista paginada e filtrada de todos os Pagamnetos de Cotas cadastrados (quando download=false), ou uma lista completa de todos os pagamentos de cotas que correspondem ao filtro (quando download=true)."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista recuperada com sucesso"),
@@ -42,10 +44,17 @@ public class PagamentoCotasController {
     })
     @GetMapping
     @PreAuthorize("hasPermission('modulo_pagamento_cotas', 'LEITURA')")
-    public ResponseEntity<Page<PagamentoCotasResponseDTO>> getAllFiltered(
-            PagamentoCotasFilteredRequest filter,
-            Pageable pageable) {
-        return ResponseEntity.ok(pagamentoCotasService.getAllFiltered(filter, pageable));
+    public ResponseEntity<?> getAllFiltered(
+            @Parameter(description = "Parâmetros de filtragem")
+            @Valid @ParameterObject PagamentoCotasFilteredRequest filter,
+            @Parameter(description = "Parâmetros de paginação (page, size, sort) - Ignorado se download=true")
+            Pageable pageable,
+            @Parameter(description = "Parâmetro de relatório,se true, retorna a lista completa sem paginação. Se false (padrão), retorna paginado.")
+            @RequestParam(required = false, defaultValue = "false")
+            boolean download
+            ) {
+        Object result = pagamentoCotasService.getAllFiltered(filter, pageable, download);
+        return ResponseEntity.ok(result);
     }
 
     @Operation(

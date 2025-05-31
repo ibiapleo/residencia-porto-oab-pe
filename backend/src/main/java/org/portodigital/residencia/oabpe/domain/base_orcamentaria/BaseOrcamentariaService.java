@@ -6,7 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaFilteredRequest;
 import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaRequestDTO;
 import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaResponseDTO;
-import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
+import org.portodigital.residencia.oabpe.domain.commons.imports.AbstractFileImportService;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,9 +34,19 @@ public class BaseOrcamentariaService extends AbstractFileImportService<BaseOrcam
         baseOrcamentariaRepository.saveAll(entidades.stream().map(e -> (BaseOrcamentaria) e).toList());
     }
 
-    public Page<BaseOrcamentariaResponseDTO> getAllFiltered(BaseOrcamentariaFilteredRequest filter, Pageable pageable) {
-        return baseOrcamentariaRepository.findAllActiveByFilter(filter, pageable)
-                .map(baseOrcamentaria -> mapper.map(baseOrcamentaria, BaseOrcamentariaResponseDTO.class));
+    public Object getAllFiltered(BaseOrcamentariaFilteredRequest filter, Pageable pageable, boolean download) {
+        if (download) {
+            List<BaseOrcamentaria> bases = baseOrcamentariaRepository.findAllActiveByFilter(filter);
+            return bases.stream()
+                    .map(base -> {
+                        BaseOrcamentariaResponseDTO dto = mapper.map(base, BaseOrcamentariaResponseDTO.class);
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            return baseOrcamentariaRepository.findAllActiveByFilter(filter, pageable)
+                    .map(baseOrcamentaria -> mapper.map(baseOrcamentaria, BaseOrcamentariaResponseDTO.class));
+        }
     }
 
     public BaseOrcamentariaResponseDTO getById(Long id) {

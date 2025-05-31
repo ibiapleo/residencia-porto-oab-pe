@@ -2,10 +2,7 @@ package org.portodigital.residencia.oabpe.domain.transparencia;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.portodigital.residencia.oabpe.domain.balancete_cfoab.BalanceteCFOAB;
-import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABRequestDTO;
-import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
-import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
+import org.portodigital.residencia.oabpe.domain.commons.imports.AbstractFileImportService;
 import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
 import org.portodigital.residencia.oabpe.domain.demonstrativo.DemonstrativoRepository;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
@@ -24,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,13 +38,25 @@ public class TransparenciaService extends AbstractFileImportService<Transparenci
             transparenciaRepository.saveAll(entidades.stream().map(e -> (Transparencia) e).toList());
     }
 
-    public Page<TransparenciaResponseDTO> getAllFiltered(TransparenciaFilteredRequest filter, Pageable pageable) {
-        return transparenciaRepository.findAllActiveByFilter(filter, pageable).map(transparencia ->{
-            TransparenciaResponseDTO dto = mapper.map(transparencia, TransparenciaResponseDTO.class);
-            dto.setDemonstrativoId(transparencia.getDemonstrativo().getId());
-            dto.setNomeDemonstrativo(transparencia.getDemonstrativo().getNome());
-            return dto;
-        });
+    public Object getAllFiltered(TransparenciaFilteredRequest filter, Pageable pageable, boolean download) {
+        if (download) {
+            List<Transparencia> transparencias = transparenciaRepository.findAllActiveByFilter(filter);
+            return transparencias.stream()
+                    .map(transparencia -> {
+                        TransparenciaResponseDTO dto = mapper.map(transparencia, TransparenciaResponseDTO.class);
+                        dto.setDemonstrativoId(transparencia.getDemonstrativo().getId());
+                        dto.setNomeDemonstrativo(transparencia.getDemonstrativo().getNome());
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            return transparenciaRepository.findAllActiveByFilter(filter, pageable).map(transparencia -> {
+                TransparenciaResponseDTO dto = mapper.map(transparencia, TransparenciaResponseDTO.class);
+                dto.setDemonstrativoId(transparencia.getDemonstrativo().getId());
+                dto.setNomeDemonstrativo(transparencia.getDemonstrativo().getNome());
+                return dto;
+            });
+        }
     }
 
      public TransparenciaResponseDTO getById(Long id) {

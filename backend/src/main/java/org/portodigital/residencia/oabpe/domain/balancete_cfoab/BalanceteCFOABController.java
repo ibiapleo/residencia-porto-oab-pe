@@ -36,7 +36,7 @@ public class BalanceteCFOABController {
 
     @Operation(
             summary = "Listar Balancetes",
-            description = "Retorna uma lista paginada de todos os balancetes cadastrados"
+            description = "Retorna uma lista paginada de balancetes cadastrados (quando download=false), ou uma lista completa de todos os balancetes que correspondem ao filtro (quando download=true)."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista recuperada com sucesso"),
@@ -44,12 +44,16 @@ public class BalanceteCFOABController {
     })
     @GetMapping
     @PreAuthorize("hasPermission('modulo_balancetes_cfoab', 'LEITURA')")
-    public ResponseEntity<Page<BalanceteCFOABResponseDTO>> getAllFiltered(
+    public ResponseEntity<?> getAllFiltered(
             @Parameter(description = "Parâmetros de filtragem")
             @Valid @ParameterObject BalanceteCFOABFilteredRequest filter,
-            @Parameter(description = "Parâmetros de paginação (page, size, sort)")
-            Pageable pageable) {
-        return ResponseEntity.ok(balanceteCFOABService.getAllFiltered(filter, pageable));
+            @Parameter(description = "Parâmetros de paginação (page, size, sort) - Ignorado se download=true")
+            Pageable pageable,
+            @Parameter(description = "Parâmetro de relatório, se true, retorna a lista completa sem paginação. Se false (padrão), retorna paginado.")
+            @RequestParam(required = false, defaultValue = "false")
+            boolean download) {
+        Object result = balanceteCFOABService.getAllFiltered(filter, pageable, download);
+        return ResponseEntity.ok(result);
     }
 
     @Operation(

@@ -2,16 +2,13 @@ package org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
-import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
-import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
+import org.portodigital.residencia.oabpe.domain.commons.imports.AbstractFileImportService;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalFiltroRequest;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalRequestDTO;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.dto.PrestacaoContasSubseccionalResponseDTO;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.Subseccional;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.SubseccionalRepository;
-import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.subseccional.dto.SubseccionalRequest;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto.TipoDesconto;
 import org.portodigital.residencia.oabpe.domain.prestacao_contas_subseccional.tipo_desconto.TipoDescontoRepository;
 import org.portodigital.residencia.oabpe.exception.EntityNotFoundException;
@@ -27,6 +24,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,20 +36,34 @@ public class PrestacaoContasSubseccionalService extends AbstractFileImportServic
     private final PrestacaoContasImportProcessor processor;
     private final ModelMapper mapper;
 
-    public Page<PrestacaoContasSubseccionalResponseDTO> getAllComFiltro(PrestacaoContasSubseccionalFiltroRequest filtro, Pageable pageable) {
-        return prestacaoContasSubseccionalRepository.findAllByFiltros(filtro, pageable)
-                .map(prestacao -> {
-                    PrestacaoContasSubseccionalResponseDTO dto = mapper.map(prestacao, PrestacaoContasSubseccionalResponseDTO.class);
-                    dto.setSubseccional(prestacao.getSubseccional().getSubSeccional());
-                    dto.setIdSubseccional(prestacao.getSubseccional().getId());
+    public Object getAllFiltered(PrestacaoContasSubseccionalFiltroRequest filtro, Pageable pageable, boolean download) {
+        if (download) {
+            List<PrestacaoContasSubseccional> prestacoes = prestacaoContasSubseccionalRepository.findAllActiveByFilter(filtro);
+            return prestacoes.stream()
+                    .map(prestacao -> {
+                        PrestacaoContasSubseccionalResponseDTO dto = mapper.map(prestacao, PrestacaoContasSubseccionalResponseDTO.class);
+                        dto.setIdSubseccional(prestacao.getSubseccional().getId());
+                        dto.setSubseccional(prestacao.getSubseccional().getSubSeccional());
+                        dto.setIdTipoDesconto(prestacao.getTipoDesconto().getId());
+                        dto.setTipoDesconto(prestacao.getTipoDesconto().getNome());
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            return prestacaoContasSubseccionalRepository.findAllActiveByFilter(filtro, pageable)
+                    .map(prestacao -> {
+                        PrestacaoContasSubseccionalResponseDTO dto = mapper.map(prestacao, PrestacaoContasSubseccionalResponseDTO.class);
+                        dto.setSubseccional(prestacao.getSubseccional().getSubSeccional());
+                        dto.setIdSubseccional(prestacao.getSubseccional().getId());
 
-                    Optional.ofNullable(prestacao.getTipoDesconto()).ifPresent(tipoDesconto -> {
-                        dto.setTipoDesconto(tipoDesconto.getNome());
-                        dto.setIdTipoDesconto(tipoDesconto.getId());
+                        Optional.ofNullable(prestacao.getTipoDesconto()).ifPresent(tipoDesconto -> {
+                            dto.setTipoDesconto(tipoDesconto.getNome());
+                            dto.setIdTipoDesconto(tipoDesconto.getId());
+                        });
+
+                        return dto;
                     });
-
-                    return dto;
-                });
+        }
     }
 
     public PrestacaoContasSubseccionalResponseDTO getById(Long id) {

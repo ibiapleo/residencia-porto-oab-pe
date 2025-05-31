@@ -3,7 +3,6 @@ package org.portodigital.residencia.oabpe.domain.pagamento_cotas;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.portodigital.residencia.oabpe.domain.balancete_cfoab.BalanceteCFOAB;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.portodigital.residencia.oabpe.domain.instituicao.InstituicaoRepository;
 import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasFilteredRequest;
@@ -17,10 +16,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
+import org.portodigital.residencia.oabpe.domain.commons.imports.AbstractFileImportService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,9 +38,23 @@ public class PagamentoCotasService extends AbstractFileImportService<PagamentoCo
         pagamentoCotasRepository.saveAll(entidades.stream().map(e -> (PagamentoCotas) e).toList());
     }
 
-    public Page<PagamentoCotasResponseDTO> getAllFiltered(PagamentoCotasFilteredRequest filter, Pageable pageable) {
-        return pagamentoCotasRepository.findAllActiveByFilter(filter, pageable)
-                .map(pagamentoCotas -> mapper.map(pagamentoCotas, PagamentoCotasResponseDTO.class));
+    public Object getAllFiltered(PagamentoCotasFilteredRequest filter, Pageable pageable, boolean download) {
+        if (download) {
+            List<PagamentoCotas> pagamentocotas = pagamentoCotasRepository.findAllActiveByFilter(filter);
+            return pagamentocotas.stream()
+                    .map(pagamentocota -> {
+                        PagamentoCotasResponseDTO dto = mapper.map(pagamentocota, PagamentoCotasResponseDTO.class);
+                        dto.setInstituicaoId(pagamentocota.getInstituicao().getId());
+                        dto.setInstituicaoNome(pagamentocota.getInstituicao().getNome());
+                        dto.setTipoDescontoId(pagamentocota.getTipoDesconto().getId());
+                        dto.setTipoDescontoNome(pagamentocota.getTipoDesconto().getNome());
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            return pagamentoCotasRepository.findAllActiveByFilter(filter, pageable)
+                    .map(pagamentoCotas -> mapper.map(pagamentoCotas, PagamentoCotasResponseDTO.class));
+        }
     }
 
     public PagamentoCotasResponseDTO getById(Long id) {

@@ -1,4 +1,4 @@
-package org.portodigital.residencia.oabpe.domain.commons;
+package org.portodigital.residencia.oabpe.domain.commons.imports;
 
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 

@@ -4,7 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
-import org.portodigital.residencia.oabpe.domain.commons.ImportProcessor;
+import org.portodigital.residencia.oabpe.domain.commons.imports.ImportProcessor;
 import org.portodigital.residencia.oabpe.domain.instituicao.Instituicao;
 import org.portodigital.residencia.oabpe.domain.instituicao.InstituicaoRepository;
 import org.portodigital.residencia.oabpe.domain.pagamento_cotas.dto.PagamentoCotasRequestDTO;
@@ -14,13 +14,10 @@ import org.springframework.stereotype.Component;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.Set;
 
 import static com.fasterxml.jackson.core.io.doubleparser.JavaBigDecimalParser.parseBigDecimal;
-import static jakarta.xml.bind.DatatypeConverter.parseDate;
 
 
 @Component

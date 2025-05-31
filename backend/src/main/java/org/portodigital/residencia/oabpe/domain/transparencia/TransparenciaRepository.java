@@ -30,4 +30,18 @@ public interface TransparenciaRepository extends JpaRepository<Transparencia, Lo
     """)
     Page<Transparencia> findAllActiveByFilter(@Param("filter") TransparenciaFilteredRequest filter, Pageable pageable);
 
+    @Query("""
+    SELECT b
+    FROM Transparencia b
+    LEFT JOIN FETCH b.demonstrativo d
+    WHERE b.status = true
+    AND (:#{#filter.demonstrativo} IS NULL OR LOWER(d.nome) LIKE LOWER(CONCAT('%', :#{#filter.demonstrativo}, '%')))
+    AND (:#{#filter.referencia} IS NULL OR LOWER(b.referencia) LIKE LOWER(CONCAT('%', :#{#filter.referencia}, '%')))
+    AND (:#{#filter.ano} IS NULL OR LOWER(b.ano) LIKE LOWER(CONCAT('%', :#{#filter.ano}, '%')))
+    AND (:#{#filter.periodicidade} IS NULL OR LOWER(b.periodicidade) LIKE LOWER(CONCAT('%', :#{#filter.periodicidade}, '%')))
+    AND (:#{#filter.dtPrevEntr} IS NULL OR b.dtPrevEntr = :#{#filter.dtPrevEntr})
+    AND (:#{#filter.dtEntrega} IS NULL OR b.dtEntrega = :#{#filter.dtEntrega})
+    """)
+    List<Transparencia> findAllActiveByFilter(@Param("filter") TransparenciaFilteredRequest filter);
+
 }

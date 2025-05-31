@@ -5,7 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABFilteredRequest;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABRequestDTO;
 import org.portodigital.residencia.oabpe.domain.balancete_cfoab.dto.BalanceteCFOABResponseDTO;
-import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
+import org.portodigital.residencia.oabpe.domain.commons.imports.AbstractFileImportService;
 import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
 import org.portodigital.residencia.oabpe.domain.demonstrativo.DemonstrativoRepository;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,14 +38,26 @@ public class BalanceteCFOABService extends AbstractFileImportService<BalanceteCF
         balanceteCFOABRepository.saveAll(entidades.stream().map(e -> (BalanceteCFOAB) e).toList());
     }
 
-    public Page<BalanceteCFOABResponseDTO> getAllFiltered(BalanceteCFOABFilteredRequest filter, Pageable pageable) {
-        return balanceteCFOABRepository.findAllActiveByFilter(filter, pageable)
-                .map(balancete -> {
-                    BalanceteCFOABResponseDTO dto = mapper.map(balancete, BalanceteCFOABResponseDTO.class);
-                    dto.setDemonstrativoId(balancete.getDemonstrativo().getId());
-                    dto.setNomeDemonstrativo(balancete.getDemonstrativo().getNome());
-                    return dto;
-                });
+    public Object getAllFiltered(BalanceteCFOABFilteredRequest filter, Pageable pageable, boolean download) {
+        if (download) {
+            List<BalanceteCFOAB> balancetes = balanceteCFOABRepository.findAllActiveByFilter(filter);
+            return balancetes.stream()
+                    .map(balancete -> {
+                        BalanceteCFOABResponseDTO dto = mapper.map(balancete, BalanceteCFOABResponseDTO.class);
+                        dto.setDemonstrativoId(balancete.getDemonstrativo().getId());
+                        dto.setNomeDemonstrativo(balancete.getDemonstrativo().getNome());
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            return balanceteCFOABRepository.findAllActiveByFilter(filter, pageable)
+                    .map(balancete -> {
+                        BalanceteCFOABResponseDTO dto = mapper.map(balancete, BalanceteCFOABResponseDTO.class);
+                        dto.setDemonstrativoId(balancete.getDemonstrativo().getId());
+                        dto.setNomeDemonstrativo(balancete.getDemonstrativo().getNome());
+                        return dto;
+                    });
+        }
     }
 
     public BalanceteCFOABResponseDTO getById(Long id) {

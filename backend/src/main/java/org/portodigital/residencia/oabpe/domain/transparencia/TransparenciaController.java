@@ -38,7 +38,7 @@ public class TransparenciaController {
 
     @Operation(
             summary = "Listar registros de transparência.",
-            description = "Retornar uma lista paginada de todos os registros de transparência cadastrados"
+            description = "Retornar uma lista paginada de todos os registros de transparência cadastrados (quando download=false), ou uma lista completa de todos as transparencias que correspondem ao filtro (quando download=true)."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista recuperada com sucesso"),
@@ -46,12 +46,17 @@ public class TransparenciaController {
     })
     @GetMapping
     @PreAuthorize("hasPermission('modulo_transparencia', 'LEITURA')")
-    public ResponseEntity<Page<TransparenciaResponseDTO>> getAllFiltered(
+    public ResponseEntity<?> getAllFiltered(
             @Parameter(description = "Parâmetros de filtragem")
             @Valid @ParameterObject TransparenciaFilteredRequest filter,
-            @Parameter(description = "Parâmetros de paginação (page, size, sort)")
-            Pageable pageable) {
-        return ResponseEntity.ok(transparenciaService.getAllFiltered(filter, pageable));
+            @Parameter(description = "Parâmetros de paginação (page, size, sort) - Ignorado se download=true")
+            Pageable pageable,
+            @Parameter(description = "Parâmetro de relatório, se true, retorna a lista completa sem paginação. Se false (padrão), retorna paginado.")
+            @RequestParam(required = false, defaultValue = "false")
+            boolean download
+            ) {
+        Object result = transparenciaService.getAllFiltered(filter, pageable, download);
+        return ResponseEntity.ok(result);
     }
 
     @Operation(

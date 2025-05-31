@@ -1,11 +1,10 @@
 package org.portodigital.residencia.oabpe.domain.base_orcamentaria;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.portodigital.residencia.oabpe.domain.base_orcamentaria.dto.BaseOrcamentariaRequestDTO;
-import org.portodigital.residencia.oabpe.domain.commons.ImportProcessor;
+import org.portodigital.residencia.oabpe.domain.commons.imports.ImportProcessor;
 import org.portodigital.residencia.oabpe.domain.identidade.model.User;
 import org.springframework.stereotype.Component;
 

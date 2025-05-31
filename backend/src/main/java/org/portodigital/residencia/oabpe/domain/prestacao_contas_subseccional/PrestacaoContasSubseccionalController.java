@@ -35,14 +35,29 @@ public class PrestacaoContasSubseccionalController {
 
     private final PrestacaoContasSubseccionalService prestacaoContasSubseccionalService;
 
-    @Operation(summary = "Listar prestações de contas com filtros")
+    @Operation(
+            summary = "Listar Prestações de Contas",
+            description = "Retorna uma lista paginada de prestações de contas cadastradas (quando download=false), ou uma lista completa de todos as prestações de contas que correspondem ao filtro (quando download=true)."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista recuperada com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
+    })
     @GetMapping
     @PreAuthorize("hasPermission('modulo_prestacao_contas_subseccional', 'LEITURA')")
-    public ResponseEntity<Page<PrestacaoContasSubseccionalResponseDTO>> getAllComFiltro(
+    public ResponseEntity<?> getAllFiltered(
+            @Parameter(description = "Parâmetros de filtragem")
             @Valid @ParameterObject PrestacaoContasSubseccionalFiltroRequest filtro,
-            Pageable pageable) {
-        return ResponseEntity.ok(prestacaoContasSubseccionalService.getAllComFiltro(filtro, pageable));
+            @Parameter(description = "Parâmetros de paginação (page, size, sort) - Ignorado se download=true")
+            Pageable pageable,
+            @Parameter(description = "Parâmetro de relatório, se true, retorna a lista completa sem paginação. Se false (padrão), retorna paginado.")
+            @RequestParam(required = false, defaultValue = "false")
+            boolean download
+            ) {
+        Object result = prestacaoContasSubseccionalService.getAllFiltered(filtro, pageable, download);
+        return ResponseEntity.ok(result);
     }
+
     @Operation(summary = "Buscar prestação de contas por ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Prestação encontrada"),
