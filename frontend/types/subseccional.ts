@@ -1,5 +1,5 @@
 export type SubseccionalResponseDTO = {
-  id: number;
+  id: string;
   subSeccional: string;
 };
 

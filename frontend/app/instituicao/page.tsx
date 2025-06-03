@@ -249,7 +249,7 @@ export default function InstituicaoPage() {
           columns={columns}
           data={data?.content || []}
           loading={isLoading}
-          searchPlaceholder="Buscar subseccionais..."
+          searchPlaceholder="Cadastre ou atualize os dados das instituições participantes."
           enableServerSidePagination
           totalCount={data?.totalElements}
           onSortChange={setSort}

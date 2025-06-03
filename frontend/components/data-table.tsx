@@ -1,16 +1,10 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import type React from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import {
   ChevronLeft,
   ChevronRight,
@@ -22,143 +16,132 @@ import {
   Filter,
   ArrowUp,
   ArrowDown,
-  Calendar,
-} from "lucide-react";
-import { format } from "date-fns";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import TableSkeleton from "@/components/ui/table-skeleton";
-import { PaginationParams } from "@/types/paginacao";
-import { buildQuery } from "@/lib/query-builder";
+} from "lucide-react"
+import { format, formatDate } from "date-fns"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+import TableSkeleton from "@/components/ui/table-skeleton"
+import type { PaginationParams } from "@/types/paginacao"
+import { buildQuery } from "@/lib/query-builder"
 
 // ========== TYPES ==========
-export type SortDirection = "asc" | "desc";
+export type SortDirection = "asc" | "desc"
 
 export type ColumnFilter = {
-  type: "text" | "select" | "date" | "dateRange" | "number" | "boolean";
-  options?: { label: string; value: string }[];
-  placeholder?: string;
-};
+  type: "text" | "select" | "date" | "dateRange" | "number" | "boolean"
+  options?: { label: string; value: string }[]
+  placeholder?: string
+}
 
 export type PaginationState = {
-  page: number;
-  pageSize: number;
-};
+  page: number
+  pageSize: number
+}
 
 export type ColumnDef<TData> = {
-  accessorKey: keyof TData | string;
-  header: string;
+  accessorKey: keyof TData | string
+  header: string
   cell?: (info: {
-    row: TData;
-    getValue: () => any;
-    value: any;
-  }) => React.ReactNode;
-  enableSorting?: boolean | string[]; // Pode ser boolean ou array de campos permitidos
-  enableFiltering?: boolean;
-  filter?: ColumnFilter;
+    row: TData
+    getValue: () => any
+    value: any
+  }) => React.ReactNode
+  enableSorting?: boolean | string[] // Pode ser boolean ou array de campos permitidos
+  enableFiltering?: boolean
+  filter?: ColumnFilter
   meta?: {
-    className?: string;
-  };
-};
+    className?: string
+  }
+}
 
 export type SortingState = {
-  column: string;
-  direction: SortDirection;
-} | null;
+  column: string
+  direction: SortDirection
+} | null
 
 export type FilterState = {
-  [key: string]: any;
-};
+  [key: string]: any
+}
 
 interface DataTableProps<TData extends Record<string, any>> {
-  loading: boolean;
-  columns: ColumnDef<TData>[];
-  data: TData[] | { content: TData[]; [key: string]: any }; // Aceita array direto ou objeto com content
-  searchPlaceholder?: string;
-  pageSizeOptions?: number[];
-  onRowClick?: (row: TData) => void;
-  className?: string;
-  enablePagination?: boolean;
-  enableServerSidePagination?: boolean;
-  totalCount?: number;
-  controlledPaginationState?: PaginationState;
-  onPaginationChange?: (pagination: PaginationState) => void;
-  onSortChange?: (
-    sorting: { field: string; direction: "asc" | "desc" }[]
-  ) => void;
-  onFilterChange?: (filters: FilterState) => void;
-  refetch?: () => void; // Adicione esta prop
+  loading: boolean
+  columns: ColumnDef<TData>[]
+  data: TData[] | { content: TData[]; [key: string]: any } // Aceita array direto ou objeto com content
+  searchPlaceholder?: string
+  pageSizeOptions?: number[]
+  onRowClick?: (row: TData) => void
+  className?: string
+  enablePagination?: boolean
+  enableServerSidePagination?: boolean
+  totalCount?: number
+  controlledPaginationState?: PaginationState
+  onPaginationChange?: (pagination: PaginationState) => void
+  onSortChange?: (sorting: { field: string; direction: "asc" | "desc" }[]) => void
+  onFilterChange?: (filters: FilterState) => void
+  refetch?: () => void // Adicione esta prop
 }
 
 // ========== UTILS ==========
 const applyTextFilter = (value: any, filterValue: string): boolean => {
-  if (value === null || value === undefined) return false;
-  return String(value).toLowerCase().includes(filterValue.toLowerCase());
-};
+  if (value === null || value === undefined) return false
+  return String(value).toLowerCase().includes(filterValue.toLowerCase())
+}
 
 const applySelectFilter = (value: any, filterValue: string[]): boolean => {
-  if (!filterValue?.length) return true;
-  return filterValue.includes(String(value));
-};
+  if (!filterValue?.length) return true
+  return filterValue.includes(String(value))
+}
 
-const applyDateFilter = (
-  value: any,
-  filterValue: Date | [Date?, Date?]
-): boolean => {
-  if (!value) return false;
+const applyDateFilter = (value: any, filterValue: Date | [Date?, Date?]): boolean => {
+  if (!value) return false
 
-  // Properly parse the date value
-  const date = value instanceof Date ? value : new Date(value);
-  if (isNaN(date.getTime())) return false; // Invalid date
+  const date = value instanceof Date ? value : new Date(value)
+  if (isNaN(date.getTime())) return false
 
   if (Array.isArray(filterValue)) {
-    const [start, end] = filterValue || [undefined, undefined];
-    if (!start && !end) return true;
+    const [start, end] = filterValue
 
-    if (start && end) return date >= start && date <= end;
-    if (start) return date >= start;
-    if (end) return date <= end;
+    if (!start && !end) return true
+    if (start && end) return date >= start && date <= end
+    if (start) return date >= start
+    if (end) return date <= end
   } else {
-    if (!filterValue) return true;
-    return date.toDateString() === filterValue.toDateString();
+    if (!filterValue) return true
+
+    // Comparar datas ignorando hora
+    const formattedDate = format(date, 'dd/MM/yyyy')
+    const formattedFilter = format(filterValue, 'dd/MM/yyyy')
+    return formattedDate === formattedFilter
   }
 
-  return true;
-};
+  return true
+}
 
-const applyNumberFilter = (
-  value: any,
-  filterValue: { min?: number; max?: number }
-): boolean => {
-  const numValue = Number(value);
-  if (isNaN(numValue)) return false;
 
-  const { min, max } = filterValue || {};
+const applyNumberFilter = (value: any, filterValue: { min?: number; max?: number }): boolean => {
+  const numValue = Number(value)
+  if (isNaN(numValue)) return false
+
+  const { min, max } = filterValue || {}
 
   if (min !== undefined && max !== undefined) {
-    return numValue >= min && numValue <= max;
+    return numValue >= min && numValue <= max
   }
   if (min !== undefined) {
-    return numValue >= min;
+    return numValue >= min
   }
   if (max !== undefined) {
-    return numValue <= max;
+    return numValue <= max
   }
 
-  return true;
-};
+  return true
+}
 
 const applyBooleanFilter = (value: any, filterValue: boolean): boolean => {
-  if (filterValue === undefined || filterValue === null) return true;
-  return Boolean(value) === filterValue;
-};
+  if (filterValue === undefined || filterValue === null) return true
+  return Boolean(value) === filterValue
+}
 
 // ========== COMPONENT ==========
 export function DataTable<TData extends Record<string, any>>({
@@ -179,343 +162,289 @@ export function DataTable<TData extends Record<string, any>>({
   refetch,
 }: DataTableProps<TData>) {
   // ========== STATE ==========
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sorting, setSorting] = useState<
-    { column: string; direction: "asc" | "desc" }[]
-  >([]);
-  const [filters, setFilters] = useState<FilterState>({});
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("")
+  const [sorting, setSorting] = useState<{ column: string; direction: "asc" | "desc" }[]>([])
+  const [filters, setFilters] = useState<FilterState>({})
+  const [activeFilters, setActiveFilters] = useState<string[]>([])
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
 
   // ========== MEMOIZED VALUES ==========
-  const [internalPagination, setInternalPagination] = useState<PaginationState>(
-    {
-      page: 0,
-      pageSize: pageSizeOptions[0],
-    }
-  );
+  const [internalPagination, setInternalPagination] = useState<PaginationState>({
+    page: 0,
+    pageSize: pageSizeOptions[0],
+  })
 
-  const effectivePagination = controlledPaginationState || internalPagination;
+  const effectivePagination = controlledPaginationState || internalPagination
 
   // Dentro do componente DataTable, antes do return
   const buildQueryString = useCallback(() => {
+    if (!enableServerSidePagination) return ""
+
     const params: PaginationParams = {
       page: effectivePagination.page,
       size: effectivePagination.pageSize,
       sort: sorting.map((s) => ({ field: s.column, direction: s.direction })),
       filters: {},
-    };
+    }
 
-    // Processa os filtros para o formato correto
+    // Processar filtros de forma mais robusta
     Object.entries(filters).forEach(([key, value]) => {
-      if (value === null || value === undefined || value === "") return;
+      if (value === null || value === undefined || value === "") return
 
-      if (typeof value === "object" && "from" in value && "to" in value) {
-        // Filtro de intervalo de datas
-        params.filters![`${key}.from`] = value.from
-          ? format(new Date(value.from), "yyyy-MM-dd")
-          : undefined;
-        params.filters![`${key}.to`] = value.to
-          ? format(new Date(value.to), "yyyy-MM-dd")
-          : undefined;
-      } else if (value instanceof Date) {
-        // Filtro de data única
-        params.filters![key] = format(value, "yyyy-MM-dd");
-      } else {
-        // Outros tipos de filtro
-        params.filters![key] = value;
+      if (Array.isArray(value) && value.length === 0) return
+
+      if (typeof value === "object" && !Array.isArray(value)) {
+        const hasValidValues = Object.values(value).some((v) => v !== undefined && v !== null && v !== "")
+        if (!hasValidValues) return
       }
-    });
 
-    // Remove filtros vazios
-    Object.keys(params.filters!).forEach((key) => {
-      if (params.filters![key] === undefined) {
-        delete params.filters![key];
-      }
-    });
+      params.filters![key] = value
+    })
 
-    return buildQuery(params);
-  }, [effectivePagination, sorting, filters]);
+    return buildQuery(params)
+  }, [effectivePagination, sorting, filters, enableServerSidePagination])
 
   const filteredData = useMemo(() => {
-    const items = Array.isArray(data)
-      ? data
-      : (data as { content?: TData[] })?.content || [];
+    const items = Array.isArray(data) ? data : (data as { content?: TData[] })?.content || []
 
-    if (enableServerSidePagination) return items;
+    if (enableServerSidePagination) return items
 
     return items.filter((item) => {
-      if (
-        searchTerm &&
-        !Object.values(item).some((value) => applyTextFilter(value, searchTerm))
-      ) {
-        return false;
+      if (searchTerm && !Object.values(item).some((value) => applyTextFilter(value, searchTerm))) {
+        return false
       }
 
       for (const [columnKey, filterValue] of Object.entries(filters)) {
-        if (
-          filterValue === undefined ||
-          filterValue === null ||
-          filterValue === ""
-        )
-          continue;
+        if (filterValue === undefined || filterValue === null || filterValue === "") continue
 
-        const column = columns.find((c) => c.accessorKey === columnKey);
-        if (!column || !column.enableFiltering) continue;
+        const column = columns.find((c) => c.accessorKey === columnKey)
+        if (!column || !column.enableFiltering) continue
 
-        const value = item[columnKey];
+        const value = item[columnKey]
 
         switch (column.filter?.type) {
           case "select":
-            if (!applySelectFilter(value, filterValue)) return false;
-            break;
+            if (!applySelectFilter(value, filterValue)) return false
+            break
           case "date":
-            if (!applyDateFilter(value, filterValue)) return false;
-            break;
+            if (!applyDateFilter(value, filterValue)) return false
+            break
           case "dateRange":
-            if (!applyDateFilter(value, filterValue)) return false;
-            break;
+            if (!applyDateFilter(value, filterValue)) return false
+            break
           case "number":
-            if (!applyNumberFilter(value, filterValue)) return false;
-            break;
+            if (!applyNumberFilter(value, filterValue)) return false
+            break
           case "boolean":
-            if (!applyBooleanFilter(value, filterValue)) return false;
-            break;
+            if (!applyBooleanFilter(value, filterValue)) return false
+            break
           default:
-            if (!applyTextFilter(value, filterValue)) return false;
+            if (!applyTextFilter(value, filterValue)) return false
         }
       }
 
-      return true;
-    });
-  }, [data, searchTerm, filters, columns, enableServerSidePagination]);
+      return true
+    })
+  }, [data, searchTerm, filters, columns, enableServerSidePagination])
 
   const sortedData = useMemo(() => {
-    if (!sorting.length || enableServerSidePagination) return filteredData;
+    if (!sorting.length || enableServerSidePagination) return filteredData
 
     return [...filteredData].sort((a, b) => {
       for (const sortItem of sorting) {
-        const aValue = a[sortItem.column];
-        const bValue = b[sortItem.column];
+        const aValue = a[sortItem.column]
+        const bValue = b[sortItem.column]
 
-        if (aValue === null || aValue === undefined)
-          return sortItem.direction === "asc" ? -1 : 1;
-        if (bValue === null || bValue === undefined)
-          return sortItem.direction === "asc" ? 1 : -1;
+        if (aValue === null || aValue === undefined) return sortItem.direction === "asc" ? -1 : 1
+        if (bValue === null || bValue === undefined) return sortItem.direction === "asc" ? 1 : -1
 
         if (aValue instanceof Date && bValue instanceof Date) {
           const result =
-            sortItem.direction === "asc"
-              ? aValue.getTime() - bValue.getTime()
-              : bValue.getTime() - aValue.getTime();
-          if (result !== 0) return result;
+            sortItem.direction === "asc" ? aValue.getTime() - bValue.getTime() : bValue.getTime() - aValue.getTime()
+          if (result !== 0) return result
         }
 
         if (typeof aValue === "string" && typeof bValue === "string") {
-          const result =
-            sortItem.direction === "asc"
-              ? aValue.localeCompare(bValue)
-              : bValue.localeCompare(aValue);
-          if (result !== 0) return result;
+          const result = sortItem.direction === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
+          if (result !== 0) return result
         }
 
         if (!isNaN(Number(aValue)) && !isNaN(Number(bValue))) {
           const result =
-            sortItem.direction === "asc"
-              ? Number(aValue) - Number(bValue)
-              : Number(bValue) - Number(aValue);
-          if (result !== 0) return result;
+            sortItem.direction === "asc" ? Number(aValue) - Number(bValue) : Number(bValue) - Number(aValue)
+          if (result !== 0) return result
         }
       }
 
-      return 0;
-    });
-  }, [filteredData, sorting, enableServerSidePagination]);
+      return 0
+    })
+  }, [filteredData, sorting, enableServerSidePagination])
 
   const paginatedData = useMemo(() => {
     if (enableServerSidePagination) {
-      return Array.isArray(data)
-        ? data
-        : (data as { content?: TData[] })?.content || [];
+      return Array.isArray(data) ? data : (data as { content?: TData[] })?.content || []
     }
 
-    const start = effectivePagination.page * effectivePagination.pageSize;
-    const end = start + effectivePagination.pageSize;
-    return sortedData.slice(start, end);
-  }, [
-    data,
-    sortedData,
-    effectivePagination.page,
-    effectivePagination.pageSize,
-    enableServerSidePagination,
-  ]);
+    const start = effectivePagination.page * effectivePagination.pageSize
+    const end = start + effectivePagination.pageSize
+    return sortedData.slice(start, end)
+  }, [data, sortedData, effectivePagination.page, effectivePagination.pageSize, enableServerSidePagination])
 
   const totalPages = useMemo(() => {
     if (enableServerSidePagination && totalCount !== undefined) {
-      return Math.max(1, Math.ceil(totalCount / effectivePagination.pageSize));
+      return Math.max(1, Math.ceil(totalCount / effectivePagination.pageSize))
     }
-    return Math.max(
-      1,
-      Math.ceil(filteredData.length / effectivePagination.pageSize)
-    );
-  }, [
-    filteredData.length,
-    effectivePagination.pageSize,
-    enableServerSidePagination,
-    totalCount,
-  ]);
+    return Math.max(1, Math.ceil(filteredData.length / effectivePagination.pageSize))
+  }, [filteredData.length, effectivePagination.pageSize, enableServerSidePagination, totalCount])
 
   const totalItems = useMemo(() => {
     if (enableServerSidePagination && totalCount !== undefined) {
-      return totalCount;
+      return totalCount
     }
-    return filteredData.length;
-  }, [filteredData.length, enableServerSidePagination, totalCount]);
+    return filteredData.length
+  }, [filteredData.length, enableServerSidePagination, totalCount])
 
   // ========== EFFECTS ==========
   // Atualize o useEffect que reseta a página
   useEffect(() => {
-    if (enableServerSidePagination) {
-      const query = buildQueryString();
-      refetch?.();
+    if (enableServerSidePagination && refetch) {
+      const timeoutId = setTimeout(() => {
+        refetch()
+      }, 300) // Debounce de 300ms
+
+      return () => clearTimeout(timeoutId)
     }
-  }, [enableServerSidePagination, onPaginationChange, refetch]);
+  }, [buildQueryString, enableServerSidePagination, refetch])
 
   useEffect(() => {
     const active = Object.entries(filters)
       .filter(([_, value]) => {
-        if (value === undefined || value === null || value === "") return false;
-        if (Array.isArray(value) && value.length === 0) return false;
+        if (value === undefined || value === null || value === "") return false
+        if (Array.isArray(value) && value.length === 0) return false
         if (typeof value === "object" && !Array.isArray(value)) {
-          return Object.values(value).some(
-            (v) => v !== undefined && v !== null && v !== ""
-          );
+          return Object.values(value).some((v) => v !== undefined && v !== null && v !== "")
         }
-        return true;
+        return true
       })
-      .map(([key]) => key);
+      .map(([key]) => key)
 
-    setActiveFilters(active);
-  }, [filters]);
-
-  useEffect(() => {
-    onPaginationChange?.(effectivePagination);
-    refetch?.();
-  }, [effectivePagination, onPaginationChange]);
+    setActiveFilters(active)
+  }, [filters])
 
   useEffect(() => {
-    const mappedSorting = sorting.map((s) => ({
-      field: s.column,
-      direction: s.direction,
-    }));
-
-    onSortChange?.(mappedSorting);
-    refetch?.();
-  }, [sorting, onSortChange]);
+    if (onPaginationChange) {
+      onPaginationChange(effectivePagination)
+    }
+  }, [effectivePagination, onPaginationChange])
 
   useEffect(() => {
-    onFilterChange?.(filters);
-    refetch?.();
-  }, [filters, onFilterChange]);
+    if (onSortChange) {
+      const mappedSorting = sorting.map((s) => ({
+        field: s.column,
+        direction: s.direction,
+      }))
+      onSortChange(mappedSorting)
+    }
+  }, [sorting, onSortChange])
+
+  useEffect(() => {
+    if (onFilterChange) {
+      onFilterChange(filters)
+    }
+  }, [filters, onFilterChange])
 
   // ========== HANDLERS ==========
   const handleSort = useCallback(
     (columnKey: string) => {
-      const columnDef = columns.find((c) => c.accessorKey === columnKey);
-      if (!columnDef || columnDef.enableSorting === false) return;
+      const columnDef = columns.find((c) => c.accessorKey === columnKey)
+      if (!columnDef || columnDef.enableSorting === false) return
 
       setSorting((prev) => {
-        const existing = prev.find((s) => s.column === columnKey);
+        const existing = prev.find((s) => s.column === columnKey)
 
         if (existing) {
           // Alternar asc -> desc -> remover
           if (existing.direction === "asc") {
-            return prev.map((s) =>
-              s.column === columnKey ? { ...s, direction: "desc" } : s
-            );
+            return prev.map((s) => (s.column === columnKey ? { ...s, direction: "desc" } : s))
           } else {
-            return prev.filter((s) => s.column !== columnKey); // remove
+            return prev.filter((s) => s.column !== columnKey) // remove
           }
         } else {
-          return [...prev, { column: columnKey, direction: "asc" }];
+          return [...prev, { column: columnKey, direction: "asc" }]
         }
-      });
+      })
     },
-    [columns]
-  );
+    [columns],
+  )
 
   const handleFilter = useCallback((column: string, value: any) => {
     setFilters((prev) => ({
       ...prev,
       [column]: value === "" ? undefined : value,
-    }));
-  }, []);
+    }))
+  }, [])
 
   const clearFilter = useCallback((column: string) => {
     setFilters((prev) => {
-      const newFilters = { ...prev };
-      delete newFilters[column];
-      return newFilters;
-    });
-  }, []);
+      const newFilters = { ...prev }
+      delete newFilters[column]
+      return newFilters
+    })
+  }, [])
 
   const clearAllFilters = useCallback(() => {
-    setFilters({});
-    setSearchTerm("");
-    setShowAdvancedFilters(false);
-  }, []);
+    setFilters({})
+    setSearchTerm("")
+    setShowAdvancedFilters(false)
+  }, [])
 
   const handlePageChange = (newPage: number) => {
     const newPagination = {
       ...effectivePagination,
       page: newPage,
-    };
+    }
 
     if (onPaginationChange) {
-      onPaginationChange(newPagination);
+      onPaginationChange(newPagination)
     } else {
-      setInternalPagination(newPagination);
+      setInternalPagination(newPagination)
     }
 
     // Forçar atualização imediatamente
     if (!enableServerSidePagination) {
       // Atualização do lado do cliente já é feita pelo useMemo
     } else {
-      refetch?.();
+      refetch?.()
     }
-  };
+  }
 
   const handlePageSizeChange = (newSize: number) => {
     const newPagination = {
       page: 0,
       pageSize: newSize,
-    };
+    }
 
     if (onPaginationChange) {
-      onPaginationChange(newPagination);
+      onPaginationChange(newPagination)
     } else {
-      setInternalPagination(newPagination);
+      setInternalPagination(newPagination)
     }
-  };
+  }
 
   const renderFilterInput = (column: ColumnDef<TData>) => {
-    const accessorKey = String(column.accessorKey);
-    const currentValue = filters[accessorKey];
-    const filterType = column.filter?.type || "text";
+    const accessorKey = String(column.accessorKey)
+    const currentValue = filters[accessorKey]
+    const filterType = column.filter?.type || "text"
 
     switch (filterType) {
       case "select":
         return (
           <Select
             value={currentValue?.[0] || ""}
-            onValueChange={(value) =>
-              handleFilter(accessorKey, value ? [value] : undefined)
-            }
+            onValueChange={(value) => handleFilter(accessorKey, value ? [value] : undefined)}
           >
             <SelectTrigger className="w-full">
-              <SelectValue
-                placeholder={column.filter?.placeholder || "Selecione..."}
-              />
+              <SelectValue placeholder={column.filter?.placeholder || "Selecione..."} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="">Todos</SelectItem>
@@ -526,27 +455,20 @@ export function DataTable<TData extends Record<string, any>>({
               ))}
             </SelectContent>
           </Select>
-        );
+        )
 
       case "date":
         return (
           <Input
             type="date"
             className="w-full"
-            value={
-              currentValue ? format(new Date(currentValue), "yyyy-MM-dd") : ""
-            }
+            value={currentValue ? format(new Date(currentValue), "dd/MM/yyyy") : ""}
             onChange={(e) => {
-              const date = e.target.value
-                ? new Date(e.target.value)
-                : undefined;
-              handleFilter(
-                accessorKey,
-                date ? format(date, "yyyy-MM-dd") : undefined
-              );
+              const date = e.target.value ? new Date(e.target.value) : undefined
+              handleFilter(accessorKey, date ? format(date, "dd/MM/yyyy") : undefined)
             }}
           />
-        );
+        )
 
       case "dateRange":
         return (
@@ -554,39 +476,27 @@ export function DataTable<TData extends Record<string, any>>({
             <Input
               type="date"
               className="w-full"
-              value={
-                currentValue?.from
-                  ? format(new Date(currentValue.from), "yyyy-MM-dd")
-                  : ""
-              }
+              value={currentValue?.from ? format(new Date(currentValue.from), "dd/MM/yyyy") : ""}
               onChange={(e) =>
                 handleFilter(accessorKey, {
                   ...currentValue,
-                  from: e.target.value
-                    ? format(new Date(e.target.value), "yyyy-MM-dd")
-                    : undefined,
+                  from: e.target.value ? format(new Date(e.target.value), "dd/MM/yyyy") : undefined,
                 })
               }
             />
             <Input
               type="date"
               className="w-full"
-              value={
-                currentValue?.to
-                  ? format(new Date(currentValue.to), "yyyy-MM-dd")
-                  : ""
-              }
+              value={currentValue?.to ? format(new Date(currentValue.to), "dd/MM/yyyy") : ""}
               onChange={(e) =>
                 handleFilter(accessorKey, {
                   ...currentValue,
-                  to: e.target.value
-                    ? format(new Date(e.target.value), "yyyy-MM-dd")
-                    : undefined,
+                  to: e.target.value ? format(new Date(e.target.value), "dd/MM/yyyy") : undefined,
                 })
               }
             />
           </div>
-        );
+        )
 
       case "number":
         return (
@@ -614,25 +524,16 @@ export function DataTable<TData extends Record<string, any>>({
               }
             />
           </div>
-        );
+        )
 
       case "boolean":
         return (
           <Select
-            value={
-              currentValue === undefined ? "" : currentValue ? "true" : "false"
-            }
-            onValueChange={(value) =>
-              handleFilter(
-                accessorKey,
-                value === "" ? undefined : value === "true"
-              )
-            }
+            value={currentValue === undefined ? "" : currentValue ? "true" : "false"}
+            onValueChange={(value) => handleFilter(accessorKey, value === "" ? undefined : value === "true")}
           >
             <SelectTrigger className="w-full">
-              <SelectValue
-                placeholder={column.filter?.placeholder || "Todos"}
-              />
+              <SelectValue placeholder={column.filter?.placeholder || "Todos"} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="">Todos</SelectItem>
@@ -640,7 +541,7 @@ export function DataTable<TData extends Record<string, any>>({
               <SelectItem value="false">Não</SelectItem>
             </SelectContent>
           </Select>
-        );
+        )
 
       default:
         return (
@@ -650,22 +551,18 @@ export function DataTable<TData extends Record<string, any>>({
             value={currentValue || ""}
             onChange={(e) => handleFilter(accessorKey, e.target.value)}
           />
-        );
+        )
     }
-  };
+  }
 
   return (
     <div className={cn("space-y-4", className)}>
       {/* Search and Filter Controls */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row  sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            {searchPlaceholder}
+          </p>
         <div className="relative w-full sm:max-w-sm">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={searchPlaceholder}
-            className="pl-8"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
           {searchTerm && (
             <Button
               variant="ghost"
@@ -700,47 +597,34 @@ export function DataTable<TData extends Record<string, any>>({
       {activeFilters.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {activeFilters.map((columnKey) => {
-            const column = columns.find((c) => c.accessorKey === columnKey);
-            if (!column) return null;
+            const column = columns.find((c) => c.accessorKey === columnKey)
+            if (!column) return null
 
-            const filterValue = filters[columnKey];
-            let displayValue = "";
+            const filterValue = filters[columnKey]
+            let displayValue = ""
 
             if (Array.isArray(filterValue)) {
-              displayValue = filterValue.join(", ");
+              displayValue = filterValue.join(", ")
             } else if (filterValue?.from && filterValue?.to) {
-              displayValue = `${format(
-                new Date(filterValue.from),
-                "PPP"
-              )} - ${format(new Date(filterValue.to), "PPP")}`;
+              displayValue = `${format(new Date(filterValue.from), "PPP")} - ${format(new Date(filterValue.to), "PPP")}`
             } else if (filterValue?.from) {
-              displayValue = `Desde ${format(
-                new Date(filterValue.from),
-                "PPP"
-              )}`;
+              displayValue = `Desde ${format(new Date(filterValue.from), "PPP")}`
             } else if (filterValue?.to) {
-              displayValue = `Até ${format(new Date(filterValue.to), "PPP")}`;
+              displayValue = `Até ${format(new Date(filterValue.to), "PPP")}`
             } else if (typeof filterValue === "object") {
-              if (
-                filterValue.min !== undefined &&
-                filterValue.max !== undefined
-              ) {
-                displayValue = `${filterValue.min} - ${filterValue.max}`;
+              if (filterValue.min !== undefined && filterValue.max !== undefined) {
+                displayValue = `${filterValue.min} - ${filterValue.max}`
               } else if (filterValue.min !== undefined) {
-                displayValue = `≥ ${filterValue.min}`;
+                displayValue = `≥ ${filterValue.min}`
               } else if (filterValue.max !== undefined) {
-                displayValue = `≤ ${filterValue.max}`;
+                displayValue = `≤ ${filterValue.max}`
               }
             } else {
-              displayValue = String(filterValue);
+              displayValue = String(filterValue)
             }
 
             return (
-              <Badge
-                key={columnKey}
-                variant="outline"
-                className="flex items-center gap-1"
-              >
+              <Badge key={columnKey} variant="outline" className="flex items-center gap-1">
                 <span className="font-medium">{column.header}:</span>
                 <span>{displayValue}</span>
                 <Button
@@ -748,14 +632,14 @@ export function DataTable<TData extends Record<string, any>>({
                   size="icon"
                   className="h-4 w-4"
                   onClick={(e) => {
-                    e.stopPropagation();
-                    clearFilter(columnKey);
+                    e.stopPropagation()
+                    clearFilter(columnKey)
                   }}
                 >
                   <X className="h-3 w-3" />
                 </Button>
               </Badge>
-            );
+            )
           })}
         </div>
       )}
@@ -768,9 +652,7 @@ export function DataTable<TData extends Record<string, any>>({
               .filter((column) => column.enableFiltering !== false)
               .map((column) => (
                 <div key={String(column.accessorKey)}>
-                  <label className="block text-sm font-medium mb-1">
-                    {column.header}
-                  </label>
+                  <label className="block text-sm font-medium mb-1">{column.header}</label>
                   {renderFilterInput(column)}
                 </div>
               ))}
@@ -788,37 +670,24 @@ export function DataTable<TData extends Record<string, any>>({
               <TableHeader>
                 <TableRow>
                   {columns.map((column) => (
-                    <TableHead
-                      key={String(column.accessorKey)}
-                      className={column.meta?.className}
-                    >
+                    <TableHead key={String(column.accessorKey)} className={column.meta?.className}>
                       {column.enableSorting !== false ? (
                         <Button
                           variant="ghost"
                           size="sm"
                           className={`-ml-3 h-8 hover:bg-accent/50 data-[state=open]:bg-accent ${
-                            sorting.find((s) => s.column === column.accessorKey)
-                              ? "bg-accent/30 font-semibold"
-                              : ""
+                            sorting.find((s) => s.column === column.accessorKey) ? "bg-accent/30 font-semibold" : ""
                           }`}
                           onClick={() => handleSort(String(column.accessorKey))}
                         >
                           <span className="font-medium">{column.header}</span>
                           {(() => {
-                            const s = sorting.find(
-                              (s) => s.column === column.accessorKey
-                            );
-                            if (s?.direction === "asc")
-                              return (
-                                <ArrowUp className="ml-2 h-4 w-4 text-foreground" />
-                              );
-                            if (s?.direction === "desc")
-                              return (
-                                <ArrowDown className="ml-2 h-4 w-4 text-foreground" />
-                              );
+                            const s = sorting.find((s) => s.column === column.accessorKey)
+                            if (s?.direction === "asc") return <ArrowUp className="ml-2 h-4 w-4 text-foreground" />
+                            if (s?.direction === "desc") return <ArrowDown className="ml-2 h-4 w-4 text-foreground" />
                             return (
                               <ArrowUpDown className="ml-2 h-4 w-4 text-muted-foreground opacity-50 hover:opacity-100" />
-                            );
+                            )
                           })()}
                         </Button>
                       ) : (
@@ -834,19 +703,14 @@ export function DataTable<TData extends Record<string, any>>({
                     <TableRow
                       key={rowIndex}
                       onClick={() => onRowClick?.(row)}
-                      className={
-                        onRowClick ? "cursor-pointer hover:bg-muted/50" : ""
-                      }
+                      className={onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}
                     >
                       {columns.map((column) => {
-                        const accessor = String(column.accessorKey);
-                        const value = row?.[accessor] ?? null;
+                        const accessor = String(column.accessorKey)
+                        const value = row?.[accessor] ?? null
 
                         return (
-                          <TableCell
-                            key={`${rowIndex}-${accessor}`}
-                            className={column.meta?.className}
-                          >
+                          <TableCell key={`${rowIndex}-${accessor}`} className={column.meta?.className}>
                             {column.cell ? (
                               column.cell({
                                 row,
@@ -854,24 +718,17 @@ export function DataTable<TData extends Record<string, any>>({
                                 value,
                               })
                             ) : (
-                              <span>
-                                {value !== null ? String(value) : "N/A"}
-                              </span>
+                              <span>{value !== null ? String(value) : "N/A"}</span>
                             )}
                           </TableCell>
-                        );
+                        )
                       })}
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      {data.length === 0
-                        ? "Nenhum dado disponível"
-                        : "Nenhum resultado encontrado"}
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      {data.length === 0 ? "Nenhum dado disponível" : "Nenhum resultado encontrado"}
                     </TableCell>
                   </TableRow>
                 )}
@@ -882,78 +739,70 @@ export function DataTable<TData extends Record<string, any>>({
       </div>
 
       {/* Pagination Controls */}
-      {enablePagination &&
-        (filteredData.length > 0 || enableServerSidePagination) && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                Itens por página:
-              </span>
-              <Select
-                value={String(effectivePagination.pageSize)}
-                onValueChange={(value) => handlePageSizeChange(Number(value))}
-              >
-                <SelectTrigger className="h-8 w-[70px]">
-                  <SelectValue placeholder={effectivePagination.pageSize} />
-                </SelectTrigger>
-                <SelectContent side="top">
-                  {pageSizeOptions.map((size) => (
-                    <SelectItem key={size} value={String(size)}>
-                      {size}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => handlePageChange(0)}
-                disabled={effectivePagination.page === 0}
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </Button>
-
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => handlePageChange(effectivePagination.page - 1)}
-                disabled={effectivePagination.page === 0}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-
-              <span className="text-sm">
-                Página {effectivePagination.page + 1} de{" "}
-                {Math.max(1, totalPages)}
-              </span>
-
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => handlePageChange(effectivePagination.page + 1)}
-                disabled={
-                  effectivePagination.page >= totalPages - 1 || totalPages === 0
-                }
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => handlePageChange(totalPages - 1)}
-                disabled={
-                  effectivePagination.page >= totalPages - 1 || totalPages === 0
-                }
-              >
-                <ChevronsRight className="h-4 w-4" />
-              </Button>
-            </div>
+      {enablePagination && (filteredData.length > 0 || enableServerSidePagination) && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Itens por página:</span>
+            <Select
+              value={String(effectivePagination.pageSize)}
+              onValueChange={(value) => handlePageSizeChange(Number(value))}
+            >
+              <SelectTrigger className="h-8 w-[70px]">
+                <SelectValue placeholder={effectivePagination.pageSize} />
+              </SelectTrigger>
+              <SelectContent side="top">
+                {pageSizeOptions.map((size) => (
+                  <SelectItem key={size} value={String(size)}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        )}
+
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => handlePageChange(0)}
+              disabled={effectivePagination.page === 0}
+            >
+              <ChevronsLeft className="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => handlePageChange(effectivePagination.page - 1)}
+              disabled={effectivePagination.page === 0}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+
+            <span className="text-sm">
+              Página {effectivePagination.page + 1} de {Math.max(1, totalPages)}
+            </span>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => handlePageChange(effectivePagination.page + 1)}
+              disabled={effectivePagination.page >= totalPages - 1 || totalPages === 0}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => handlePageChange(totalPages - 1)}
+              disabled={effectivePagination.page >= totalPages - 1 || totalPages === 0}
+            >
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
-  );
+  )
 }

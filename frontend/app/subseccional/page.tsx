@@ -246,7 +246,7 @@ export default function SubseccionalPage() {
           columns={columns}
           data={data?.content || []}
           loading={isLoading}
-          searchPlaceholder="Buscar subseccionais..."
+          searchPlaceholder="Visualize as subseções e suas respectivas informações administrativas."
           enableServerSidePagination
           totalCount={data?.totalElements}
           onSortChange={setSort}

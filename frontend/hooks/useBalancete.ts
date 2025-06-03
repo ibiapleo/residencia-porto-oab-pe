@@ -4,6 +4,7 @@ import { getBalancetes } from '@/services/balanceteService';
 import { BalanceteResponseDTO } from '@/types/balancete';
 import { Page, PaginationParams } from '@/types/paginacao';
 
-export function useBalancete(params: PaginationParams) {
-  return usePaginatedResource<Page<BalanceteResponseDTO>>('/balancete-cfoab', getBalancetes, params);
+export function useBalancete(params: PaginationParams, download?: boolean) {
+  return usePaginatedResource<Page<BalanceteResponseDTO>>('/balancete-cfoab', getBalancetes, params,);
 }
+

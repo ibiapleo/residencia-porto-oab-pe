@@ -44,6 +44,7 @@ import { PaginationParams, Sort } from "@/types/paginacao";
 import { deleteBalancete, uploadBalancete } from "@/services/balanceteService";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileImport } from "@/components/file-import";
+import { BalanceteDownloadButton } from "@/components/BalanceteDownloadButton";
 
 export default function BalancetePage() {
   const { toast } = useToast();
@@ -171,9 +172,9 @@ export default function BalancetePage() {
     {
       accessorKey: "dtPrevEntr",
       header: "Prev. Entrega",
-      cell: ({ row }) => row?.dtPrevEntr.toString(),
+      cell: ({ row }) => `${row?.dtPrevEntr ?? "-"}`,
       enableSorting: true,
-      enableFiltering: true,
+      enableFiltering: false,
       filter: {
         type: "dateRange",
       },
@@ -183,7 +184,7 @@ export default function BalancetePage() {
       header: "Entrega",
       cell: ({ row }) => `${row?.dtEntr ?? "-"}`,
       enableSorting: true,
-      enableFiltering: true,
+      enableFiltering: false,
       filter: {
         type: "dateRange",
       },
@@ -337,7 +338,7 @@ export default function BalancetePage() {
         columns={columns}
         data={data?.content || []}
         loading={isLoading}
-        searchPlaceholder="Buscar balancetes..."
+        searchPlaceholder="Acompanhe os balancetes financeiros consolidados por período."
         enableServerSidePagination
         totalCount={data?.totalElements}
         onSortChange={setSort}

@@ -357,7 +357,7 @@ export default function PagamentoCotasPage() {
           columns={columns}
           data={data?.content || []}
           loading={isLoading}
-          searchPlaceholder="Buscar pagamentos de cotas..."
+          searchPlaceholder="Visualize os registros de pagamento de cotas pelas subseções."
           enableServerSidePagination
           totalCount={data?.totalElements}
           onSortChange={setSort}

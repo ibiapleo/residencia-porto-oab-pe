@@ -356,7 +356,8 @@ export default function BaseOrcamentariaPage() {
           columns={columns}
           data={data?.content || []}
           loading={isLoading}
-          searchPlaceholder="Buscar bases orçamentárias..."
+          searchPlaceholder="
+Confira a base orçamentária utilizada na elaboração dos relatórios."
           enableServerSidePagination
           totalCount={data?.totalElements}
           onSortChange={setSort}

@@ -336,7 +336,7 @@ export default function TransparenciaPage() {
           columns={columns}
           data={data?.content || []}
           loading={isLoading}
-          searchPlaceholder="Buscar demonstrativos..."
+          searchPlaceholder="Acesse os dados publicados para fins de prestação de contas e controle social."
           enableServerSidePagination
           totalCount={data?.totalElements}
           onSortChange={setSort}

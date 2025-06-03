@@ -38,7 +38,7 @@ import { FileImport } from "@/components/file-import";
 
 const formSchema = z
   .object({
-    subseccional: z
+    idSubseccional: z
       .string({ required_error: "Selecione uma subseccional" })
       .min(1),
     mesReferencia: z.string({ required_error: "Selecione um mês" }).min(1),
@@ -52,7 +52,7 @@ const formSchema = z
     valorDesconto: z.number().optional(),
     protocoloSGD: z.string().optional(),
     observacao: z.string().optional(),
-    tipoDescontoId: z.string().optional(),
+    idTipoDesconto: z.string().optional(),
   })
   .refine(
     (data) => {
@@ -116,7 +116,7 @@ export default function NewPrestacaoContasPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      subseccional: "",
+      idSubseccional: "",
       mesReferencia: "",
       ano: new Date().getFullYear().toString(),
       dtPrevEntr: "",
@@ -126,7 +126,7 @@ export default function NewPrestacaoContasPage() {
       valorDesconto: 0,
       protocoloSGD: "",
       observacao: "",
-      tipoDescontoId: "",
+      idTipoDesconto: "",
     },
   });
 
@@ -157,7 +157,7 @@ export default function NewPrestacaoContasPage() {
 
     try {
       const requestData: PrestacaoContasSubseccionalRequestDTO = {
-        subseccional: values.subseccional,
+        idSubseccional: values.idSubseccional,
         mesReferencia: values.mesReferencia,
         ano: values.ano,
         dtPrevEntr: values.dtPrevEntr,
@@ -167,7 +167,7 @@ export default function NewPrestacaoContasPage() {
         valorDesconto: Number(values.valorDesconto),
         protocoloSGD: values.protocoloSGD?.toString() ?? "",
         observacao: values.observacao?.toString() ?? "",
-        tipoDescontoId: values.tipoDescontoId?.toString() ?? "",
+        idTipoDesconto: values.idTipoDesconto?.toString() ?? "",
       };
 
       await criarPrestacaoContas(requestData);
@@ -215,13 +215,13 @@ export default function NewPrestacaoContasPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
-                    name="subseccional"
+                    name="idSubseccional"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Subseccional</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          value={field.value ?? ""}
+                          value={field.value}
                           disabled={isLoadingSubseccionais}
                         >
                           <FormControl>
@@ -239,9 +239,9 @@ export default function NewPrestacaoContasPage() {
                             {subseccionais?.content.map((item) => (
                               <SelectItem
                                 key={item.id}
-                                value={item.subSeccional}
+                                value={item.id.toString()} // Armazena o ID como valor
                               >
-                                {item.subSeccional}
+                                {item.subSeccional} {/* Mostra o nome para o usuário */}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -389,7 +389,7 @@ export default function NewPrestacaoContasPage() {
                   />
                   <FormField
                     control={form.control}
-                    name="tipoDescontoId"
+                    name="idTipoDesconto"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Tipo de Desconto</FormLabel>
