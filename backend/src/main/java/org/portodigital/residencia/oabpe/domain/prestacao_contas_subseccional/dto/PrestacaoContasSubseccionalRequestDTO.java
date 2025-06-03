@@ -27,8 +27,9 @@ public class PrestacaoContasSubseccionalRequestDTO {
     private String protocoloSGD;
     private String observacao;
     private BigDecimal valorPago;
+    private Long idSubseccional;
+    private Long idTipoDesconto;
     @NotBlank
     private String subseccional;
     private String tipoDesconto;
-
 }

@@ -104,11 +104,15 @@ public class PrestacaoContasSubseccionalService extends AbstractFileImportServic
             throw new IllegalArgumentException("A Data de Pagamento não pode ser posterior à Data de Entrega.");
         }
 
-        Subseccional subseccional = subseccionalRepository.findByNomeAtivo(request.getSubseccional())
-                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Subseccional não encontrada com nome: " + request.getSubseccional()));
+        Subseccional subseccional = subseccionalRepository.findById(request.getIdSubseccional())
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Subseccional não encontrada com nome: " + request.getIdSubseccional()));
 
-        TipoDesconto tipoDesconto = tipoDescontoRepository.findByNomeAtivo(request.getTipoDesconto())
-                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Subseccional não encontrada com nome: " + request.getTipoDesconto()));
+        TipoDesconto tipoDesconto = null;
+
+        if(request.getIdTipoDesconto() != null){
+            tipoDesconto = tipoDescontoRepository.findById(request.getIdTipoDesconto())
+                    .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Subseccional não encontrada com nome: " + request.getIdTipoDesconto()));
+        }
 
         prestacao.setUser(user);
         prestacao.setValorPago(prestacao.getValorPago());
