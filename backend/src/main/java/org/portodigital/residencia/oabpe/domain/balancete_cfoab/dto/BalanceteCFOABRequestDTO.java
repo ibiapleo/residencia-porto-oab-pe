@@ -15,19 +15,14 @@ public class BalanceteCFOABRequestDTO {
 
     @NotBlank(message = "Nome do demonstrativo é obrigatório")
     private String demonstrativoNome;
-
     @NotBlank(message = "Referência é obrigatória")
     private String referencia;
-
     @NotBlank(message = "Ano é obrigatório")
     private String ano;
-
     @NotBlank(message = "Periodicidade é obrigatória")
     private String periodicidade;
-
     @NotNull(message = "Data de Previsão de Entrega é obrigatória")
     private LocalDate dtPrevEntr;
-
     private LocalDate dtEntr;
 
 }

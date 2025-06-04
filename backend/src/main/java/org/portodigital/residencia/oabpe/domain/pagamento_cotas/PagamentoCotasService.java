@@ -69,10 +69,10 @@ public class PagamentoCotasService extends AbstractFileImportService<PagamentoCo
             throw new SecurityException("Acesso não autorizado");
         }
 
-        var instituicao = instituicaoRepository.findByNomeAtivo(request.getInstituicaoNome())
-                .orElseThrow(() -> new EntityNotFoundException("Instituição não encontrada com ID: " + request.getInstituicaoNome()));
+        var instituicao = instituicaoRepository.findByNomeAtivo(request.getInstituicao())
+                .orElseThrow(() -> new EntityNotFoundException("Instituição não encontrada com nome: " + request.getInstituicao()));
         var tipoDesconto = tipoDescontoRepository.findByNomeAtivo(request.getTipoDesconto())
-                .orElseThrow(() -> new EntityNotFoundException("Tipo de desconto não encontrado com ID: " + request.getTipoDesconto()));
+                .orElseThrow(() -> new EntityNotFoundException("Tipo de desconto não encontrado com nome: " + request.getTipoDesconto()));
 
         User user = (User) authentication.getPrincipal();
         PagamentoCotas pagamentoCotas = mapper.map(request, PagamentoCotas.class);
@@ -89,8 +89,6 @@ public class PagamentoCotasService extends AbstractFileImportService<PagamentoCo
         var existingPagamento = pagamentoCotasRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Pagamento de Cotas não encontrado."));
         existingPagamento.setStatus(false);
-
-        // rastreia o usuário que fez a inativação
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getPrincipal() == null) {
             throw new SecurityException("Acesso não autorizado");
@@ -106,14 +104,14 @@ public class PagamentoCotasService extends AbstractFileImportService<PagamentoCo
                 .orElseThrow(() -> new EntityNotFoundException("Pagamento de Cotas não encontrado com id: " + id));
 
 
-        if (request.getInstituicaoNome() != null) {
-            var instituicao = instituicaoRepository.findByNomeAtivo(request.getInstituicaoNome())
-                    .orElseThrow(() -> new EntityNotFoundException("Instituição não encontrada com ID: " + request.getInstituicaoNome()));
+        if (request.getInstituicao() != null) {
+            var instituicao = instituicaoRepository.findByNomeAtivo(request.getInstituicao())
+                    .orElseThrow(() -> new EntityNotFoundException("Instituição não encontrada com nome: " + request.getInstituicao()));
             existing.setInstituicao(instituicao);
         }
         if (request.getTipoDesconto() != null) {
             var tipoDesconto = tipoDescontoRepository.findByNomeAtivo(request.getTipoDesconto())
-                    .orElseThrow(() -> new EntityNotFoundException("Tipo de desconto não encontrado com ID: " + request.getTipoDesconto()));
+                    .orElseThrow(() -> new EntityNotFoundException("Tipo de desconto não encontrado com nome: " + request.getTipoDesconto()));
             existing.setTipoDesconto(tipoDesconto);
         }
 
