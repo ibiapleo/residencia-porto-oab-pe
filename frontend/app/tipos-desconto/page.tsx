@@ -235,7 +235,7 @@ export default function DescontoPage() {
           columns={columns}
           data={data?.content || []}
           loading={isLoading}
-          searchPlaceholder="Buscar descontos..."
+          searchPlaceholder="Visualize os tipos de desconto aplicáveis nos registros financeiros."
           enableServerSidePagination
           totalCount={data?.totalElements}
           onSortChange={setSort}

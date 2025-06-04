@@ -16,12 +16,12 @@ export interface PrestacaoContasSubseccionalResponseDTO {
   subseccional: string;
   subseccionalId: string;
   tipoDesconto: string;
-  tipoDescontoId: string;
+  idTipoDesconto: string;
   usuarioId: string;
 }
 
 export interface PrestacaoContasSubseccionalRequestDTO {
-  subseccional: string;
+  idSubseccional: string;
   mesReferencia: string;
   ano: string;
   dtPrevEntr: string; // ou Date se você converter
@@ -31,5 +31,5 @@ export interface PrestacaoContasSubseccionalRequestDTO {
   valorDesconto: number;
   protocoloSGD: string;
   observacao: string;
-  tipoDescontoId: string;
+  idTipoDesconto: string;
 }

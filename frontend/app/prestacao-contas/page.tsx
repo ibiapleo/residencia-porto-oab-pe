@@ -408,7 +408,7 @@ export default function PrestacaoContasPage() {
         columns={columns}
         data={data?.content || []}
         loading={isLoading}
-        searchPlaceholder="Buscar Prestações..."
+        searchPlaceholder="Registre ou atualize a prestação de contas de uma subseção."
         enableServerSidePagination
         totalCount={data?.totalElements}
         onSortChange={setSort}
