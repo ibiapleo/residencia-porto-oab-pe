@@ -19,15 +19,15 @@ function createFakeToken(username: string): string {
     sub: username,
     exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // expira em 1 dia
     permissions: {
-      modulo_gestao_usuarios: ["read", "write", "delete"],
-      modulo_balancetes_cfoab: ["read", "write", "delete"],
-      modulo_prestacao_contas_subseccional: ["read", "write", "delete"],
-      modulo_subseccional: ["read", "write", "delete"],
-      modulo_instituicoes: ["read", "write", "delete"],
-      modulo_pagamento_cotas: ["read", "write", "delete"],
-      modulo_base_orcamentaria: ["read", "write", "delete"],
-      modulo_transparencia: ["read", "write", "delete"],
-      modulo_demonstrativos: ["read", "write", "delete"]
+      modulo_gestao_usuarios: ["admin"],
+      modulo_balancetes_cfoab: ["admin"],
+      modulo_prestacao_contas_subseccional: ["admin"],
+      modulo_subseccional: ["admin"],
+      modulo_instituicoes: ["admin"],
+      modulo_pagamento_cotas: ["admin"],
+      modulo_base_orcamentaria: ["admin"],
+      modulo_transparencia: ["admin"],
+      modulo_demonstrativos: ["admin"],
     },
   };
 
