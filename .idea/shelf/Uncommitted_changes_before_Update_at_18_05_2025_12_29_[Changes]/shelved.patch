@@ -1,0 +1,103 @@
+Index: backend/src/main/java/org/portodigital/residencia/oabpe/domain/demonstrativo/DemonstrativoRepository.java
+===================================================================
+diff --git a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/demonstrativo/DemonstrativoRepository.java b/backend/src/main/java/org/portodigital/residencia/oabpe/domain/demonstrativo/DemonstrativoRepository.java
+deleted file mode 100644
+--- a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/demonstrativo/DemonstrativoRepository.java	(revision d9ac035b7a8a948e79ae6d970eecb857109fbd97)
++++ /dev/null	(revision d9ac035b7a8a948e79ae6d970eecb857109fbd97)
+@@ -1,6 +0,0 @@
+-package org.portodigital.residencia.oabpe.domain.demonstrativo;
+-
+-import org.springframework.data.jpa.repository.JpaRepository;
+-
+-public interface DemonstrativoRepository extends JpaRepository<Demonstrativo, Long> {
+-}
+Index: backend/src/main/java/org/portodigital/residencia/oabpe/domain/demonstrativo/Demonstrativo.java
+===================================================================
+diff --git a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/demonstrativo/Demonstrativo.java b/backend/src/main/java/org/portodigital/residencia/oabpe/domain/demonstrativo/Demonstrativo.java
+deleted file mode 100644
+--- a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/demonstrativo/Demonstrativo.java	(revision d9ac035b7a8a948e79ae6d970eecb857109fbd97)
++++ /dev/null	(revision d9ac035b7a8a948e79ae6d970eecb857109fbd97)
+@@ -1,21 +0,0 @@
+-package org.portodigital.residencia.oabpe.domain.demonstrativo;
+-
+-import lombok.*;
+-import jakarta.persistence.*;
+-
+-@Getter
+-@Setter
+-@NoArgsConstructor
+-@AllArgsConstructor
+-@Entity
+-@Table(name = "Demonstrativo")
+-public class Demonstrativo {
+-
+-    @Id
+-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+-    private Long id;
+-
+-    @Column(name = "Nome", length = 100)
+-    private String nome;
+-
+-}
+Index: backend/src/main/java/org/portodigital/residencia/oabpe/infra/security/SecurityConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package org.portodigital.residencia.oabpe.infra.security;\n\nimport lombok.RequiredArgsConstructor;\nimport org.springframework.context.annotation.Bean;\nimport org.springframework.context.annotation.Configuration;\nimport org.springframework.http.HttpHeaders;\nimport org.springframework.http.HttpMethod;\nimport org.springframework.security.authentication.AuthenticationManager;\nimport org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;\nimport org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;\nimport org.springframework.security.config.annotation.web.builders.HttpSecurity;\nimport org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;\nimport org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;\nimport org.springframework.security.config.http.SessionCreationPolicy;\nimport org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;\nimport org.springframework.security.crypto.password.PasswordEncoder;\nimport org.springframework.security.web.SecurityFilterChain;\nimport org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;\nimport org.springframework.web.cors.CorsConfiguration;\nimport org.springframework.web.cors.CorsConfigurationSource;\nimport org.springframework.web.cors.UrlBasedCorsConfigurationSource;\n\nimport java.util.Arrays;\nimport java.util.List;\n\n@Configuration\n@RequiredArgsConstructor\n@EnableWebSecurity\n@EnableMethodSecurity\npublic class SecurityConfig {\n\n    private final CustomUserDetailsService userDetailsService;\n    private final SecurityFilter securityFilter;\n\n    @Bean\n    public CorsConfigurationSource corsConfigurationSource() {\n        CorsConfiguration configuration = new CorsConfiguration();\n        configuration.setAllowedOrigins(List.of(\"http://localhost:5173\"));\n        configuration.setAllowedMethods(Arrays.asList(\n                HttpMethod.GET.name(),\n                HttpMethod.POST.name(),\n                HttpMethod.PUT.name(),\n                HttpMethod.DELETE.name(),\n                HttpMethod.OPTIONS.name()));\n        configuration.setAllowedHeaders(Arrays.asList(\n                HttpHeaders.AUTHORIZATION,\n                HttpHeaders.CONTENT_TYPE));\n        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();\n        source.registerCorsConfiguration(\"/**\", configuration);\n        return source;\n    }\n\n    @Bean\n    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {\n        http\n                .cors(c -> c.configurationSource(corsConfigurationSource()))\n                .csrf(AbstractHttpConfigurer::disable)\n                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))\n                .authorizeHttpRequests(authorize -> authorize\n                        .requestMatchers(\n                                \"/v1/auth/login\",\n                                \"/v1/auth/register\",\n                                \"/v1/auth/refresh-token\",\n                                \"/v2/api-docs\",\n                                \"/v3/api-docs\",\n                                \"/v3/api-docs/**\",\n                                \"/swagger-resources\",\n                                \"/swagger-resources/**\",\n                                \"/configuration/ui\",\n                                \"/configuration/security\",\n                                \"/swagger-ui/**\",\n                                \"/webjars/**\",\n                                \"/swagger-ui.html\",\n                                \"/ms-users/v3/api-docs\",\n                                \"/transparencia\"\n                                )\n                        .permitAll()\n                        .anyRequest()\n                        .authenticated()\n                )\n                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);\n        return http.build();\n    }\n\n    @Bean\n    public PasswordEncoder passwordEncoder() {\n        return new BCryptPasswordEncoder();\n    }\n\n    @Bean\n    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {\n        return authenticationConfiguration.getAuthenticationManager();\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/org/portodigital/residencia/oabpe/infra/security/SecurityConfig.java b/backend/src/main/java/org/portodigital/residencia/oabpe/infra/security/SecurityConfig.java
+--- a/backend/src/main/java/org/portodigital/residencia/oabpe/infra/security/SecurityConfig.java	(revision d9ac035b7a8a948e79ae6d970eecb857109fbd97)
++++ b/backend/src/main/java/org/portodigital/residencia/oabpe/infra/security/SecurityConfig.java	(date 1747579178906)
+@@ -71,8 +71,7 @@
+                                 "/swagger-ui/**",
+                                 "/webjars/**",
+                                 "/swagger-ui.html",
+-                                "/ms-users/v3/api-docs",
+-                                "/transparencia"
++                                "/ms-users/v3/api-docs"
+                                 )
+                         .permitAll()
+                         .anyRequest()
+Index: backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package org.portodigital.residencia.oabpe.domain.transparencia;\r\n\r\nimport jakarta.persistence.*;\r\nimport lombok.*;\r\nimport org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;\r\n\r\nimport java.time.LocalDate;\r\n\r\n@Getter\r\n@Setter\r\n@NoArgsConstructor\r\n@AllArgsConstructor\r\n@Entity\r\n@Table(name = \"Transparencia\")\r\npublic class Transparencia {\r\n\r\n    @Id\r\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\r\n    private Long id;\r\n\r\n    @ManyToOne(optional = false)\r\n    @JoinColumn(name = \"Id_Demonst\", referencedColumnName = \"id\")\r\n    private Demonstrativo demonstrativo;\r\n\r\n    @Column(name = \"Referencia\", length = 80, nullable = false)\r\n    private String referencia;\r\n\r\n    @Column(name = \"Ano\", length = 4, nullable = false)\r\n    private String ano;\r\n\r\n    @Column(name = \"Periodicidade\", length = 80, nullable = false)\r\n    private String periodicidade;\r\n\r\n    @Column(name = \"DtPrevEntr\", nullable = false)\r\n    private LocalDate dtPrevEntr;\r\n\r\n    @Column(name = \"DtEntrega\")\r\n    private LocalDate dtEntrega;\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java b/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java
+--- a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java	(revision d9ac035b7a8a948e79ae6d970eecb857109fbd97)
++++ b/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java	(date 1747579997547)
+@@ -2,7 +2,7 @@
+ 
+ import jakarta.persistence.*;
+ import lombok.*;
+-import org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;
++import org.portodigital.residencia.oabpe.domain.user.User;
+ 
+ import java.time.LocalDate;
+ 
+@@ -18,10 +18,6 @@
+     @GeneratedValue(strategy = GenerationType.IDENTITY)
+     private Long id;
+ 
+-    @ManyToOne(optional = false)
+-    @JoinColumn(name = "Id_Demonst", referencedColumnName = "id")
+-    private Demonstrativo demonstrativo;
+-
+     @Column(name = "Referencia", length = 80, nullable = false)
+     private String referencia;
+ 
+@@ -36,4 +32,11 @@
+ 
+     @Column(name = "DtEntrega")
+     private LocalDate dtEntrega;
++
++    @Column(name = "Status", nullable = false)
++    private boolean status;
++
++    @ManyToOne(optional = false)
++    @JoinColumn(name = "Id_usuario", referencedColumnName = "id")
++    private User user;
+ }

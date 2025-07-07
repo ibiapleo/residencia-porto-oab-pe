@@ -1,0 +1,275 @@
+Index: backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package org.portodigital.residencia.oabpe.domain.transparencia;\r\n\r\nimport jakarta.persistence.*;\r\nimport lombok.*;\r\nimport org.portodigital.residencia.oabpe.domain.demonstrativo.Demonstrativo;\r\n\r\nimport java.time.LocalDate;\r\n\r\n@Getter\r\n@Setter\r\n@NoArgsConstructor\r\n@AllArgsConstructor\r\n@Entity\r\n@Table(name = \"Transparencia\")\r\npublic class Transparencia {\r\n\r\n    @Id\r\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\r\n    private Long id;\r\n\r\n    @ManyToOne(optional = false)\r\n    @JoinColumn(name = \"Id_Demonst\", referencedColumnName = \"id\")\r\n    private Demonstrativo demonstrativo;\r\n\r\n    @Column(name = \"Referencia\", length = 80, nullable = false)\r\n    private String referencia;\r\n\r\n    @Column(name = \"Ano\", length = 4, nullable = false)\r\n    private String ano;\r\n\r\n    @Column(name = \"Periodicidade\", length = 80, nullable = false)\r\n    private String periodicidade;\r\n\r\n    @Column(name = \"DtPrevEntr\", nullable = false)\r\n    private LocalDate dtPrevEntr;\r\n\r\n    @Column(name = \"DtEntrega\")\r\n    private LocalDate dtEntrega;\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java b/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java
+--- a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java	(revision 3350c7e704c0d49d0f041858d06adb4014ac78a8)
++++ b/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java	(date 1748033666119)
+@@ -19,7 +19,7 @@
+     private Long id;
+ 
+     @ManyToOne(optional = false)
+-    @JoinColumn(name = "Id_Demonst", referencedColumnName = "id")
++    @JoinColumn(name = "Id_Demonstrativo", referencedColumnName = "id")
+     private Demonstrativo demonstrativo;
+ 
+     @Column(name = "Referencia", length = 80, nullable = false)
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"ExternalStorageConfigurationManager\" enabled=\"true\" />\n  <component name=\"MavenProjectsManager\">\n    <option name=\"originalFiles\">\n      <list>\n        <option value=\"$PROJECT_DIR$/backend/pom.xml\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_24\" project-jdk-name=\"21\" project-jdk-type=\"JavaSDK\" />\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision 3350c7e704c0d49d0f041858d06adb4014ac78a8)
++++ b/.idea/misc.xml	(date 1747951075990)
+@@ -8,5 +8,7 @@
+       </list>
+     </option>
+   </component>
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_24" project-jdk-name="21" project-jdk-type="JavaSDK" />
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="21" project-jdk-type="JavaSDK">
++    <output url="file://$PROJECT_DIR$/out" />
++  </component>
+ </project>
+\ No newline at end of file
+Index: backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/dto/TransparenciaRequestDTO.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package org.portodigital.residencia.oabpe.domain.transparencia.dto;\r\n\r\nimport lombok.Data;\r\n\r\nimport java.time.LocalDate;\r\n\r\n@Data\r\npublic class TransparenciaRequestDTO {\r\n    private Long idDemonst;\r\n    private String referencia;\r\n    private String ano;\r\n    private String periodicidade;\r\n    private LocalDate dtPrevEntr;\r\n    private LocalDate dtEntrega;\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/dto/TransparenciaRequestDTO.java b/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/dto/TransparenciaRequestDTO.java
+--- a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/dto/TransparenciaRequestDTO.java	(revision 3350c7e704c0d49d0f041858d06adb4014ac78a8)
++++ b/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/dto/TransparenciaRequestDTO.java	(date 1747950852066)
+@@ -1,15 +1,26 @@
+ package org.portodigital.residencia.oabpe.domain.transparencia.dto;
+ 
++import jakarta.validation.constraints.NotBlank;
++import jakarta.validation.constraints.NotNull;
+ import lombok.Data;
+-
+ import java.time.LocalDate;
+ 
+ @Data
+ public class TransparenciaRequestDTO {
++    @NotNull(message = "ID do demonstrativo é obrigatório")
+     private Long idDemonst;
++
++    @NotBlank(message = "Referência é obrigatória")
+     private String referencia;
++
++    @NotBlank(message = "Ano é obrigatório")
+     private String ano;
++
++    @NotBlank(message = "Periodicidade é obrigatória")
+     private String periodicidade;
++
++    @NotNull(message = "Data prevista de entrega é obrigatória")
+     private LocalDate dtPrevEntr;
++
+     private LocalDate dtEntrega;
+-}
++}
+\ No newline at end of file
+Index: backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package org.portodigital.residencia.oabpe.domain.transparencia;\r\n\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.modelmapper.ModelMapper;\r\nimport org.portodigital.residencia.oabpe.domain.demonstrativo.DemonstrativoRepository;\r\nimport org.portodigital.residencia.oabpe.domain.transparencia.dto.TransparenciaRequestDTO;\r\nimport org.portodigital.residencia.oabpe.domain.transparencia.dto.TransparenciaResponseDTO;\r\nimport org.portodigital.residencia.oabpe.exception.EntityNotFoundException;\r\nimport org.springframework.data.domain.Page;\r\nimport org.springframework.data.domain.Pageable;\r\nimport org.springframework.stereotype.Service;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class TransparenciaService {\r\n\r\n    private final TransparenciaRepository transparenciaRepository;\r\n    private final DemonstrativoRepository demonstrativoRepository;\r\n    private final ModelMapper mapper;\r\n\r\n    public Page<TransparenciaResponseDTO> getAll(Pageable pageable) {\r\n        return transparenciaRepository.findAll(pageable)\r\n                .map(t -> {\r\n                    TransparenciaResponseDTO dto = mapper.map(t, TransparenciaResponseDTO.class);\r\n                    dto.setNomeDemonstrativo(t.getDemonstrativo().getNome()); // adapte conforme a entidade\r\n                    return dto;\r\n                });\r\n    }\r\n\r\n    public TransparenciaResponseDTO getById(Long id) {\r\n        Transparencia transparencia = transparenciaRepository.findById(id)\r\n                .orElseThrow(() -> new EntityNotFoundException(\"Transparência não encontrada\"));\r\n        TransparenciaResponseDTO dto = mapper.map(transparencia, TransparenciaResponseDTO.class);\r\n        dto.setNomeDemonstrativo(transparencia.getDemonstrativo().getNome());\r\n        return dto;\r\n    }\r\n\r\n    public TransparenciaResponseDTO create(TransparenciaRequestDTO request) {\r\n        Transparencia transparencia = new Transparencia();\r\n        transparencia.setReferencia(request.getReferencia());\r\n        transparencia.setAno(request.getAno());\r\n        transparencia.setPeriodicidade(request.getPeriodicidade());\r\n        transparencia.setDtPrevEntr(request.getDtPrevEntr());\r\n        transparencia.setDtEntrega(request.getDtEntrega());\r\n        transparencia.setDemonstrativo(demonstrativoRepository.findById(request.getIdDemonst())\r\n                .orElseThrow(() -> new EntityNotFoundException(\"Demonstrativo não encontrado\")));\r\n\r\n        Transparencia saved = transparenciaRepository.save(transparencia);\r\n        TransparenciaResponseDTO dto = mapper.map(saved, TransparenciaResponseDTO.class);\r\n        dto.setNomeDemonstrativo(saved.getDemonstrativo().getNome());\r\n        return dto;\r\n    }\r\n\r\n    public TransparenciaResponseDTO update(Long id, TransparenciaRequestDTO request) {\r\n        Transparencia transparencia = transparenciaRepository.findById(id)\r\n                .orElseThrow(() -> new EntityNotFoundException(\"Transparência não encontrada\"));\r\n\r\n        transparencia.setReferencia(request.getReferencia());\r\n        transparencia.setAno(request.getAno());\r\n        transparencia.setPeriodicidade(request.getPeriodicidade());\r\n        transparencia.setDtPrevEntr(request.getDtPrevEntr());\r\n        transparencia.setDtEntrega(request.getDtEntrega());\r\n        transparencia.setDemonstrativo(demonstrativoRepository.findById(request.getIdDemonst())\r\n                .orElseThrow(() -> new EntityNotFoundException(\"Demonstrativo não encontrado\")));\r\n\r\n        Transparencia updated = transparenciaRepository.save(transparencia);\r\n        TransparenciaResponseDTO dto = mapper.map(updated, TransparenciaResponseDTO.class);\r\n        dto.setNomeDemonstrativo(updated.getDemonstrativo().getNome());\r\n        return dto;\r\n    }\r\n\r\n    public void delete(Long id) {\r\n        Transparencia transparencia = transparenciaRepository.findById(id)\r\n                .orElseThrow(() -> new EntityNotFoundException(\"Transparência não encontrada\"));\r\n        transparenciaRepository.delete(transparencia);\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaService.java b/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaService.java
+--- a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaService.java	(revision 3350c7e704c0d49d0f041858d06adb4014ac78a8)
++++ b/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaService.java	(date 1747951296840)
+@@ -2,6 +2,7 @@
+ 
+ import lombok.RequiredArgsConstructor;
+ import org.modelmapper.ModelMapper;
++import org.portodigital.residencia.oabpe.domain.commons.AbstractFileImportService;
+ import org.portodigital.residencia.oabpe.domain.demonstrativo.DemonstrativoRepository;
+ import org.portodigital.residencia.oabpe.domain.transparencia.dto.TransparenciaRequestDTO;
+ import org.portodigital.residencia.oabpe.domain.transparencia.dto.TransparenciaResponseDTO;
+@@ -12,7 +13,7 @@
+ 
+ @Service
+ @RequiredArgsConstructor
+-public class TransparenciaService {
++public class TransparenciaService extends AbstractFileImportService<TransparenciaRequestDTO> {
+ 
+     private final TransparenciaRepository transparenciaRepository;
+     private final DemonstrativoRepository demonstrativoRepository;
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"58ef6694-5138-4c73-a136-164ab2eceedc\" name=\"Changes\" comment=\"\">\n      <change afterPath=\"$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/dto/PagamentoCotasFilteredRequest.java\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.idea/compiler.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/compiler.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotas.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotas.java\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasController.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasController.java\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasRepository.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasRepository.java\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasService.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasService.java\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/dto/PagamentoCotasResponseDTO.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/dto/PagamentoCotasResponseDTO.java\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/backend/src/test/java/org/portodigital/residencia/oabpe/domain/PagamentoCotasServiceTest.java\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/backend/src/test/java/org/portodigital/residencia/oabpe/domain/PagamentoCotasServiceTest.java\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Class\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 3\n}</component>\n  <component name=\"ProjectId\" id=\"2x68qPAE8UCMpzqkbYp3U5fIO5u\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;JUnit.PagamentoCotasServiceTest.executor&quot;: &quot;Run&quot;,\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\n    &quot;git-widget-placeholder&quot;: &quot;test/modulo-pagamento-cotas&quot;,\n    &quot;last_opened_file_path&quot;: &quot;/home/luccas/Área de trabalho/programacao&quot;,\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\n    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,\n    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,\n    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,\n    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\n  }\n}</component>\n  <component name=\"RunManager\" selected=\"JUnit.PagamentoCotasServiceTest\">\n    <configuration name=\"PagamentoCotasServiceTest\" type=\"JUnit\" factoryName=\"JUnit\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"oabpe\" />\n      <extension name=\"coverage\">\n        <pattern>\n          <option name=\"PATTERN\" value=\"org.portodigital.residencia.oabpe.domain.*\" />\n          <option name=\"ENABLED\" value=\"true\" />\n        </pattern>\n      </extension>\n      <option name=\"PACKAGE_NAME\" value=\"org.portodigital.residencia.oabpe.domain\" />\n      <option name=\"MAIN_CLASS_NAME\" value=\"org.portodigital.residencia.oabpe.domain.PagamentoCotasServiceTest\" />\n      <option name=\"TEST_OBJECT\" value=\"class\" />\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration name=\"ResidenciaPortoDigitalOabPeApplication\" type=\"SpringBootApplicationConfigurationType\" factoryName=\"Spring Boot\" nameIsGenerated=\"true\">\n      <option name=\"FRAME_DEACTIVATION_UPDATE_POLICY\" value=\"UpdateClassesAndResources\" />\n      <module name=\"oabpe\" />\n      <option name=\"SPRING_BOOT_MAIN_CLASS\" value=\"org.portodigital.residencia.oabpe.ResidenciaPortoDigitalOabPeApplication\" />\n      <method v=\"2\">\n        <option name=\"Make\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"JUnit.PagamentoCotasServiceTest\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.129\" />\n        <option value=\"bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.129\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"58ef6694-5138-4c73-a136-164ab2eceedc\" name=\"Changes\" comment=\"\" />\n      <created>1747247353444</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1747247353444</updated>\n      <workItem from=\"1747247355081\" duration=\"10450000\" />\n      <workItem from=\"1747424050966\" duration=\"3000\" />\n      <workItem from=\"1747657749787\" duration=\"10257000\" />\n      <workItem from=\"1747700191036\" duration=\"2174000\" />\n    </task>\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 3350c7e704c0d49d0f041858d06adb4014ac78a8)
++++ b/.idea/workspace.xml	(date 1748033508841)
+@@ -5,15 +5,12 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="58ef6694-5138-4c73-a136-164ab2eceedc" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/dto/PagamentoCotasFilteredRequest.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotas.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotas.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasController.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasRepository.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/PagamentoCotasService.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/dto/PagamentoCotasResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/pagamento_cotas/dto/PagamentoCotasResponseDTO.java" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/backend/src/test/java/org/portodigital/residencia/oabpe/domain/PagamentoCotasServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/org/portodigital/residencia/oabpe/domain/PagamentoCotasServiceTest.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/Transparencia.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaController.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaService.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/dto/TransparenciaRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/dto/TransparenciaRequestDTO.java" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -30,10 +27,25 @@
+   <component name="Git.Settings">
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+   </component>
++  <component name="GitHubPullRequestSearchHistory">{
++  &quot;lastFilter&quot;: {
++    &quot;state&quot;: &quot;OPEN&quot;,
++    &quot;assignee&quot;: &quot;JoaoLucasmcS&quot;
++  }
++}</component>
++  <component name="GithubPullRequestsUISettings">{
++  &quot;selectedUrlAndAccountId&quot;: {
++    &quot;url&quot;: &quot;https://github.com/GabrielMorais2/residencia-porto-oab-pe.git&quot;,
++    &quot;accountId&quot;: &quot;2c8f19dd-1ada-46ef-ab5a-0e70fc0d95ee&quot;
++  }
++}</component>
+   <component name="ProjectColorInfo">{
+   &quot;associatedIndex&quot;: 3
+ }</component>
+   <component name="ProjectId" id="2x68qPAE8UCMpzqkbYp3U5fIO5u" />
++  <component name="ProjectLevelVcsManager">
++    <ConfirmationsSetting value="1" id="Add" />
++  </component>
+   <component name="ProjectViewState">
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+@@ -44,7 +56,8 @@
+     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+-    &quot;git-widget-placeholder&quot;: &quot;test/modulo-pagamento-cotas&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;#3 on feature/implementacao-modulo-transparencia&quot;,
++    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+     &quot;last_opened_file_path&quot;: &quot;/home/luccas/Área de trabalho/programacao&quot;,
+     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+@@ -91,8 +104,8 @@
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.129" />
+-        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.129" />
++        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.109" />
++        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.109" />
+       </set>
+     </attachedChunks>
+   </component>
+@@ -107,6 +120,9 @@
+       <workItem from="1747424050966" duration="3000" />
+       <workItem from="1747657749787" duration="10257000" />
+       <workItem from="1747700191036" duration="2174000" />
++      <workItem from="1747960028699" duration="298000" />
++      <workItem from="1747960716471" duration="981000" />
++      <workItem from="1748032775856" duration="727000" />
+     </task>
+     <servers />
+   </component>
+Index: backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package org.portodigital.residencia.oabpe.domain.transparencia;\r\n\r\nimport io.swagger.v3.oas.annotations.*;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.portodigital.residencia.oabpe.domain.transparencia.dto.TransparenciaRequestDTO;\r\nimport org.portodigital.residencia.oabpe.domain.transparencia.dto.TransparenciaResponseDTO;\r\nimport org.springframework.data.domain.Page;\r\nimport org.springframework.data.domain.Pageable;\r\nimport org.springframework.http.ResponseEntity;\r\nimport org.springframework.web.bind.annotation.*;\r\n\r\n@RestController\r\n@RequestMapping(\"/transparencia\")\r\n@RequiredArgsConstructor\r\npublic class TransparenciaController {\r\n\r\n    private final TransparenciaService transparenciaService;\r\n\r\n    @GetMapping\r\n    public ResponseEntity<Page<TransparenciaResponseDTO>> getAll(Pageable pageable) {\r\n        return ResponseEntity.ok(transparenciaService.getAll(pageable));\r\n    }\r\n\r\n    @GetMapping(\"/{id}\")\r\n    public ResponseEntity<TransparenciaResponseDTO> getById(@PathVariable Long id) {\r\n        return ResponseEntity.ok(transparenciaService.getById(id));\r\n    }\r\n\r\n    @PostMapping\r\n    public ResponseEntity<TransparenciaResponseDTO> create(@RequestBody TransparenciaRequestDTO request) {\r\n        return ResponseEntity.status(201).body(transparenciaService.create(request));\r\n    }\r\n\r\n    @PutMapping(\"/{id}\")\r\n    public ResponseEntity<TransparenciaResponseDTO> update(\r\n            @PathVariable Long id, @RequestBody TransparenciaRequestDTO request) {\r\n        return ResponseEntity.ok(transparenciaService.update(id, request));\r\n    }\r\n\r\n    @DeleteMapping(\"/{id}\")\r\n    public ResponseEntity<Void> delete(@PathVariable Long id) {\r\n        transparenciaService.delete(id);\r\n        return ResponseEntity.noContent().build();\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaController.java b/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaController.java
+--- a/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaController.java	(revision 3350c7e704c0d49d0f041858d06adb4014ac78a8)
++++ b/backend/src/main/java/org/portodigital/residencia/oabpe/domain/transparencia/TransparenciaController.java	(date 1747950852076)
+@@ -1,45 +1,47 @@
+ package org.portodigital.residencia.oabpe.domain.transparencia;
+ 
+ import io.swagger.v3.oas.annotations.*;
++import io.swagger.v3.oas.annotations.responses.ApiResponse;
++import io.swagger.v3.oas.annotations.responses.ApiResponses;
++import io.swagger.v3.oas.annotations.tags.Tag;
++import jakarta.validation.Valid;
+ import lombok.RequiredArgsConstructor;
++import lombok.Value;
++import org.portodigital.residencia.oabpe.domain.transparencia.dto.TransparenciaFilteredRequest;
+ import org.portodigital.residencia.oabpe.domain.transparencia.dto.TransparenciaRequestDTO;
+ import org.portodigital.residencia.oabpe.domain.transparencia.dto.TransparenciaResponseDTO;
++import org.springdoc.core.annotations.ParameterObject;
+ import org.springframework.data.domain.Page;
+ import org.springframework.data.domain.Pageable;
+ import org.springframework.http.ResponseEntity;
++import org.springframework.security.access.prepost.PreAuthorize;
+ import org.springframework.web.bind.annotation.*;
+ 
+ @RestController
+-@RequestMapping("/transparencia")
++@RequestMapping("/v1/transparencia")
+ @RequiredArgsConstructor
++@Tag(name = "Transparencia", description = "Gerencia registros de transparencia")
+ public class TransparenciaController {
+ 
+     private final TransparenciaService transparenciaService;
+ 
++    @Operation(
++            summary = "Listar registros de transparência.",
++            description = "Retornar uma lista paginada de todos os registros de transparência cadastrados"
++    )
++    @ApiResponses({
++            @ApiResponse(responseCode = "200", description = "Lista recuperada com sucesso"),
++            @ApiResponse(responseCode = "403", description = "Acesso não autorizado")
++    })
+     @GetMapping
+-    public ResponseEntity<Page<TransparenciaResponseDTO>> getAll(Pageable pageable) {
+-        return ResponseEntity.ok(transparenciaService.getAll(pageable));
+-    }
+-
+-    @GetMapping("/{id}")
+-    public ResponseEntity<TransparenciaResponseDTO> getById(@PathVariable Long id) {
+-        return ResponseEntity.ok(transparenciaService.getById(id));
+-    }
+-
+-    @PostMapping
+-    public ResponseEntity<TransparenciaResponseDTO> create(@RequestBody TransparenciaRequestDTO request) {
+-        return ResponseEntity.status(201).body(transparenciaService.create(request));
+-    }
++    @PreAuthorize("hasPermission('modulo_transparencia', 'LEITURA')")
++    public ResponseEntity<Page<TransparenciaResponseDTO>> getAllFiltered(
++            @Parameter(description = "Parâmetros de filtragem")
++            @Valid @ParameterObject TransparenciaFilteredRequest filter,
++            @Parameter(description = "Parâmetros de paginação (page, size, sort)")
++            Pageable pageable) {
++        return ResponseEntity.ok(transparenciaService.getAllFiltered(filter, pageable));
+ 
+-    @PutMapping("/{id}")
+-    public ResponseEntity<TransparenciaResponseDTO> update(
+-            @PathVariable Long id, @RequestBody TransparenciaRequestDTO request) {
+-        return ResponseEntity.ok(transparenciaService.update(id, request));
+     }
+ 
+-    @DeleteMapping("/{id}")
+-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+-        transparenciaService.delete(id);
+-        return ResponseEntity.noContent().build();
+-    }
+ }
