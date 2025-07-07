@@ -19,15 +19,15 @@ function createFakeToken(username: string): string {
     sub: username,
     exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // expira em 1 dia
     permissions: {
-      modulo_gestao_usuarios: ["admin"],
-      modulo_balancetes_cfoab: ["admin"],
-      modulo_prestacao_contas_subseccional: ["admin"],
-      modulo_subseccional: ["admin"],
-      modulo_instituicoes: ["admin"],
-      modulo_pagamento_cotas: ["admin"],
-      modulo_base_orcamentaria: ["admin"],
-      modulo_transparencia: ["admin"],
-      modulo_demonstrativos: ["admin"],
+      modulo_gestao_usuarios: ['ADMIN', 'ESCRITA', 'LEITURA', 'AUDITORIA'],
+      modulo_balancetes_cfoab: ['ADMIN', 'ESCRITA', 'LEITURA', 'AUDITORIA'],
+      modulo_prestacao_contas_subseccional: ['ADMIN', 'ESCRITA', 'LEITURA', 'AUDITORIA'],
+      modulo_subseccional: ['ADMIN', 'ESCRITA', 'LEITURA', 'AUDITORIA'],
+      modulo_instituicoes: ['ADMIN', 'ESCRITA', 'LEITURA', 'AUDITORIA'],
+      modulo_pagamento_cotas: ['ADMIN', 'ESCRITA', 'LEITURA', 'AUDITORIA'],
+      modulo_base_orcamentaria: ['ADMIN', 'ESCRITA', 'LEITURA', 'AUDITORIA'],
+      modulo_transparencia: ['ADMIN', 'ESCRITA', 'LEITURA', 'AUDITORIA'],
+      modulo_demonstrativos: ['ADMIN', 'ESCRITA', 'LEITURA', 'AUDITORIA'],
     },
   };
 
