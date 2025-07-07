@@ -197,9 +197,7 @@ export default function BalanceteDetailsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {new Date(data?.dtPrevEntr).toLocaleDateString("pt-BR")}
-            </div>
+            <div className="text-2xl font-bold">{data.dtPrevEntr}</div>
           </CardContent>
         </Card>
 
