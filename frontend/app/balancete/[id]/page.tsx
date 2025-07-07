@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { 
-  ArrowLeft, 
-  Pencil, 
-  FileText, 
-  Calendar, 
+import {
+  ArrowLeft,
+  Pencil,
+  FileText,
+  Calendar,
   FileBarChart2,
   Clock,
   CheckCircle,
@@ -108,7 +108,7 @@ export default function BalanceteDetailsPage() {
           </Button>
           <h2 className="text-2xl font-bold">Balancete não encontrado</h2>
         </div>
-        
+
         <div className="flex flex-col items-center justify-center space-y-4 rounded-md border p-8 text-center">
           <FileText className="h-12 w-12 text-muted-foreground" />
           <h3 className="text-xl font-semibold">
@@ -136,7 +136,7 @@ export default function BalanceteDetailsPage() {
           </Button>
           <h2 className="text-2xl font-bold">Detalhes do Balancete</h2>
         </div>
-        
+
         <div className="space-x-2">
           <Button asChild variant="outline">
             <Link href={`/balancete/edit/${data.id}`}>
@@ -197,7 +197,9 @@ export default function BalanceteDetailsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.dtPrevEntr}</div>
+            <div className="text-2xl font-bold">
+              {new Date(data?.dtPrevEntr).toLocaleDateString("pt-BR")}
+            </div>
           </CardContent>
         </Card>
 
