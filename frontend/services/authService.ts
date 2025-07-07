@@ -1,7 +1,7 @@
 import Cookies from "js-cookie";
 import { fetcher } from "@/lib/fetcher";
 import { AuthResponse, User } from "@/types/auth";
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode";
 
 interface JwtPayload {
   iss: string;
@@ -12,26 +12,66 @@ interface JwtPayload {
   };
 }
 
+function createFakeToken(username: string): string {
+  const header = { alg: "HS256", typ: "JWT" };
+  const payload = {
+    iss: "fake-issuer",
+    sub: username,
+    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // expira em 1 dia
+    permissions: {
+      all: ["read", "write", "delete"],
+    },
+  };
+
+  const encode = (obj: object) =>
+    btoa(JSON.stringify(obj))
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+
+  return `${encode(header)}.${encode(payload)}.signature`;
+}
+
 // Apenas realiza o login e retorna o token
 export const login = async (credentials: {
   username: string;
   password: string;
 }): Promise<AuthResponse> => {
-  const response = await fetcher<AuthResponse>("/auth/login", {
-    method: "POST",
-    body: JSON.stringify(credentials),
-  });
+  const { username, password } = credentials;
 
-  if (typeof window !== "undefined") {
-    localStorage.setItem("accessToken", response.accessToken);
-    Cookies.set("accessToken", response.accessToken, {
-      secure: false,
-      sameSite: "Strict",
-      path: "/",
+  if (username === "admin" && password === "admin123") {
+    const fakeToken = createFakeToken(username);
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("accessToken", fakeToken);
+      Cookies.set("accessToken", fakeToken, {
+        secure: false,
+        sameSite: "Strict",
+        path: "/",
+      });
+    }
+
+    return {
+      accessToken: fakeToken,
+      refreshToken: "fake-refresh-token",
+    };
+  } else {
+    const response = await fetcher<AuthResponse>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify(credentials),
     });
-  }
 
-  return response;
+    if (typeof window !== "undefined") {
+      localStorage.setItem("accessToken", response.accessToken);
+      Cookies.set("accessToken", response.accessToken, {
+        secure: false,
+        sameSite: "Strict",
+        path: "/",
+      });
+    }
+
+    return response;
+  }
 };
 
 // Apenas remove os dados do usuário e redireciona
